@@ -24,6 +24,7 @@
 | 14 | [Transaction, Undo và hiệu năng](14_Transaction_Undo_va_hieu_nang.md) | Bắt buộc theo thao tác |
 | 15 | [Xử lý lỗi và HARD STOP](15_Xu_ly_loi_va_HARD_STOP.md) | Bắt buộc |
 | 16 | [DataManifest, BuildInfo và QA](16_DataManifest_BuildInfo_va_QA.md) | Bắt buộc |
+| 17 | [Autoupdate — Tự động chuẩn hóa, build, đóng gói và upload GitHub](17_Autoupdate.md) | Bắt buộc khi cập nhật GitHub |
 
 ## Nguyên tắc sử dụng
 
