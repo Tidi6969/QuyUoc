@@ -76,3 +76,27 @@ Mỗi phiên bản là một snapshot độc lập; ví dụ `DBox/V5/DBox-V5.zi
 | AUTO-05 | ZIP mở lại được, đúng nội dung và checksum nếu có | PASS/FAIL/NotVerified |
 | AUTO-06 | GitHub commit/push thành công; đọc lại đường dẫn và blob | PASS/FAIL/NotVerified |
 | AUTO-07 | Khi PASS, phản hồi chỉ link `/blob/...`; khi lỗi, báo chặn rõ ràng | PASS/FAIL/NotVerified |
+
+## 8. Đồng bộ bắt buộc với repository DCAD tổng hợp
+
+**Kho tổng hợp chính:** `https://github.com/Tidi6969/DCAD` (nhánh `main`, trừ khi người dùng chỉ định khác). DCAD là **danh mục trạng thái của toàn bộ add-in**, không phải chỗ lưu bản sao ZIP/DLL/source của từng add-in.
+
+- Khi người dùng yêu cầu phát hành hoặc lưu trữ một phiên bản module lên GitHub, yêu cầu ấy **đồng thời cho phép** cập nhật **thông tin metadata tương ứng** trong `Tidi6969/DCAD`, không cần xin xác nhận thứ hai. Không được nhân đó thay đổi quy chuẩn, source hay cấu hình runtime DCAD ngoài danh mục/thông tin phát hành.
+- Trình tự: (1) xác minh bản ZIP/changelog trong repository module, (2) xác minh trạng thái build/QA/running thực tế, (3) cập nhật mục module trong `DCAD/README.md` hoặc manifest danh mục nếu có, (4) đọc lại cả hai repository và xác nhận khớp. **Chỉ đánh dấu "Hoàn tất đồng bộ" sau bước (4).**
+- Mục module tối thiểu ghi: **Tên add-in, phiên bản mới nhất đã lưu, loại bản (snapshot nguồn / đã build / đã kiểm thử CAD), trạng thái Build/Runtime đúng bằng chứng, CAD target, ngày đồng bộ và đường dẫn ZIP dạng `/blob/<branch>/<path>`**, cùng link repository/changelog khi phù hợp.
+- Trạng thái `Đã lưu trên GitHub` **khác** `Build PASS` và `CAD runtime PASS`; không suy diễn kết quả kiểm thử từ việc có ZIP hoặc DLL. Một phiên bản chưa được nghiệm thu có thể được ghi vào danh mục với nhãn `Chờ build/kiểm thử`, nhưng **không** được quảng bá là bản phát hành hoàn tất.
+- Nếu upload module thành công nhưng cập nhật DCAD thất bại: báo rõ **module đã có trên GitHub, DCAD chưa đồng bộ**; không nói hoàn thành toàn bộ, không xóa bản đã upload và không ghi nhận sai trạng thái.
+- Nếu phát hành module thất bại: không tăng phiên bản "mới nhất đã hoàn tất" trong DCAD; được ghi trạng thái lỗi đang xử lý khi cần và có bằng chứng, nhưng không được thay bản đã chạy ổn định.
+- Nếu người dùng đang sửa và thử nghiệm một bản chưa nghiệm thu: có thể ghi phiên bản `đang thử nghiệm` bên cạnh `phiên bản đã nghiệm thu` khi thực sự có bản đã được lưu; **không** tự khẳng định người dùng đã test chạy CAD.
+- Sau khi đồng bộ thành công, liên kết trả về theo mẫu yêu cầu vẫn là **một link ZIP tại repository module**; khi lỗi thì nêu rõ bước thất bại theo mục 6.
+
+### Vòng lặp làm việc với người dùng
+
+**ChatGPT nhận yêu cầu → sửa/kiểm tra/build (nếu có môi trường) → lưu phiên bản module lên GitHub → đồng bộ trạng thái DCAD → trả link ZIP → người dùng tải về chạy thử CAD → người dùng phản hồi lỗi/kết quả tại ChatGPT → cập nhật trạng thái và sửa phiên bản tiếp theo khi có yêu cầu.**
+
+Không chờ một thao tác GitHub thủ công của người dùng ở các bước mà công cụ thực sự thực hiện được; không tự tuyên bố việc tải về chạy thử của người dùng đã xảy ra. Mọi lần cập nhật diễn ra trong phiên được yêu cầu, không tự chạy ngầm giữa các cuộc trò chuyện.
+
+| Mã | Kiểm chứng bổ sung | Kết quả |
+|---|---|---|
+| AUTO-08 | Danh mục `Tidi6969/DCAD` phản ánh đúng phiên bản, URL, build/runtime status và CAD target | PASS/FAIL/NotVerified |
+| AUTO-09 | Đọc lại repository module và DCAD sau commit, xác nhận không lệch trạng thái | PASS/FAIL/NotVerified |
