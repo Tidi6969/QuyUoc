@@ -1,6 +1,6 @@
 # DCAD-STD-16 — DataManifest, BuildInfo và QA
 
-**Phiên bản:** 1.12  
+**Phiên bản:** 1.13  
 **Cập nhật:** 03/11/2026  
 **Mức áp dụng:** Bắt buộc
 
@@ -14,6 +14,7 @@
 - **Checklist trước bàn giao**:
 
   - [ ] Tất cả source thay đổi đều có lý do và phạm vi impact; bảo toàn baseline những phần ngoài scope.
+  - [ ] Với AI, áp dụng STD-18: nêu mục tiêu, không suy diễn, không thêm chức năng ngoài phạm vi; diff tối thiểu và ca thử có expected/actual.
   - [ ] Target/framework/reference đúng cho từng CAD, không lẫn host.
   - [ ] Xác nhận các target được triển khai đều thuộc AutoCAD 2022, AutoCAD 2025 hoặc GstarCAD 2027 và đúng phạm vi dự án. Không còn nhánh source, SDK/Reference, script, project target, DLL, log, output portable hoặc mục manifest của CAD ngoài phạm vi.
   - [ ] Release build từng target được kiểm chứng riêng; `Build_All.cmd` ở root điều phối `Build_Release.cmd /nopause` đúng thư mục `%~3`, không dùng nhãn `%~2` thay đường dẫn.
@@ -61,6 +62,7 @@
 | STD-14 | Transaction/Undo/ESC và hiệu năng không phá bản vẽ | DWG trước/sau Cancel/Undo, log ngoại lệ, phép thử tập lớn khi liên quan |
 | STD-15 | Lỗi hiển thị đúng, log/diagnostic đủ, HARD STOP khi lặp | Ca lỗi giả lập hoặc tái hiện; log lỗi và hành vi khôi phục |
 | STD-16 | Manifest, BuildInfo, release gating, trạng thái đúng | Bảng nghiệm thu cuối và đối chiếu thực tế từng file/host |
+| STD-18 | Hiểu yêu cầu, tối giản giải pháp, thay đổi đúng phạm vi, kiểm chứng theo mục tiêu | Scope, diff, ca kiểm thử, log và AI-01–AI-12 |
 
 ### Trạng thái và điều kiện bàn giao
 
@@ -72,3 +74,5 @@
 6. Kèm theo bản giao biên bản ngắn: `RequirementID | Applies | Result | Evidence | Host | Notes`; file này thuộc **Userdata/log package phần mềm khi phù hợp**, không chèn bản sao bộ tiêu chuẩn `.md` vào ZIP phần mềm. Không đặt file rác Test/Tests vào ZIP bàn giao.
 
 - Kiểm tra cập nhật GitHub theo STD-17 AUTO-01–AUTO-13: chọn baseline gần nhất khi không có chỉ định; version mới mặc định max đã lưu + 1; không ghi đè bản cũ; README module và DCAD có trạng thái mới nhất/đã nghiệm thu riêng; đọc lại ZIP/changelog/metadata sau commit. Chỉ lưu bản gốc hoặc metadata không tự tăng version phần mềm.
+
+- Khi AI phân tích/viết/sửa/rà soát code, kiểm tra **STD-18, AI-01–AI-12** theo phạm vi; không gán PASS khi thiếu bằng chứng.

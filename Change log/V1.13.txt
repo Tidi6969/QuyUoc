@@ -1,0 +1,12 @@
+DCAD — QuyUoc V1.13
+Ngày: 03/11/2026
+Loại: Cập nhật tài liệu; không sửa/build phần mềm CAD.
+Nguồn tham khảo STD-18: https://github.com/multica-ai/andrej-karpathy-skills (MIT).
+MỚI: 18_Karpathy_Guidelines_cho_AI_lap_trinh.md (STD-18 v1.0)
+SỬA: 00_MUC_LUC.md (V1.13, mục 18)
+SỬA: 16_DataManifest_BuildInfo_va_QA.md (QA STD-18, v1.13)
+SỬA: README.md (V1.13)
+PHÁT HÀNH: Releases/V1.13/QuyUoc-V1.13.zip gồm các file 00–18 .md tại root.
+Giữ nguyên V1.12 và các phiên bản cũ.
+QA tài liệu và ZIP: kiểm tra sau đóng gói.
+Build/NETLOAD CAD: N/A, không có thay đổi phần mềm.

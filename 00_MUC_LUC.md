@@ -1,4 +1,4 @@
-# BỘ TIÊU CHUẨN DCAD — V1.12
+# BỘ TIÊU CHUẨN DCAD — V1.13
 
 **Phạm vi CAD hỗ trợ:** AutoCAD 2022, AutoCAD 2025 và GstarCAD 2027. Mỗi dự án triển khai các target đã được duyệt trong danh sách này.  
 **Bàn giao:** Một file ZIP chứa các file Markdown độc lập, không chứa bản sao tài liệu nguồn hoặc file phụ trợ.  
@@ -25,6 +25,7 @@
 | 15 | [Xử lý lỗi và HARD STOP](15_Xu_ly_loi_va_HARD_STOP.md) | Bắt buộc |
 | 16 | [DataManifest, BuildInfo và QA](16_DataManifest_BuildInfo_va_QA.md) | Bắt buộc |
 | 17 | [Autoupdate — Tự động build, đồng bộ GitHub và ghi nhận xác nhận OK](17_Autoupdate.md) | Bắt buộc khi cập nhật GitHub hoặc người dùng xác nhận phiên bản OK |
+| 18 | [Nguyên tắc AI lập trình theo Karpathy](18_Karpathy_Guidelines_cho_AI_lap_trinh.md) | Bắt buộc khi AI phân tích/viết/sửa/rà soát code |
 
 ## Nguyên tắc sử dụng
 
@@ -44,7 +45,7 @@
 - **Build PASS**, **tuân thủ tiêu chuẩn PASS** và **NETLOAD/runtime PASS** là các kết quả độc lập. Lỗi trình bày CMD không được đổi một kết quả biên dịch thành FAIL, nhưng bản bàn giao chính thức không được tuyên bố đạt chuẩn khi yêu cầu trình bày bắt buộc chưa đạt.
 - Có thể bàn giao bản nguồn đang kiểm thử với các mục `NotVerified` được công bố rõ, nhưng không gọi bản đó là đã nghiệm thu đầy đủ. Không được suy diễn tình trạng CAD đích từ kết quả của host khác.
 - Mọi nhánh CAD, cấu hình build, SDK/Reference, DLL, log và manifest thuộc phạm vi bàn giao phải khớp danh sách target đã được duyệt theo quy chuẩn 03/04; không đưa target ngoài phạm vi vào gói.
-- Phiên bản ZIP tổng là **V1.12**; số phiên bản ở đầu từng file cho biết lần sửa nội dung của chính quy chuẩn đó, nên một số file không sửa vẫn giữ phiên bản cũ.
+- Phiên bản ZIP tổng là **V1.13**; số phiên bản ở đầu từng file cho biết lần sửa nội dung của chính quy chuẩn đó, nên một số file không sửa vẫn giữ phiên bản cũ.
 
 ## Cập nhật V1.12 — 03/11/2026
 
@@ -56,3 +57,8 @@
 
 - Khi người dùng xác nhận phiên bản chạy OK/đạt/duyệt và xác định được module/version, trợ lý phải cập nhật ngay thông tin xác nhận trong repository module và danh mục DCAD, không cần người dùng nhắc lại.
 - Chỉ cập nhật metadata nghiệm thu; không tự tăng phiên bản, ghi đè ZIP hoặc gán PASS cho CAD host chưa có bằng chứng. Kiểm tra commit và thông báo trung thực nếu đồng bộ chưa hoàn tất. Chi tiết tại STD-17 mục 9.
+
+## Cập nhật V1.13 — 03/11/2026
+
+- Bổ sung STD-18: Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution.
+- Đồng bộ STD-16/QA, mục lục, README, changelog và ZIP tổng mới. Không sửa phần mềm CAD hay tăng version module.
