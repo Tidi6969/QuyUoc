@@ -24,7 +24,7 @@
 | 14 | [Transaction, Undo và hiệu năng](14_Transaction_Undo_va_hieu_nang.md) | Bắt buộc theo thao tác |
 | 15 | [Xử lý lỗi và HARD STOP](15_Xu_ly_loi_va_HARD_STOP.md) | Bắt buộc |
 | 16 | [DataManifest, BuildInfo và QA](16_DataManifest_BuildInfo_va_QA.md) | Bắt buộc |
-| 17 | [Autoupdate — Tự động chuẩn hóa, build, đóng gói và upload GitHub](17_Autoupdate.md) | Bắt buộc khi cập nhật GitHub |
+| 17 | [Autoupdate — Tự động build, đồng bộ GitHub và ghi nhận xác nhận OK](17_Autoupdate.md) | Bắt buộc khi cập nhật GitHub hoặc người dùng xác nhận phiên bản OK |
 
 ## Nguyên tắc sử dụng
 
@@ -51,3 +51,8 @@
 - Đồng bộ quy tắc tên thư mục cuối, kiểm tra theo phụ thuộc và thư mục con ứng dụng được khai báo.
 - Tự chọn baseline gần nhất, tăng phiên bản phần mềm đúng 1 khi không có chỉ định; giữ lịch sử và tách trạng thái nghiệm thu.
 - Giữ tên file hiện có để bảo toàn URL; hậu tố phiên bản trong tên file cũ là định danh lịch sử, phiên bản hiệu lực nằm ở đầu nội dung.
+
+## Bổ sung ngày 03/11/2026 — Xác nhận OK và tự đồng bộ GitHub
+
+- Khi người dùng xác nhận phiên bản chạy OK/đạt/duyệt và xác định được module/version, trợ lý phải cập nhật ngay thông tin xác nhận trong repository module và danh mục DCAD, không cần người dùng nhắc lại.
+- Chỉ cập nhật metadata nghiệm thu; không tự tăng phiên bản, ghi đè ZIP hoặc gán PASS cho CAD host chưa có bằng chứng. Kiểm tra commit và thông báo trung thực nếu đồng bộ chưa hoàn tất. Chi tiết tại STD-17 mục 9.
