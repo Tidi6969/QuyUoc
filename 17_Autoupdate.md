@@ -123,3 +123,23 @@ Không chờ một thao tác GitHub thủ công của người dùng ở các b�
 | AUTO-11 | Không chỉ định version đích: max đã lưu + 1; baseline cũ chỉ định không gây ghi đè; lưu nguyên bản/metadata không tăng số | PASS/FAIL/NotVerified |
 | AUTO-12 | Giữ ZIP/changelog bản cũ; thêm bản mới độc lập; README module/DCAD tách mới nhất và bản đã nghiệm thu | PASS/FAIL/NotVerified |
 | AUTO-13 | Đọc lại nhánh/version trước commit và sau upload; xử lý xung đột, retry không tự nhảy số hoặc ghi đè | PASS/FAIL/NotVerified |
+
+## 9. Tự động cập nhật GitHub ngay khi người dùng xác nhận OK
+
+**Kích hoạt:** Khi người dùng xác nhận rõ một phiên bản/module bằng các cách diễn đạt như **“OK”, “oke”, “chạy ngon”, “đạt”, “ổn rồi”, “duyệt”** hoặc tương đương, trong ngữ cảnh có thể xác định phiên bản được xác nhận, trợ lý **PHẢI chủ động thực hiện đồng bộ thông tin nghiệm thu lên GitHub ngay trong lượt trả lời đó**, không chờ người dùng nhắc “cập nhật GitHub” lần thứ hai.
+
+1. **Xác định phạm vi:** Lấy đúng module, repository, phiên bản, CAD host và nội dung được người dùng xác nhận từ ngữ cảnh. Nếu chỉ xác nhận chung “chạy ngon” mà không rõ từng CAD host, ghi `UserReportedWorking=YES` và phạm vi người dùng thực sự xác nhận; **không tự gán** `Build PASS`, `NETLOAD PASS` hoặc `Runtime PASS` cho cả ba host.
+2. **Cập nhật repository module:** Đọc trạng thái hiện tại, cập nhật Change Log, README hoặc manifest phiên bản đang có, ghi ngày xác nhận, nội dung xác nhận, phạm vi, trạng thái và các bằng chứng tương ứng. Đây là cập nhật **metadata/ghi nhận nghiệm thu**, **không tự tăng số phiên bản phần mềm**, không tự sửa source và không ghi đè ZIP đã lưu.
+3. **Đồng bộ repository DCAD tổng hợp:** Cập nhật danh mục của đúng module tại `Tidi6969/DCAD` để phân biệt phiên bản mới nhất đã lưu với phiên bản đã được người dùng xác nhận. Không chuyển một phiên bản thành “đã nghiệm thu đầy đủ mọi CAD host” nếu chưa có bằng chứng tương ứng.
+4. **Đọc lại và đối chiếu:** Sau commit, đọc lại các tệp đã cập nhật tại repository module và DCAD; chỉ thông báo **đã đồng bộ hoàn tất** khi cả hai bên thực sự khớp. Nếu chỉ một bên thành công, ghi rõ bên đã cập nhật và bên còn lỗi, không báo thành công toàn bộ.
+5. **Không yêu cầu nhắc lại:** Xác nhận OK đủ rõ là ủy quyền cập nhật **thông tin trạng thái** cho phiên bản đó; không cần hỏi lại chỉ để commit metadata. Nếu thiếu thông tin thiết yếu để chọn đúng module/version, hỏi đúng thông tin còn thiếu thay vì cập nhật nhầm.
+6. **Giới hạn thực thi:** Chỉ thao tác khi có kết nối, quyền và công cụ phù hợp trong lượt hội thoại hiện tại; **không** hứa chạy nền hoặc tự cập nhật sau khi cuộc trò chuyện kết thúc. Nếu công cụ không cho phép, báo rõ `NotSynced` cùng lý do; không nhận là đã push.
+7. **Không đánh đồng với phát hành ZIP:** Xác nhận OK cho bản đã lưu chỉ kích hoạt đồng bộ trạng thái nghiệm thu; không buộc build lại, tạo ZIP mới hoặc phát hành phiên bản mới. Các cổng HARD STOP ở mục 5 vẫn áp dụng khi thực sự phát hành bản phần mềm mới.
+
+**Ví dụ:** Người dùng nói “DProject V14 chạy ngon rồi” → trợ lý chủ động cập nhật ghi nhận xác nhận V14 trong repository DProject và danh mục DCAD, kiểm tra commit rồi báo kết quả. Nếu chưa rõ V14 chạy trên host nào, giữ từng host ở trạng thái chưa xác minh thay vì tự kết luận cả ba đã PASS.
+
+| Mã | Kiểm chứng bổ sung | Kết quả |
+|---|---|---|
+| AUTO-14 | Xác nhận OK rõ module/version kích hoạt cập nhật metadata GitHub trong cùng lượt, không cần nhắc lần hai | PASS/FAIL/NotVerified |
+| AUTO-15 | Repository module và DCAD được cập nhật, đọc lại và đối chiếu; báo chính xác nếu đồng bộ một phần | PASS/FAIL/NotVerified |
+| AUTO-16 | Không tự tăng version, ghi đè ZIP hoặc gán Build/NETLOAD/runtime PASS ngoài phạm vi bằng chứng | PASS/FAIL/NotVerified |
