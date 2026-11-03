@@ -1,7 +1,7 @@
 # DCAD-STD-03 — Cấu trúc thư mục và đóng gói phần mềm
 
-**Phiên bản:** 1.12  
-**Cập nhật:** 21/10/2026 — thống nhất tên DLL theo host; khóa cấu trúc `Dprogram`; đồng bộ STD-05 V1.11.  
+**Phiên bản:** 1.13  
+**Cập nhật:** 03/11/2026  
 **Mức áp dụng:** Bắt buộc
 
 ## Một cây project cho một CAD mục tiêu
@@ -30,7 +30,7 @@
 
 ## Cấu hình môi trường dữ liệu CAD
 
-**Setup/QA cấu hình toàn hệ thống** kiểm đúng năm thư mục logic `DData`, `DUser`, `DProgram`, `DHelp`, `Dicon` đăng ký DIRECT và có thể ở **vị trí/thứ tự bất kỳ** trong Support File Search Path. Thư mục nguồn (ví dụ `DCAD`) **không phải entry bắt buộc** và không tự thêm vào Support Path. **Module CAD** chỉ kiểm tra tài nguyên thật sự sử dụng theo `DataManifest` (không chặn vì thiếu thư mục không liên quan). Không chấp nhận PARENT/fallback. Khi quy định cũ về sáu entry/cuối danh sách xung đột, **STD-05 V1.11 là chuẩn ưu tiên**. Đây là đường dẫn runtime trên máy người sử dụng, **khác** cây `Runtime`, `icon`, `Buildtime` của source.
+**Setup/QA và module CAD** kiểm các tài nguyên thật sự sử dụng trong phạm vi cấu hình/chức năng theo `DataManifest`; không yêu cầu đủ năm thư mục nếu không dùng. Entry DIRECT phải có tên thư mục cuối là `DData`, `DUser`, `DProgram`, `Dicon` hoặc `Dhelp` (không phân biệt hoa/thường trên Windows); không yêu cầu thứ tự/vị trí, liền kề, cùng root hay entry root `DCAD`. `DUser\abc` không phải entry DUser; chỉ đăng ký root cũng không hợp lệ thay DUser. Đường dẫn con ứng dụng phải khai báo riêng, ví dụ từ DProgram DIRECT đến `Dnest\Dnest.exe`; không tìm đệ quy hoặc chấp nhận entry con thay entry logic. Áp dụng STD-05 hiện hành. Đây là đường dẫn runtime, khác cây `Runtime`, `icon`, `Buildtime` của source.
 
 ## ZIP phần mềm đa phiên bản
 
@@ -44,7 +44,7 @@
 └── Dprogram/          # DLL portable đặt trực tiếp trong thư mục này; chỉ publish khi các target đã duyệt PASS
 ```
 
-- Một ZIP duy nhất cho mỗi lần bàn giao. Các nhánh độc lập cùng version, không trộn framework/reference/source giữa các host.
+- Một ZIP duy nhất cho mỗi lần bàn giao. Các nhánh độc lập cùng version, không trộn framework/reference/source giữa các host. Baseline mặc định là bản gần nhất và version đích mặc định tăng đúng 1 theo STD-01/17; đồng bộ version ZIP/thư mục/project/BuildInfo/changelog, không ghi đè bản cũ.
 - Không đóng thư mục Tests/Test, file tạm và dữ liệu QA rác vào gói bàn giao; vẫn giữ đủ source, reference và dữ liệu runtime cần thiết.
 - `Dprogram` ở root ZIP là **đích xuất DLL portable dạng phẳng** (`Dprogram/<AssemblyNameHost>.dll`), **không** tự thêm thư mục `AutoCAD2022/`, `AutoCAD2025/` hoặc `GstarCAD2027/` bên trong nếu không có chuẩn module riêng đã duyệt. Không tự coi đây là `DProgram` runtime của Support File Search Path.
 - Quy chuẩn `.md` nằm trong **ZIP tiêu chuẩn DCAD**, không chèn vào ZIP phần mềm.

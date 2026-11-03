@@ -1,18 +1,18 @@
 # DCAD-STD-05 — Support File Search Path và phân giải dữ liệu
 
-**Phiên bản:** 1.11  
-**Cập nhật:** 21/10/2026 — năm DIRECT bắt buộc; thứ tự/vị trí tự do; nguồn không phải entry.  
-**Mức áp dụng:** Bắt buộc theo tài nguyên mà module sử dụng; kiểm tra cấu hình đầy đủ tại Setup/QA hệ thống  
+**Phiên bản:** 1.12  
+**Cập nhật:** 03/11/2026  
+**Mức áp dụng:** Bắt buộc theo tài nguyên mà module sử dụng; Setup/QA kiểm theo phạm vi chức năng được triển khai  
 **Hợp đồng:** `DCAD-DATA-DIR-001` — DIRECT-only và phân giải theo phạm vi DataManifest
 
 ## 1. Phạm vi áp dụng và nguyên tắc
 
-DCAD có **năm thư mục logic bắt buộc đối với cấu hình đầy đủ cấp hệ thống**: `DData`, `DUser`, `DProgram`, `DHelp`, `Dicon`. Tên thư mục nguồn (ví dụ `DCAD`) chỉ dùng để chọn, quét và đối chiếu, **không phải entry bắt buộc hoặc tự động thêm vào Support File Search Path**. Việc kiểm tra được tách thành **hai cấp độc lập**:
+DCAD quy định năm **tên thư mục logic**: `DData`, `DUser`, `DProgram`, `Dicon`, `Dhelp`. Đây là các tên được chấp nhận ở **thành phần cuối cùng của đường dẫn đăng ký**, không phải yêu cầu có đủ năm thư mục hoặc đặt năm entry ở cuối danh sách. Thư mục cha (ví dụ `DCAD`) không có tên/vị trí bắt buộc và không được dùng thay entry DIRECT. Hai cấp kiểm tra đều theo phụ thuộc thực tế:
 
 1. **Module CAD:** chỉ xác định và kiểm tra những thư mục, tệp hoặc chương trình ngoài DWG mà module **thực sự sử dụng**, căn cứ `DataManifest` của module và chức năng đang thực hiện. Tài nguyên **bắt buộc** của module phải đạt kiểm tra trước khi sử dụng; thiếu tài nguyên không liên quan **không được gây `FATAL` hoặc ngăn lệnh chạy**.
-2. **Setup/QA cấp hệ thống:** kiểm tra đúng **năm thư mục logic DIRECT**, tồn tại và truy cập được, không trùng tên logic khác đích; khi chọn nguồn, kiểm tra năm thư mục cùng thuộc nguồn đó. **Không bắt buộc thứ tự, tính liền kề hay vị trí cuối danh sách.** Thư mục nguồn không được tự động đăng ký. Đây là điều kiện nghiệm thu cấu hình toàn hệ thống, không phải điều kiện khởi động mặc định của từng module.
+2. **Setup/QA cấp hệ thống:** xác định các chức năng/module được triển khai và tập tài nguyên cần dùng theo DataManifest; kiểm các DIRECT tương ứng, khả năng truy cập, xung đột và tệp bắt buộc. **Không bắt buộc đủ năm thư mục, cùng root, liền kề, đúng thứ tự hay ở cuối danh sách.** Không đánh lỗi vì thiếu thư mục không được dùng trong phạm vi cấu hình. Chọn thư mục cha chỉ phục vụ xem/lựa chọn, không tự đăng ký cha hoặc suy thư mục con khi runtime.
 
-`DIRECT-only` áp dụng như nhau ở cả hai cấp: chỉ đường dẫn **đăng ký trực tiếp** tới chính thư mục logic trong Support File Search Path của CAD/profile hiện hành mới hợp lệ. Không suy ra thư mục con từ root/entry cha (`PARENT`), không suy ra thư mục anh em, không tìm đệ quy/quét ổ đĩa, không tự tạo thư mục logic và không chuyển sang đích dự phòng.
+`DIRECT-only` áp dụng như nhau ở cả hai cấp: chỉ đường dẫn **đăng ký trực tiếp**, có **tên thư mục cuối khớp tên logic** trong Support File Search Path của CAD/profile hiện hành mới hợp lệ. Sau chuẩn hóa dấu gạch cuối và so sánh Windows không phân biệt hoa/thường: `D:\A\DUser` và `E:\B\abc\DUser` hợp lệ cho DUser; `D:\A\DUser\abc` không hợp lệ vì tên cuối là `abc`. `DHelp` và `Dhelp` được nhận như cùng tên logic. Không suy ra thư mục con từ root/entry cha (`PARENT`), không suy ra thư mục anh em, không tìm đệ quy/quét ổ đĩa, không tự tạo thư mục logic và không chuyển sang đích dự phòng.
 
 Thao tác **chọn nguồn trong Setup** được phép liệt kê các thư mục con trực tiếp của thư mục do người dùng chọn, chỉ để hiển thị/lựa chọn; việc này **không** biến nguồn thành một entry DIRECT hay cho phép runtime phân giải PARENT.
 
@@ -27,36 +27,33 @@ Tệp nhúng assembly và XData/XRecord trong DWG không phải tài nguyên c�
 | `DProgram` | Ứng dụng phụ trợ và metadata runtime | Khi gọi/đọc tài nguyên DProgram |
 | `DHelp` | Tài liệu trợ giúp | Khi truy cập trợ giúp ngoài DLL |
 | `Dicon` | Icon/ảnh ngoài DLL | Khi nạp tài nguyên ngoài DLL từ Dicon |
-| Thư mục nguồn (ví dụ `DCAD`) | Chỉ định nơi quét/lựa chọn năm thư mục | **Không phải entry bắt buộc; không tự thêm vào Support Path và không dùng làm PARENT/fallback** |
+| Thư mục nguồn (ví dụ `DCAD`) | Chỉ định nơi xem/lựa chọn các thư mục cần dùng | **Không phải entry bắt buộc; không tự thêm vào Support Path và không dùng làm PARENT/fallback** |
 
-**Cấu hình chuẩn do Setup/QA kiểm tra:** năm thư mục logic phải đăng ký **DIRECT** trên Profile CAD đang dùng. **Người dùng được tự do sắp xếp vị trí và thứ tự** của các entry trong `Support File Search Path` thông qua thao tác có xác nhận; không bắt buộc ở cuối, không bắt buộc liền kề và không tự chèn tên thư mục nguồn. Ví dụ một cấu hình hợp lệ (chỉ minh họa, không phải thứ tự bắt buộc):
+**Cấu hình do Setup/QA kiểm tra:** chỉ những thư mục logic có tài nguyên bắt buộc trong phạm vi chức năng được triển khai mới phải có DIRECT hợp lệ. Không ép đủ năm, không ép cùng thư mục cha. Người dùng tự sắp xếp thứ tự/vị trí của các entry; không bắt buộc ở cuối, liền kề hoặc thêm root. Ví dụ dưới đây chỉ triển khai chức năng cần DUser và DProgram, không cần ba thư mục còn lại:
 
 ```text
 ... (các đường dẫn mặc định của CAD)
 D:\DCAD\DUser
 ... (đường dẫn khác do người dùng đăng ký)
-D:\DCAD\DData
-D:\DCAD\Dicon
-D:\DCAD\DProgram
-D:\DCAD\DHelp
+E:\UngDung\DProgram
 ```
 
-`D:\DCAD` trong ví dụ chỉ là **thư mục nguồn**, không được thêm chỉ vì nó là cha của năm thư mục. Một mục nguồn tồn tại sẵn từ cấu hình cũ được hiển thị như entry hiện có, để người dùng xem và loại bỏ có xác nhận; không xóa âm thầm các entry không liên quan. Các đường dẫn mặc định CAD khác được bảo toàn nếu người dùng không chủ động thay đổi.
+`D:\DCAD` trong ví dụ chỉ là **thư mục cha**, không được thêm để thay đường dẫn DIRECT của thư mục logic. Một mục nguồn tồn tại sẵn từ cấu hình cũ được hiển thị như entry hiện có, để người dùng xem và loại bỏ có xác nhận; không xóa âm thầm các entry không liên quan. Các đường dẫn mặc định CAD khác được bảo toàn nếu người dùng không chủ động thay đổi.
 
 **Ưu tiên tìm kiếm:** Support Path có thứ tự và CAD có thể tìm tài nguyên theo thứ tự ấy. Vì vậy Dsetup cho phép di chuyển lên/xuống và xóa khỏi **phương án xem trước**. Trước khi ghi, cảnh báo khi thứ tự thay đổi hoặc khi xóa mục cũ; sao lưu, cập nhật riêng Support Path và đọc lại xác nhận. Không tự động sắp xếp lại chỉ để đạt một thứ tự ví dụ.
 
 **Phạm vi module:** Module CAD chỉ kiểm tra các tài nguyên thật sự cần dùng theo DataManifest. Nó không được yêu cầu đủ năm thư mục hoặc một thứ tự cụ thể khi chức năng chỉ cần một vài tài nguyên; với tài nguyên cần dùng, DIRECT-only và xử lý trùng khác đích vẫn bắt buộc.
 
-**Hiệu lực khi có tài liệu cũ khác:** Nếu một bản STD-03/STD-07 cũ còn mô tả nhóm sáu entry đặt cuối, thì đối với yêu cầu **Support File Search Path**, áp dụng quy tắc mới của STD-05 V1.11. Các tài liệu liên quan cần được cập nhật đồng bộ ở lần ban hành kế tiếp; không tự hiểu rằng chuẩn cũ vẫn bắt buộc root/thứ tự.
+**Hiệu lực:** STD-05 V1.12 thay các mô tả cũ bắt đủ năm/sáu entry, cùng root hoặc ở cuối danh sách. Tên cuối đường dẫn, phụ thuộc theo chức năng và DIRECT-only là yêu cầu; vị trí entry trong danh sách không phải yêu cầu nghiệm thu.
 
 ## 3. Hợp đồng DataManifest của module
 
 1. Mỗi module phải khai báo mọi **tài nguyên ngoài DWG thực sự sử dụng** trong `DataManifest`: tối thiểu `FileName/ResourceName`, `LogicalFolder`, `OwnerModule`, `Required`, `AccessMode`, `DefaultBehavior`; những trường nguồn/đích, version, schema/encoding áp dụng cho từng dạng tệp. `Required=true` là yêu cầu bắt buộc cho **chức năng dùng tài nguyên đó**, không suy rộng sang mọi module DCAD.
 2. Trước khi thực hiện chức năng, tạo tập phụ thuộc từ các mục `Required=true` và các phụ thuộc runtime bắt buộc được khai báo cho chức năng. **Chỉ phân giải thư mục chứa tài nguyên bắt buộc hoặc tài nguyên tùy chọn mà chức năng thực sự đang truy cập**. Tài nguyên tùy chọn (`Required=false`) chỉ được kiểm tra khi tính năng thực sự truy cập; thiếu tài nguyên tùy chọn không gây `FATAL` nếu `DefaultBehavior` có phương án được công bố.
-3. Không suy ra phụ thuộc vào năm thư mục từ việc module mang tên DCAD hoặc do Setup/QA yêu cầu cấu trúc đầy đủ. Một module chỉ đọc `DUser\MIS_SET.SET` không phải xác định `DData`, `DProgram`, `DHelp`, `Dicon` hay thư mục nguồn.
+3. Không suy ra phụ thuộc vào năm thư mục từ việc module mang tên DCAD hoặc do Setup/QA đang kiểm nhiều module. Một module chỉ đọc `DUser\MIS_SET.SET` không phải xác định `DData`, `DProgram`, `DHelp`, `Dicon` hay thư mục nguồn.
 4. Thiếu/không chính xác DataManifest là **lỗi tuân thủ/QA** cần hoàn thiện, không phải lý do để tự động bắt toàn bộ module kiểm tra năm đường dẫn. Không chế tạo mục file hoặc đường dẫn thay thế để bỏ qua manifest.
 5. `MIS_SET.SET` bắt buộc với module **sử dụng cơ chế ngôn ngữ DCAD**. Các module không sử dụng tài nguyên này không phải đọc hoặc kiểm tra nó. Khi đã áp dụng, phải đọc trong `DUser` DIRECT; lỗi bắt buộc dẫn đến cảnh báo thiết lập lại và dừng **chức năng phụ thuộc**.
-6. Lỗi ghi log runtime phải được thông báo trong CAD, không viết sang TEMP/AppData. Nếu log chỉ là tài nguyên phụ trợ không bắt buộc cho nghiệp vụ thì lỗi log không được tạo `FATAL` giả; nếu DataManifest xác định log là điều kiện bắt buộc của chức năng thì thực hiện xử lý lỗi đúng mức đó.
+6. Lỗi ghi log thuộc DUser phải được thông báo trong CAD, không chuyển sang TEMP/AppData làm đích dự phòng. Log/job có hợp đồng vị trí riêng áp dụng mục 7. Nếu log chỉ là tài nguyên phụ trợ không bắt buộc cho nghiệp vụ thì lỗi log không được tạo `FATAL` giả; nếu DataManifest xác định log là điều kiện bắt buộc của chức năng thì thực hiện xử lý lỗi đúng mức đó.
 
 ## 4. Nguồn và quy trình phân giải DIRECT-only
 
@@ -67,7 +64,7 @@ D:\DCAD\DHelp
 5. Kiểm tra sự tồn tại, schema, quyền và giá trị **các tài nguyên bắt buộc đã khai báo**. Nếu lỗi, cảnh báo yêu cầu thiết lập lại và dừng chức năng phụ thuộc; không thay bằng dữ liệu giả và không âm thầm ghi đè file chuẩn.
 6. Phân giải một lần khi bắt đầu lượt lệnh/chức năng liên quan, dùng nhất quán trong lượt thao tác. Không giám sát lại đường dẫn khi chuyển tab/nhấn Lưu; lượt lệnh mới lấy lại Support Path hiện hành.
 
-**Không được** yêu cầu đủ năm entry, áp đặt thứ tự hoặc vị trí trong danh sách như điều kiện `FATAL` khi khởi động **một module CAD**. Setup/QA cấp hệ thống kiểm đủ năm DIRECT hợp lệ, trùng/xung đột và cùng nguồn nếu đã chọn nguồn; **không kiểm vị trí, thứ tự, tính liền kề**.
+**Không được** yêu cầu đủ năm entry, áp đặt thứ tự hoặc vị trí trong danh sách như điều kiện `FATAL` khi khởi động **một module CAD**. Setup/QA cấp hệ thống cũng chỉ kiểm các DIRECT/tài nguyên trong phạm vi chức năng triển khai; không ép đủ năm hoặc cùng nguồn; **không kiểm vị trí, thứ tự, tính liền kề**.
 
 ## 5. Cảnh báo và xử lý lỗi
 
@@ -85,19 +82,19 @@ Hướng dẫn: Kiểm tra tệp và thư mục tương ứng;
 ```
 
 - Dừng **chức năng phụ thuộc**, không đánh dấu toàn bộ module hoặc hệ thống là không dùng được do một thư mục không liên quan.
-- Khi Setup/QA kiểm tra **toàn hệ thống**, cảnh báo khi thiếu một trong **năm** DIRECT, thư mục không tồn tại/không truy cập được, trùng tên logic khác đích, hoặc năm thư mục không cùng nguồn được chọn. **Không cảnh báo sai vị trí, sai thứ tự hay không liền kề**. Nếu thư mục nguồn có sẵn trong Profile, cho người dùng xem và chủ động loại bỏ theo phương án; nguồn không thuộc năm entry bắt buộc.
+- Khi Setup/QA kiểm tra **hệ thống**, chỉ cảnh báo thiếu/hỏng/xung đột tài nguyên bắt buộc của các chức năng đã chọn triển khai. Không cảnh báo vì thiếu thư mục không dùng, khác thư mục cha, khác vị trí/thứ tự hoặc không liền kề. Entry root cũ không thay được DIRECT; chỉ chỉnh/xóa entry theo phương án có xác nhận, không tự xóa path CAD khác.
 - `USER_FOLDER_AMBIGUOUS` chỉ áp dụng khi có từ hai `DUser` DIRECT khác biệt **trong lượt kiểm tra DUser**, không đếm PARENT. Chẩn đoán nội bộ phân biệt `NOT_CONFIGURED`, `UNAVAILABLE`, `CONFLICT`, `INVALID_DATA` nhưng giao diện cung cấp hướng dẫn thiết lập lại dễ hiểu.
 - Nếu DUser không ghi log được, phát cảnh báo trực tiếp tại CAD; không ghi ở đích khác và không yêu cầu file log mới có thể thông báo lỗi.
-- Khi đã chọn DUser, settings và log runtime thuộc cùng module dùng thống nhất resolver; ghi file an toàn, validate, flush, sao lưu khi cần. File settings có thể khởi tạo lần đầu trong DUser hợp lệ nếu DataManifest cho phép; không tạo thư mục logic.
+- Khi đã chọn DUser, settings và log runtime được khai báo lưu tại DUser của cùng module dùng thống nhất resolver; ghi file an toàn, validate, flush, sao lưu khi cần. File settings có thể khởi tạo lần đầu trong DUser hợp lệ nếu DataManifest cho phép; không tạo thư mục logic.
 
 ## 6. Kiểm thử bắt buộc theo phạm vi
 
-**Phân lớp:** `SYS` = chạy trong Setup/QA **cấp hệ thống**; `MOD` = chạy khi module/chức năng có phụ thuộc tương ứng (không biến tài nguyên không liên quan thành điều kiện FAIL). Giữ mã ID DIR01–DIR28 để đối chiếu biên bản QA cũ, **điều chỉnh kỳ vọng các ca SYS** theo quy tắc mới. Bổ sung DIR29–DIR33 cho năm thư mục, thứ tự tự do, loại trừ nguồn và quyền thao tác người dùng.
+**Phân lớp:** `SYS` = chạy trong Setup/QA **cấp hệ thống**; `MOD` = chạy khi module/chức năng có phụ thuộc tương ứng (không biến tài nguyên không liên quan thành điều kiện FAIL). Giữ mã ID DIR01–DIR28 để đối chiếu biên bản QA cũ, **điều chỉnh kỳ vọng các ca SYS** theo quy tắc mới. DIR29–DIR33 kiểm phạm vi triển khai, thứ tự tự do, loại trừ root và quyền thao tác; DIR34–DIR38 kiểm tên thư mục cuối và đường dẫn con ứng dụng.
 
 | ID | Phạm vi | Điều kiện kiểm thử | Kết quả bắt buộc |
 |---|---|---|---|
-| DIR01 | SYS | Năm thư mục con DIRECT hợp lệ, cùng nguồn đã chọn, nằm ở bất kỳ vị trí nào | Setup/QA cấu hình đạt |
-| DIR02 | SYS | Có nguồn nhưng thiếu một trong năm DIRECT | Setup/QA báo thiếu; không suy ra từ nguồn |
+| DIR01 | SYS | Chỉ có các DIRECT cần cho chức năng triển khai, tên thư mục cuối hợp lệ | Setup/QA đạt nếu đủ phụ thuộc; không cần đủ năm |
+| DIR02 | SYS | Thiếu một trong năm tên logic nhưng chức năng triển khai không dùng nó | Không báo thiếu; chỉ báo nếu tài nguyên đó thực sự bắt buộc |
 | DIR03 | SYS/MOD | Có thư mục thật dưới nguồn nhưng chỉ đăng ký nguồn; module cần thư mục đó | Không chấp nhận PARENT; module lỗi nếu tài nguyên bắt buộc |
 | DIR04 | SYS/MOD | Có hai DUser DIRECT khác đích, lượt kiểm tra cần DUser | Báo xung đột; chỉ báo `USER_FOLDER_AMBIGUOUS` trong trường hợp này |
 | DIR05 | SYS/MOD | Hai entry DUser là cùng một đích sau chuẩn hóa | Gộp, không báo xung đột giả |
@@ -107,7 +104,7 @@ Hướng dẫn: Kiểm tra tệp và thư mục tương ứng;
 | DIR09 | SYS/MOD | `MIS_SET.SET` thiếu/sai, chức năng sử dụng ngôn ngữ DCAD | Cảnh báo thiết lập lại; dừng chức năng cần ngôn ngữ |
 | DIR10 | SYS | Một hay nhiều entry khác xen giữa năm DIRECT hợp lệ | Cấu hình hợp lệ; không bắt buộc liền kề |
 | DIR11 | SYS | Năm DIRECT nằm đầu/giữa/cuối theo vị trí người dùng chọn | Cấu hình hợp lệ; không bắt buộc đặt cuối |
-| DIR12 | SYS | DData/DUser thuộc hai nguồn khác nhau khi đã chọn một nguồn chung | Setup/QA báo không thống nhất nguồn; module chỉ xét DIRECT cần dùng |
+| DIR12 | SYS/MOD | DData và DUser DIRECT thuộc hai thư mục cha/ổ đĩa khác nhau | Hợp lệ nếu từng tài nguyên cần dùng đạt; không ép cùng nguồn |
 | DIR13 | MOD | Settings module chưa có, DUser hợp lệ, manifest cho phép tạo | Chỉ tạo tệp settings trong DUser, không tạo thư mục |
 | DIR14 | SYS/MOD | Host không cung cấp nguồn Support Path cho thư mục cần dùng | Cảnh báo thiết lập lại; không dùng fallback |
 | DIR15 | MOD | Form thao tác nhiều bước | Giữ kết quả phân giải trong lượt, không kiểm tra mỗi thao tác UI |
@@ -122,13 +119,24 @@ Hướng dẫn: Kiểm tra tệp và thư mục tương ứng;
 | DIR24 | MOD | Module không dùng DData; DData DIRECT thiếu hoặc không truy cập được | Không phân giải DData; không cảnh báo/FATAL liên quan DData |
 | DIR25 | MOD | Module dùng DProgram cho EXE bắt buộc, không dùng DData/DHelp/Dicon | Chỉ kiểm tra DProgram và các phụ thuộc thực tế đã khai báo |
 | DIR26 | MOD | Tệp `Required=false` không tồn tại | Không FATAL nếu DefaultBehavior đã công bố; không fallback đường dẫn trái phép |
-| DIR27 | SYS/MOD | Setup/QA báo thiếu một trong năm DIRECT; module có đủ phụ thuộc riêng | Setup/QA không đạt, module không FATAL vì thiếu tài nguyên không dùng |
+| DIR27 | SYS/MOD | Thiếu thư mục không được chức năng/module triển khai sử dụng | Cả Setup/QA và module không FAIL/FATAL vì phần không dùng |
 | DIR28 | SYS/MOD | Tài nguyên bắt buộc của module thiếu hoặc sai schema | Module cảnh báo thiết lập lại và dừng đúng chức năng; Setup/QA ghi lỗi phù hợp |
-
 | DIR29 | SYS | Năm DIRECT đầy đủ nhưng nằm rải rác và thứ tự bất kỳ | Setup/QA đạt; không cảnh báo vị trí hay thứ tự |
 | DIR30 | SYS | Năm DIRECT đầy đủ, không có entry tên thư mục nguồn `DCAD` | Setup/QA đạt; không thêm nguồn tự động |
 | DIR31 | SYS | Dsetup chọn lại nguồn mới và phát hiện entry nguồn cũ | Cho xem/xóa có xác nhận; không tự xóa path CAD khác |
 | DIR32 | SYS | Người dùng Lên/Xuống/Xóa trong phương án | Cho phép chỉnh, cảnh báo ảnh hưởng ưu tiên và sao lưu trước khi ghi |
-| DIR33 | SYS/MOD | Module chỉ sử dụng DUser, hệ thống thiếu bốn thư mục còn lại | Module chạy khi DUser/tệp hợp lệ; Setup/QA báo thiếu bốn |
+| DIR33 | SYS/MOD | Chỉ triển khai chức năng dùng DUser, thiếu bốn thư mục còn lại | Setup/QA và module đạt phần đường dẫn nếu DUser/tệp cần dùng hợp lệ |
+| DIR34 | SYS/MOD | Entry kết thúc bằng `DUser\abc`, file có trong đó | Không nhận là DUser; không dùng file để lách tên thư mục cuối |
+| DIR35 | SYS/MOD | Entry `E:\abc\DUser`, không có root tên DCAD | Nhận DUser DIRECT; thư mục cha tự do |
+| DIR36 | SYS/MOD | Chỉ đăng ký DProgram DIRECT, EXE nằm đúng `Dnest\Dnest.exe` theo manifest | Cho phép đường dẫn con cố định; không cần đăng ký Dnest |
+| DIR37 | SYS/MOD | Chỉ đăng ký `DProgram\Dnest`, hoặc chỉ đăng ký root chứa DProgram | Không nhận thay DProgram DIRECT; không dò lên/xuống để chữa |
+| DIR38 | SYS/MOD | Entry có gạch cuối hoặc khác hoa/thường, tên cuối sau chuẩn hóa là Dhelp | Nhận cùng thư mục logic; không dùng so khớp chuỗi suffix tùy ý |
 
-**Bất biến:** `DIRECT-only` · `DataManifest xác định phạm vi từng module` · `không FATAL vì tài nguyên không sử dụng` · `Setup/QA kiểm đủ năm DIRECT, không bắt buộc vị trí/thứ tự` · `thư mục nguồn không bắt buộc đăng ký` · `không fallback đường dẫn` · `không giám sát liên tục trong hộp thoại`.
+**Bất biến:** `tên thư mục cuối khớp logic` · `DIRECT-only` · `không ép đủ năm hoặc cùng root` · `DataManifest xác định phạm vi SYS/MOD` · `không FATAL vì tài nguyên không dùng` · `đường dẫn con chỉ theo hợp đồng khai báo` · `không fallback hoặc tìm đệ quy` · `không giám sát liên tục trong hộp thoại`.
+
+## 7. Đường dẫn con ứng dụng và dữ liệu portable riêng
+
+- Phân biệt **entry đăng ký** và **đường dẫn tài nguyên bên trong**. Entry luôn kết thúc bằng tên logic; tài nguyên có thể nằm trong đường dẫn con cố định nếu DataManifest khai báo `LogicalFolder`, `RelativePath`, owner, Required, AccessMode và chính sách lưu. RelativePath không được tuyệt đối hoặc chứa `..` thoát khỏi thư mục logic.
+- Ví dụ DNesting: đăng ký `D:\DCAD\DProgram`, rồi tìm đúng `Dnest\Dnest.exe`; không đăng ký `DProgram\Dnest` thay DProgram và không dò từ root. Đây là hợp đồng riêng DNesting, không cho phép mọi module quét các thư mục con tùy ý.
+- DNesting V49 quy định `DNest_settings.json`, `DNest_cad-command.json`, `DNest_window.json` nằm cạnh đúng `Dnest.exe` đã chọn. DUser vẫn dùng riêng cho `MIS_SET.SET` khi chạy trong CAD. Không tự chuyển settings portable về DUser hay áp cách lưu này sang module khác.
+- Trường hợp có nguồn settings/log/job riêng đã công bố phải khai báo rõ trong manifest/hợp đồng module; đó là vị trí được chỉ định, không phải đích dự phòng khi DIRECT lỗi. Không mở rộng ngoại lệ ngầm từ mã legacy. Mã cũ còn nhận PARENT phải ghi không tuân thủ DIRECT-only và chỉ sửa khi có yêu cầu sửa phần mềm.

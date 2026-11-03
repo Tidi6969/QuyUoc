@@ -1,12 +1,13 @@
 # DCAD-STD-07 — Đa ngôn ngữ và Unicode
 
-**Phiên bản:** 1.10  
+**Phiên bản:** 1.11  
+**Cập nhật:** 03/11/2026  
 **Mức áp dụng:** Bắt buộc khi có giao diện hoặc text
 
 ## Nguồn và cách chọn ngôn ngữ
 
 - `Buildtime/lang.dat` là dữ liệu đa ngôn ngữ **nhúng vào DLL**; runtime không tìm `lang.dat` cạnh DLL hoặc ngoài đĩa.
-- Mặc định lấy mã ngôn ngữ từ **dòng 28** của `DUser/MIS_SET.SET`; vị trí file bắt buộc lấy từ **bộ phân giải DUser DIRECT theo DCAD-DATA-DIR-001** (quy chuẩn 05), không tự dò lại thư mục trong `Lang.cs`. Chỉ chấp nhận `DUser` được đăng ký trực tiếp trong Support File Search Path, không tìm thư mục con từ entry cha dù file có tồn tại. `MIS_SET.SET` là tệp bắt buộc cho module sử dụng cơ chế ngôn ngữ DCAD; Setup/QA hệ thống kiểm riêng bố trí nhóm thư mục, không dùng điều kiện đủ sáu entry để chặn module. Plugin không quản lý ngôn ngữ chỉ được **đọc**, không tự ghi vào file chung.
+- Mặc định lấy mã ngôn ngữ từ **dòng 28** của `DUser/MIS_SET.SET`; vị trí file bắt buộc lấy từ **bộ phân giải DUser DIRECT theo DCAD-DATA-DIR-001** (quy chuẩn 05), không tự dò lại thư mục trong `Lang.cs`. Chỉ chấp nhận `DUser` được đăng ký trực tiếp trong Support File Search Path, không tìm thư mục con từ entry cha dù file có tồn tại. `MIS_SET.SET` là tệp bắt buộc cho module sử dụng cơ chế ngôn ngữ DCAD; tên thư mục cuối của entry phải là DUser (không phải `DUser\abc`); Setup/QA và module không ép đủ năm thư mục hay vị trí cuối danh sách, chỉ kiểm phụ thuộc thực tế theo STD-05. Plugin không quản lý ngôn ngữ chỉ được **đọc**, không tự ghi vào file chung.
 - Khi bắt đầu command, dùng `Lang.BeginCommand()` và `Lang.Reload()` trong các project triển khai hạ tầng `Lang` này.
 - UI gọi `Lang.T("KeyName")`; không viết các nhánh `if/switch` ngôn ngữ rải rác trong business logic, form và drawing.
 

@@ -1,13 +1,14 @@
 # DCAD-STD-06 — Lưu settings và Reset Factory
 
-**Phiên bản:** 1.10  
+**Phiên bản:** 1.11  
+**Cập nhật:** 03/11/2026  
 **Mức áp dụng:** Theo tính năng
 
 
 ## Lưu cấu hình DUser an toàn
 
-1. **Chức năng đọc/ghi settings trong DUser** chỉ yêu cầu thư mục `DUser` DIRECT và các tệp bắt buộc được khai báo trong DataManifest của module; không cần kiểm đủ năm thư mục logic hoặc root `DCAD`. Chỉ sử dụng **DUser DIRECT duy nhất** đã phân giải ở đầu lượt lệnh. Cấu hình DUser lỗi/trùng/không khả dụng phải cảnh báo yêu cầu thiết lập lại và không ghi settings sang `DData`, `DProgram` hoặc đích khác. Kiểm tra đủ nhóm thư mục liền kề cuối Support Path chỉ thuộc Setup/QA hệ thống.
-2. Đọc settings, ghi settings và log **runtime cùng module** dùng chung một kết quả phân giải DUser của lượt lệnh; không tự viết nhiều resolver. Nếu DUser không cho phép ghi log, hiển thị lỗi trên giao diện/Command Line, không chuyển log sang `%APPDATA%`, TEMP hay thư mục DLL. Không đặt bước kiểm tra lại Support Path tại mỗi lần nhấn Lưu trong form.
+1. **Chức năng đọc/ghi settings trong DUser** chỉ yêu cầu thư mục `DUser` DIRECT và các tệp bắt buộc được khai báo trong DataManifest của module; không cần kiểm đủ năm thư mục logic hoặc root `DCAD`. Chỉ sử dụng **DUser DIRECT duy nhất** đã phân giải ở đầu lượt lệnh. Cấu hình DUser lỗi/trùng/không khả dụng phải cảnh báo yêu cầu thiết lập lại và không ghi settings sang `DData`, `DProgram` hoặc đích khác. Setup/QA cũng chỉ kiểm phụ thuộc của chức năng triển khai; không ép đủ năm, cùng root hoặc vị trí/thứ tự. Entry phải kết thúc đúng DUser, không phải `DUser\abc`.
+2. Đọc settings, ghi settings và log **được khai báo thuộc DUser của cùng module** dùng chung một kết quả phân giải DUser của lượt lệnh; không tự viết nhiều resolver. Nếu DUser không cho phép ghi log, hiển thị lỗi trên giao diện/Command Line, không chuyển log sang `%APPDATA%`, TEMP hay thư mục DLL. Không đặt bước kiểm tra lại Support Path tại mỗi lần nhấn Lưu trong form.
 3. Validate schema, encoding, số, phạm vi và khóa trước khi ghi.
 4. Ghi file tạm **cùng thư mục và cùng ổ đĩa**; flush, đóng file và kiểm tra lại khi dữ liệu quan trọng.
 5. Thay thế bằng phương thức an toàn có **backup**; nếu lỗi phải giữ bản cũ. Không xóa đích trước rồi chép file mới.
@@ -24,7 +25,7 @@
 - **Thiếu settings riêng của module:** chỉ tạo tại DUser DIRECT hợp lệ nếu DataManifest cho phép khởi tạo lần đầu; không sử dụng default để che lỗi cấu hình hệ thống.
 - **Thiếu dữ liệu hệ thống bắt buộc:** cảnh báo yêu cầu thiết lập lại và dừng chức năng DCAD phụ thuộc môi trường; không trích xuất/khôi phục tự động để che lỗi.
 - **File hỏng:** giữ backup, báo tên file/dòng/khóa/lý do; không âm thầm ghi đè bằng default.
-- `MIS_SET.SET` là tệp chọn ngôn ngữ bắt buộc trong DUser của hệ thống DCAD; plugin không quản trị ngôn ngữ chỉ đọc dòng 28. Thiếu/sai: cảnh báo yêu cầu thiết lập lại, không tự tạo/sửa và không vận hành bằng lựa chọn ngôn ngữ giả định.
+- `MIS_SET.SET` là tệp chọn ngôn ngữ bắt buộc cho chức năng dùng cơ chế ngôn ngữ DCAD; plugin không quản trị ngôn ngữ chỉ đọc dòng 28 trong DUser DIRECT. Thiếu/sai: cảnh báo yêu cầu thiết lập lại, không tự tạo/sửa và không vận hành bằng lựa chọn ngôn ngữ giả định.
 
 ## Reset Factory
 
@@ -33,3 +34,7 @@
 - Chỉ dùng đúng bộ factory canonical của **dự án hiện tại** được khai báo trong DataManifest, có version/schema và kiểm tra tính toàn vẹn.
 - Sao lưu file tùy chỉnh trước restore; ghi thay thế an toàn; thông báo những tệp sẽ bị thay đổi.
 - Không tự tạo factory giả, không lấy bộ mặc định của dự án khác hoặc dùng Factory để chữa lỗi build.
+
+## Hợp đồng settings portable riêng của module
+
+Các yêu cầu DUser ở trên áp dụng cho settings được khai báo lưu tại DUser; không chuyển settings có hợp đồng vị trí riêng về DUser. DNesting V49 lưu `DNest_settings.json`, `DNest_cad-command.json`, `DNest_window.json` cạnh đúng `DProgram\Dnest\Dnest.exe` đã chọn. CAD phân giải DProgram DIRECT trước, sau đó dùng relative path cố định; Desktop độc lập dùng thư mục EXE của chính nó. `MIS_SET.SET` vẫn đọc riêng từ DUser khi dùng ngôn ngữ CAD. Ghi an toàn/backup và báo lỗi vẫn áp dụng; không tự đổi sang DUser, TEMP hoặc AppData để cứu lỗi lưu. Các vị trí log/job riêng chỉ dùng khi đã được hợp đồng module khai báo; không dùng làm settings fallback. Chi tiết entry cuối và relative path ở STD-05.

@@ -1,6 +1,7 @@
 # DCAD-STD-01 — Quy trình phát triển và quản lý phiên bản
 
-**Phiên bản:** 1.9  
+**Phiên bản:** 1.10  
+**Cập nhật:** 03/11/2026  
 **Mức áp dụng:** Bắt buộc
 
 ## Mức độ áp dụng
@@ -12,7 +13,7 @@
 
 ## Quy trình thực hiện
 
-1. Xác định phạm vi, mục tiêu CAD, nghiệp vụ và baseline đã được nghiệm thu.
+1. Xác định phạm vi, mục tiêu CAD, nghiệp vụ và baseline theo chỉ định hoặc phiên bản gần nhất theo STD-17; ghi riêng trạng thái nghiệm thu của baseline.
 2. Khảo sát code, dữ liệu, log và lỗi thực tế; không suy đoán nguyên nhân từ hiện tượng.
 3. Xác định file/module cần sửa; đánh giá Geometry, XData, Settings, UI, ngôn ngữ, build và rủi ro hồi quy.
 4. Đề xuất phương án và phản biện nguy cơ phá logic; **chỉ code sau khi được cho phép**.
@@ -22,8 +23,10 @@
 
 ## Quản lý baseline và phiên bản
 
-- Chỉ dùng baseline đã được người dùng duyệt; không lấy bản chưa kiểm chứng làm nguồn chính.
-- Khi chuyển host, giữ business logic, sửa riêng framework/API đã có bằng chứng không tương thích.
+- Ưu tiên baseline người dùng chỉ định hoặc nguồn cụ thể người dùng giao để sửa. Khi không chỉ định baseline, tự lấy **phiên bản gần nhất đã lưu của đúng module trên GitHub** theo số `V<n>` lớn nhất, đọc và xác minh nguồn; không tự lùi về bản cũ chỉ vì bản mới chưa nghiệm thu. Ghi đúng trạng thái chưa kiểm chứng, không biến việc chọn baseline thành xác nhận Build/Runtime PASS.
+- Khi không chỉ định version đích cho lần sửa/tạo bản mới, lấy số phiên bản lớn nhất đã lưu của module rồi tăng **đúng 1**, ví dụ V49 → V50. Nếu cố ý sửa từ V47 nhưng kho đã có V49, bản mới mặc định vẫn là V50 để giữ lịch sử; chỉ định rõ của người dùng có ưu tiên nhưng không mặc nhiên cho phép ghi đè.
+- Chỉ lưu trữ bản gốc, kiểm tra hoặc cập nhật metadata không tạo bản phần mềm mới. Khi upload chưa thành công, không coi số dự kiến là bản đã lưu; kiểm lại kho trước khi thử lại. Chi tiết chọn nguồn, xung đột version và lưu lịch sử ở STD-17.
+- Khi chuyển host, giữ business logic của baseline đã chọn, sửa riêng framework/API đã có bằng chứng không tương thích.
 - Các nhánh cùng lần giao có **cùng số version package**, nhưng trạng thái build/test là độc lập.
 - Nếu lỗi lặp sau nhiều bản sửa: **HARD STOP**, truy nguyên nhân và đối chiếu baseline trước khi tiếp tục.
 
@@ -35,3 +38,5 @@
 4. Phân biệt rõ: **BuildStatus** (compiler/DLL), **StandardsStatus** (mức tuân thủ) và **RuntimeStatus** (NETLOAD/thao tác CAD). Không cộng gộp các trạng thái để đưa ra thông báo PASS thiếu căn cứ.
 5. Không công bố bản **phát hành đã nghiệm thu** nếu một yêu cầu bắt buộc còn `FAIL` hoặc `NotVerified`. Có thể giao bản **source/chờ kiểm thử** khi công khai rõ hạn chế và không nhận là hoàn thiện.
 6. Mỗi yêu cầu bắt buộc phải có mã kiểm tra và tiêu chí đạt trong DCAD-STD-16; thiếu phương pháp kiểm chứng được xem là **thiếu quy chuẩn nghiệm thu**, cần hoàn thiện trước khi chốt phát hành.
+
+- Trước khi bàn giao, ghi rõ baseline, phiên bản lớn nhất trước cập nhật, version đích, lý do chọn và trạng thái `mới nhất đã lưu` / `đã nghiệm thu` riêng biệt; giữ ZIP/changelog cũ, thêm phiên bản mới và đồng bộ repo module + DCAD theo STD-17.

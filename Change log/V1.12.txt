@@ -1,0 +1,10 @@
+QuyUoc V1.12 — 03/11/2026
+Baseline: GitHub QuyUoc main at 29e19e8cb15b857e5a726439ea3a35043c798298; package V1.11.
+Changed standards: 00, 01, 03, 04, 05, 06, 07, 15, 16, 17; README and package links.
+Directory rule: final path component is DData/DUser/DProgram/Dicon/Dhelp; direct registration only; no parent/child-entry fallback; no mandatory complete set, shared root or list position.
+Module-relative app path: declare explicitly; DNesting uses DProgram/Dnest/Dnest.exe and JSON beside selected EXE. No CAD source edited.
+Version rule: explicit source/version takes priority; otherwise latest stored numeric V<n> as baseline and max stored + 1 for a new software version. Archival/metadata operations do not bump software versions.
+History: retain old ZIP/changelog; new version stored separately; track latest stored and approved version separately; verify module + DCAD after writes.
+QA: all 18 standards reviewed; local Markdown links and requirement consistency checked; ZIP content/CRC checked.
+Previous V1.11 is archived from pinned GitHub file contents; individual standard headers have independent revision numbers. Existing Markdown URLs retained.
+SoftwareBuild/NETLOAD: N/A — documentation-only change.

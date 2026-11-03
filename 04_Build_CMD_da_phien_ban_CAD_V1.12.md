@@ -1,7 +1,7 @@
 # DCAD-STD-04 — Build CMD đa phiên bản CAD
 
-**Phiên bản:** 1.12  
-**Cập nhật:** 21/10/2026 — thêm Build CMD byte-level QA và bắt buộc đối chiếu tên DLL theo host.  
+**Phiên bản:** 1.13  
+**Cập nhật:** 03/11/2026  
 **Mức áp dụng:** Bắt buộc theo target
 
 ## Target CAD, framework, reference, Build CMD và version [CORE theo target]
@@ -18,8 +18,8 @@
 
 - Một target = một cây source/project độc lập, một `.sln/.csproj`, framework và Reference đúng host, `Debug|x64` và `Release|x64`. Không trộn nhiều host/reference chung một project.
 - **Phạm vi target bắt buộc:** Chỉ hỗ trợ AutoCAD 2022, AutoCAD 2025 và GstarCAD 2027. Danh sách nhánh trong `Build_All.cmd` phải khớp các target thuộc phạm vi dự án đã được duyệt; không bổ sung nhánh `Build_Release.cmd`, mục `:TARGET`, SDK/Reference, DLL, log hoặc output portable của host ngoài phạm vi.
-- Khi port: chốt baseline đã duyệt → tạo cây target mới → thay framework, reference, project plumbing tối thiểu → **BUILD FIRST** → phân loại lỗi thực → sửa đúng nguyên nhân → build lại → regression. Không biến lỗi build thành lý do thay đổi Geometry/XData/Settings/UI.
-- Các nhánh cùng **số version bàn giao** trong một ZIP tổng, nhưng `Build`, `NETLOAD` và `Smoke Test` báo độc lập `PASS/FAIL/NotVerified`.
+- Khi port: chốt baseline chỉ định hoặc gần nhất theo STD-01/17 → tạo cây target mới → thay framework, reference, project plumbing tối thiểu → **BUILD FIRST** → phân loại lỗi thực → sửa đúng nguyên nhân → build lại → regression. Không biến lỗi build thành lý do thay đổi Geometry/XData/Settings/UI.
+- Các nhánh cùng **số version bàn giao** trong một ZIP tổng, nhưng `Build`, `NETLOAD` và `Smoke Test` báo độc lập `PASS/FAIL/NotVerified`. Baseline/version đích lấy theo STD-01/17: không chỉ định baseline thì dùng bản gần nhất; không chỉ định version đích thì tăng số lớn nhất đã lưu đúng 1. Script, thư mục, project và BuildInfo phải cùng version đích; chỉ chọn số không có nghĩa đã build PASS.
 
 ### 2. Cấu trúc script và điểm chạy duy nhất
 
@@ -154,4 +154,3 @@ endlocal & exit /b %BUILD_EXIT_CODE%
 10. Với module đang chỉ duyệt một target, chỉ test/publish target đó và ghi rõ **one approved target**; không xuất hiện tên project, output, Reference hay log của host chưa được duyệt.
 
 **Trạng thái riêng:** `CMD_BYTES_QA`, `CMD_WINDOWS_QA`, `ARTIFACT_NAME_QA`, `PACKAGE_TREE_QA`, `BUILD_RESULT`, `NETLOAD` và `SMOKE_TEST` phải báo riêng PASS/FAIL/NotVerified. `CMD_BYTES_QA=PASS` không suy ra `CMD_WINDOWS_QA=PASS` hoặc `BUILD_RESULT=PASS`.
-
