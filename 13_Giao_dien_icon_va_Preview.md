@@ -1,6 +1,6 @@
 # DCAD-STD-13 — Giao diện, icon và Preview
 
-**Phiên bản:** 1.6
+**Phiên bản:** 1.7
 **Cập nhật:** 05/11/2026  
 **Mức áp dụng:** Theo tính năng
 
@@ -22,10 +22,12 @@
 
 - **BẮT BUỘC đối với hộp thoại WinForms do module DCAD tự tạo:** khi có logo DCAD đã phê duyệt, sử dụng icon đó tại thanh tiêu đề (Form.Icon/ShowIcon), thay icon mặc định thừa kế từ host CAD. Không thay icon, tài nguyên hay cửa sổ chính của AutoCAD/GstarCAD.
 - Chỉ sử dụng bộ nhận diện chính thức được phê duyệt, không tự vẽ hoặc suy diễn logo. Nếu thiếu/sai tài nguyên đã duyệt, ghi NotVerified cho mục nhận diện, không nhận là đã thay thành công.
-- Tệp nguồn icon đặt ở thư mục icon của project. Ưu tiên nhúng vào assembly với tên resource ổn định và nạp khi tạo form; không phụ thuộc đường dẫn source tree lúc chạy. Nếu đã duyệt icon ngoài DLL, dùng Dicon DIRECT cùng DataManifest theo STD-05/16. Không bắt module không dùng icon ngoài DLL kiểm Dicon.
-- Chỉ hiển thị icon taskbar DCAD đối với cửa sổ riêng có taskbar button. Form con hoặc modal đang ShowInTaskbar=false không bị ép hiển thị trên taskbar.
+- **BẮT BUỘC nhúng logo DCAD vào DLL:** tệp logo chính thức đã phê duyệt (ví dụ `DcadLogo.ico`) đặt trong thư mục nguồn `icon/` của **từng project/host**, khai báo `EmbeddedResource` với tên resource nhất quán và nạp từ assembly khi tạo form. Khi chạy, **không** đọc logo từ `Dicon`, `DUser`, thư mục chương trình, thư mục source hoặc đường dẫn tuyệt đối; file ICO bên ngoài không phải điều kiện để mở hộp thoại. Việc sử dụng `Dicon` cho **tài nguyên khác logo DCAD** chỉ được phép theo DataManifest/STD-05/16 khi có yêu cầu đã duyệt.
+- **BẮT BUỘC áp dụng logo cho cửa sổ DIALOG thực tế:** gán `Form.Icon` và `ShowIcon=true` đối với form có thanh tiêu đề. Nếu host/Windows có thể gán lại biểu tượng khi tạo handle hoặc hiện form, đăng ký xử lý ở `HandleCreated` và `Shown` để áp dụng lại; khi cần, gửi `WM_SETICON` cho **chính handle của form DCAD** với cả `ICON_SMALL` và `ICON_BIG`. Quản lý vòng đời của `Icon`/handle đúng cách, không rò rỉ GDI và không ghi đè biểu tượng cửa sổ chính của AutoCAD/GstarCAD.
+- **Đổi logo trong các lần phát hành sau:** lấy tệp ICO mới **được người dùng phê duyệt**, thay đúng tệp nguồn ở `icon/` của các nhánh CAD liên quan, giữ tên resource/hợp đồng nạp trừ khi có chỉ định khác, build lại DLL của từng host, rồi kiểm tra rằng tài nguyên mới được nhúng và được hiển thị thật. Không được tự thiết kế logo thay thế hoặc đổi logo mà không được giao.
+- Chỉ hiển thị icon taskbar DCAD đối với cửa sổ riêng có taskbar button. Form con hoặc modal đang `ShowInTaskbar=false` không bị ép hiển thị trên taskbar.
 - Chỉ sửa phần icon thuộc phạm vi yêu cầu; bảo toàn ESC/Cancel, DPI, ngôn ngữ, Preview, focus, hành vi của hộp thoại và phần mềm CAD chính.
-- **QA:** kiểm nguồn/phê duyệt logo, resource nhúng trong DLL, hiển thị thanh tiêu đề thật trên từng host, taskbar nếu áp dụng và không tác động icon ứng dụng CAD. Báo riêng PASS/FAIL/NotVerified; khai báo resource không đồng nghĩa runtime PASS.
+- **QA (STD-13/16/18):** kiểm hash/tệp logo đã duyệt; khai báo `EmbeddedResource` và resource thật bên trong DLL; mở hộp thoại SS/F/R hay form thuộc module trên từng CAD host và kiểm tra thanh tiêu đề, tái tạo handle, hiển thị lại và taskbar (nếu có); thử khi không có file ICO ngoài DLL; xác nhận icon chính của host không bị đổi. Báo riêng `PASS`/`FAIL`/`NotVerified` cho kiểm tra tĩnh, build và runtime. Việc có resource hoặc code `WM_SETICON` không đồng nghĩa runtime PASS.
 
 ## Preview và DrawJig
 
