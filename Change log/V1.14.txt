@@ -1,0 +1,14 @@
+DCAD RULES - V1.14
+Date: 2026-11-09
+Baseline: V1.13
+Scope: standards and metadata only (no DCADManage/DLL source change)
+Added: 19_Kien_truc_ban_quyen_DCAD_va_dong_bo_DLL.md (STD-19 v1.0)
+Updated: 00_MUC_LUC.md; README.md; 16_DataManifest_BuildInfo_va_QA.md (STD-16 v1.14)
+Release: Releases/V1.14/QuyUoc-V1.14.zip (all current root standards .md)
+Content: eight licensing architecture layers; dynamic Tool/Feature registry; UID; manifest; signed integration export; trust anchor; binary signed/encrypted File ID; client runtime; QA LIC01-LIC26.
+DataImpact: architecture contract only; no database migration executed.
+Compatibility: V9 legacy remains historical; FeatureGrant migration is not implemented here.
+BuildResult: N/A documentation-only
+RuntimeResult: N/A documentation-only
+KnownIssues: implementation and verification in DCADManage/DLL are future work.
+Retained: all previous V1.13 and earlier ZIPs unchanged.
