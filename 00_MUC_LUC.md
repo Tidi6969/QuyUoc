@@ -1,4 +1,4 @@
-# BỘ TIÊU CHUẨN DCAD — V1.13
+# BỘ TIÊU CHUẨN DCAD — V1.14
 
 **Phạm vi CAD hỗ trợ:** AutoCAD 2022, AutoCAD 2025 và GstarCAD 2027. Mỗi dự án triển khai các target đã được duyệt trong danh sách này.  
 **Bàn giao:** Một file ZIP chứa các file Markdown độc lập, không chứa bản sao tài liệu nguồn hoặc file phụ trợ.  
@@ -26,6 +26,7 @@
 | 16 | [DataManifest, BuildInfo và QA](16_DataManifest_BuildInfo_va_QA.md) | Bắt buộc |
 | 17 | [Autoupdate — Tự động build, đồng bộ GitHub và ghi nhận xác nhận OK](17_Autoupdate.md) | Bắt buộc khi cập nhật GitHub hoặc người dùng xác nhận phiên bản OK |
 | 18 | [Nguyên tắc AI lập trình theo Karpathy](18_Karpathy_Guidelines_cho_AI_lap_trinh.md) | Bắt buộc khi AI phân tích/viết/sửa/rà soát code |
+| 19 | [Kiến trúc bản quyền DCAD và đồng bộ DCADManage ↔ DLL](19_Kien_truc_ban_quyen_DCAD_va_dong_bo_DLL.md) | Bắt buộc khi xây dựng/tích hợp/quản lý bản quyền DCAD |
 
 ## Nguyên tắc sử dụng
 
@@ -45,7 +46,7 @@
 - **Build PASS**, **tuân thủ tiêu chuẩn PASS** và **NETLOAD/runtime PASS** là các kết quả độc lập. Lỗi trình bày CMD không được đổi một kết quả biên dịch thành FAIL, nhưng bản bàn giao chính thức không được tuyên bố đạt chuẩn khi yêu cầu trình bày bắt buộc chưa đạt.
 - Có thể bàn giao bản nguồn đang kiểm thử với các mục `NotVerified` được công bố rõ, nhưng không gọi bản đó là đã nghiệm thu đầy đủ. Không được suy diễn tình trạng CAD đích từ kết quả của host khác.
 - Mọi nhánh CAD, cấu hình build, SDK/Reference, DLL, log và manifest thuộc phạm vi bàn giao phải khớp danh sách target đã được duyệt theo quy chuẩn 03/04; không đưa target ngoài phạm vi vào gói.
-- Phiên bản ZIP tổng là **V1.13**; số phiên bản ở đầu từng file cho biết lần sửa nội dung của chính quy chuẩn đó, nên một số file không sửa vẫn giữ phiên bản cũ.
+- Phiên bản ZIP tổng là **V1.14**; số phiên bản ở đầu từng file cho biết lần sửa nội dung của chính quy chuẩn đó, nên một số file không sửa vẫn giữ phiên bản cũ.
 
 ## Cập nhật V1.12 — 03/11/2026
 
@@ -62,3 +63,9 @@
 
 - Bổ sung STD-18: Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution.
 - Đồng bộ STD-16/QA, mục lục, README, changelog và ZIP tổng mới. Không sửa phần mềm CAD hay tăng version module.
+
+## Cập nhật V1.14 — 09/11/2026
+
+- Bổ sung DCAD-STD-19 v1.0: 8 tầng bản quyền, Tool/Feature Registry động, ToolUid/FeatureUid, manifest, xuất bộ tích hợp, chứng nhận, khóa tin cậy, File ID và License Client.
+- Đồng bộ ma trận QA STD-16 (LIC01–LIC26), mục lục, README, changelog và ZIP tổng V1.14; giữ lại ZIP V1.13 và mọi bản cũ.
+- Chỉ cập nhật tài liệu; chưa thay đổi hoặc nghiệm thu mã nguồn DCADManage/DLL.
