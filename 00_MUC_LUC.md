@@ -1,4 +1,4 @@
-# BỘ TIÊU CHUẨN DCAD — V1.14
+# BỘ TIÊU CHUẨN DCAD — V1.15
 
 **Phạm vi CAD hỗ trợ:** AutoCAD 2022, AutoCAD 2025 và GstarCAD 2027. Mỗi dự án triển khai các target đã được duyệt trong danh sách này.  
 **Bàn giao:** Một file ZIP chứa các file Markdown độc lập, không chứa bản sao tài liệu nguồn hoặc file phụ trợ.  
@@ -46,7 +46,7 @@
 - **Build PASS**, **tuân thủ tiêu chuẩn PASS** và **NETLOAD/runtime PASS** là các kết quả độc lập. Lỗi trình bày CMD không được đổi một kết quả biên dịch thành FAIL, nhưng bản bàn giao chính thức không được tuyên bố đạt chuẩn khi yêu cầu trình bày bắt buộc chưa đạt.
 - Có thể bàn giao bản nguồn đang kiểm thử với các mục `NotVerified` được công bố rõ, nhưng không gọi bản đó là đã nghiệm thu đầy đủ. Không được suy diễn tình trạng CAD đích từ kết quả của host khác.
 - Mọi nhánh CAD, cấu hình build, SDK/Reference, DLL, log và manifest thuộc phạm vi bàn giao phải khớp danh sách target đã được duyệt theo quy chuẩn 03/04; không đưa target ngoài phạm vi vào gói.
-- Phiên bản ZIP tổng là **V1.14**; số phiên bản ở đầu từng file cho biết lần sửa nội dung của chính quy chuẩn đó, nên một số file không sửa vẫn giữ phiên bản cũ.
+- Phiên bản ZIP tổng là **V1.15**; số phiên bản ở đầu từng file cho biết lần sửa nội dung của chính quy chuẩn đó, nên một số file không sửa vẫn giữ phiên bản cũ.
 
 ## Cập nhật V1.12 — 03/11/2026
 
@@ -69,3 +69,10 @@
 - Bổ sung DCAD-STD-19 v1.0: 8 tầng bản quyền, Tool/Feature Registry động, ToolUid/FeatureUid, manifest, xuất bộ tích hợp, chứng nhận, khóa tin cậy, File ID và License Client.
 - Đồng bộ ma trận QA STD-16 (LIC01–LIC26), mục lục, README, changelog và ZIP tổng V1.14; giữ lại ZIP V1.13 và mọi bản cũ.
 - Chỉ cập nhật tài liệu; chưa thay đổi hoặc nghiệm thu mã nguồn DCADManage/DLL.
+
+## Cập nhật V1.15 — 10/11/2026
+
+- STD-05 v1.13: PlateCatalog đọc từ `DData` DIRECT, bỏ ngoặc bao ngoài trong UI nhưng giữ DAT gốc.
+- STD-09 v1.6: PlateCode → layer Hole Normal `_O`, W/T `_W`, không cắt sai các mã như `PH_P` và không ghi đè màu layer hiện có.
+- STD-11 v1.6: chọn layer theo PlateCode đã chuẩn hóa, giữ nguyên công thức Gap/Depth và xử lý A/B.
+- Đồng bộ bản lưu Skill D5/D9/D11, README, changelog, ZIP V1.15; không chỉnh mã nguồn CAD. Các bản V1.14 trở về trước được giữ lại.

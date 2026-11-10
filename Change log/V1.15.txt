@@ -1,0 +1,12 @@
+DCAD RULES - V1.15
+Date: 2026-11-10
+Baseline: V1.14
+Scope: PlateCatalog display and Hole layer generation; documentation only
+STD-05 v1.13: DData DIRECT PlateCatalog, preserve DAT bytes and Ti.dat, normalize enclosing parentheses for UI.
+STD-09 v1.6: PlateCode examples UP/PH_P, Hole Normal _O, W/T _W, existing layer style preserved.
+STD-11 v1.6: layer choice after normalization, A/B independent, gap formula unchanged.
+Updated: 00_MUC_LUC.md, README.md, Skills/D5/D9/D11 snapshots.
+Release: Releases/V1.15/QuyUoc-V1.15.zip
+BuildResult: N/A (documentation only)
+RuntimeResult: N/A (documentation only)
+Retained: all older release ZIPs unchanged.

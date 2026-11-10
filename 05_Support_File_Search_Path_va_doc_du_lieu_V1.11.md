@@ -1,7 +1,7 @@
 # DCAD-STD-05 — Support File Search Path và phân giải dữ liệu
 
-**Phiên bản:** 1.12  
-**Cập nhật:** 03/11/2026  
+**Phiên bản:** 1.13  
+**Cập nhật:** 10/11/2026  
 **Mức áp dụng:** Bắt buộc theo tài nguyên mà module sử dụng; Setup/QA kiểm theo phạm vi chức năng được triển khai  
 **Hợp đồng:** `DCAD-DATA-DIR-001` — DIRECT-only và phân giải theo phạm vi DataManifest
 
@@ -54,6 +54,13 @@ E:\UngDung\DProgram
 4. Thiếu/không chính xác DataManifest là **lỗi tuân thủ/QA** cần hoàn thiện, không phải lý do để tự động bắt toàn bộ module kiểm tra năm đường dẫn. Không chế tạo mục file hoặc đường dẫn thay thế để bỏ qua manifest.
 5. `MIS_SET.SET` bắt buộc với module **sử dụng cơ chế ngôn ngữ DCAD**. Các module không sử dụng tài nguyên này không phải đọc hoặc kiểm tra nó. Khi đã áp dụng, phải đọc trong `DUser` DIRECT; lỗi bắt buộc dẫn đến cảnh báo thiết lập lại và dừng **chức năng phụ thuộc**.
 6. Lỗi ghi log thuộc DUser phải được thông báo trong CAD, không chuyển sang TEMP/AppData làm đích dự phòng. Log/job có hợp đồng vị trí riêng áp dụng mục 7. Nếu log chỉ là tài nguyên phụ trợ không bắt buộc cho nghiệp vụ thì lỗi log không được tạo `FATAL` giả; nếu DataManifest xác định log là điều kiện bắt buộc của chức năng thì thực hiện xử lý lỗi đúng mức đó.
+
+### 3.1. Danh mục tấm (PlateCatalog) từ DData [THEO TÍNH NĂNG]
+
+- Khi module khai báo danh mục tấm DAT (ví dụ Dtscr2 dùng `tscr_plates.dat`), chỉ đọc file từ `DData` DIRECT theo DataManifest. Không lấy danh mục layer hiện có thay DAT, không ghi ngược file chỉ vì chọn tấm, không thay thế/ghi đè `Ti.dat` dùng chung; giữ thứ tự, mã hóa và nội dung DAT, xử lý EOF DOS `0x1A` nếu có.
+- Tách `RawPlateCode` (nguyên chuỗi nguồn), `PlateCode` (mã đã chuẩn hóa dùng trong UI và bản vẽ), `LayerName` (layer đích theo STD-09). Với PlateCatalog có cú pháp ngoặc ngoài: `(UP)` → `UP`, `(UB)` → `UB`, `(PH_P)` → `PH_P`. Chỉ bỏ một cặp ngoặc `(` `)` bao trọn tên sau khi trim; không cắt `_P` thuộc tên gốc, không áp quy tắc bỏ ngoặc cho XData, tên file hoặc tất cả loại layer khác.
+- Hộp thoại chỉ hiển thị `UP`, `UB`, `PH`…; mã kỹ thuật không dịch. Bản ghi mã trống, ngoặc thiếu đối xứng hoặc hai bản ghi trùng nhau sau chuẩn hóa phải được báo lỗi dữ liệu, không tự bịa tên tấm khác.
+- QA: `(UP)` hiển thị `UP`, `(PH_P)` hiển thị `PH_P`; số lượng/thứ tự không đổi, DAT giữ nguyên byte, thiếu tài nguyên bắt buộc báo theo STD-05, khi vẽ dùng `PlateCode` đã chuẩn hóa theo STD-09.
 
 ## 4. Nguồn và quy trình phân giải DIRECT-only
 
