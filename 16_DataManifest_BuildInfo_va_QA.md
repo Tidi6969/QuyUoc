@@ -1,7 +1,7 @@
 # DCAD-STD-16 — DataManifest, BuildInfo và QA
 
-**Phiên bản:** 1.15  
-**Cập nhật:** 11/11/2026  
+**Phiên bản:** 1.14  
+**Cập nhật:** 09/11/2026  
 **Mức áp dụng:** Bắt buộc
 
 ## DataManifest, BuildInfo, checklist và nghiệm thu [CORE]
@@ -80,20 +80,3 @@
 - Khi AI phân tích/viết/sửa/rà soát code, kiểm tra **STD-18, AI-01–AI-12** theo phạm vi; không gán PASS khi thiếu bằng chứng.
 
 - Với module **có tích hợp hoặc quản lý License DCAD**, kiểm tra **STD-19 / LIC01–LIC26** theo phạm vi; không coi sự tồn tại file ID/manifest/code sinh là bằng chứng feature thực sự bị khóa.
-
-## QA tách mã dùng chung/riêng host — 11/11/2026
-
-Áp dụng trong phạm vi target thực sự được duyệt, không yêu cầu tạo hoặc mô phỏng CAD chưa triển khai.
-
-| Mã | Yêu cầu | Bằng chứng |
-|---|---|---|
-| HOST-01 | Các hàm thay đổi đã phân loại A dùng chung, B kết hợp, C riêng CAD | Bảng file/hàm/ảnh hưởng |
-| HOST-02 | Core/Data/UI chung không gọi trực tiếp CAD SDK | Static scan và review |
-| HOST-03 | Adapter chỉ xử lý CAD host, giữ contract Geometry/XData | Diff và test |
-| HOST-04 | Không tạo project, SDK, nhánh, build output cho host chưa được yêu cầu | ZIP tree, script, project |
-| HOST-05 | Geometry, layer, XData/XRecord, DAT/Settings không đổi khi tách | Regression dữ liệu chuẩn/expected/actual |
-| HOST-06 | Preview/hình ảnh và bố cục UI không đổi khi nằm ngoài yêu cầu | Diff, ảnh/runtime khi có |
-| HOST-07 | Build, APPLOAD/NETLOAD, lệnh, Palette, vẽ, Undo/ESC trên host hiện tại | Log và run |
-| HOST-08 | SDK/host mới phải kiểm riêng ABI, document lifecycle, Palette, XData | PASS/FAIL/NotVerified mỗi host |
-
-Kết quả test thuật toán portable chỉ xác minh Core; Build, APPLOAD và Runtime phải báo riêng và không được coi PASS khi chưa chạy trên CAD thật. Áp dụng STD-18.
