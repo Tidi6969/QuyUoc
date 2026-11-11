@@ -1,7 +1,7 @@
 # DCAD-STD-03 — Cấu trúc thư mục và đóng gói phần mềm
 
-**Phiên bản:** 1.13  
-**Cập nhật:** 03/11/2026  
+**Phiên bản:** 1.14  
+**Cập nhật:** 11/11/2026  
 **Mức áp dụng:** Bắt buộc
 
 ## Một cây project cho một CAD mục tiêu
@@ -78,3 +78,11 @@ Mỗi module đặt **một tên gốc ổn định** cho `Module`, ZIP và thư
 - Kiểm tra cây file trong ZIP thực tế: chỉ có nhánh host đã duyệt, tên nhánh và version đúng; không lẫn Reference hoặc DLL của host khác.
 - Kiểm tra đồng thời cây thư mục, tên project, `.sln/.csproj`, target build, SDK/Reference, DLL, log và manifest. Không chấp nhận tình trạng xóa cây host ngoài phạm vi nhưng còn giữ cấu hình hoặc đầu ra phục vụ host đó.
 - Kiểm tra đầu ra DLL, cấu trúc thư mục phẳng và tài liệu runtime bằng kiểm tra nội dung ZIP; kết quả lưu trong biên bản DCAD-STD-16.
+
+## Mã nguồn sẵn sàng đa CAD, không tạo nhánh ngoài phạm vi — 11/11/2026
+
+- Thiết kế mã dùng chung/riêng host từ đầu theo STD-02, nhưng chỉ triển khai target người dùng đã giao. Khả năng mở rộng không đồng nghĩa phải tạo mọi cây thư mục.
+- Trong src của project đang dùng, chỉ tạo các file/module có công việc thực: Core/Data/UI dùng chung và host adapter thực tế. Không bắt buộc cây Host trống; không tạo GstarCAD, ZWCAD, BricsCAD, OtherCAD hoặc stub nếu chưa được giao.
+- Khi có target mới được duyệt, thêm riêng project, SDK/Reference, build, artifact và QA đúng target; tái sử dụng nguồn chung thay vì âm thầm nhân bản và phân nhánh thuật toán.
+- Source Host chỉ là ranh giới mã biên dịch; không được lấy vị trí SDK/source/project để suy diễn các runtime folder DData, DUser, DProgram, Dicon, Dhelp.
+- Với C++ native, quy tắc phân nhánh host và kiểm tra thư viện áp dụng tương tự các ví dụ .NET; các yêu cầu về .csproj/DLL chỉ áp dụng cho dự án managed tương ứng. Không đổi đuôi artifact gốc chỉ để khớp ví dụ .NET.
