@@ -1,7 +1,7 @@
 # DCAD-STD-05 — Support File Search Path và phân giải dữ liệu
 
-**Phiên bản:** 1.13  
-**Cập nhật:** 10/11/2026  
+**Phiên bản:** 1.14  
+**Cập nhật:** 11/11/2026  
 **Mức áp dụng:** Bắt buộc theo tài nguyên mà module sử dụng; Setup/QA kiểm theo phạm vi chức năng được triển khai  
 **Hợp đồng:** `DCAD-DATA-DIR-001` — DIRECT-only và phân giải theo phạm vi DataManifest
 
@@ -147,3 +147,11 @@ Hướng dẫn: Kiểm tra tệp và thư mục tương ứng;
 - Ví dụ DNesting: đăng ký `D:\DCAD\DProgram`, rồi tìm đúng `Dnest\Dnest.exe`; không đăng ký `DProgram\Dnest` thay DProgram và không dò từ root. Đây là hợp đồng riêng DNesting, không cho phép mọi module quét các thư mục con tùy ý.
 - DNesting V49 quy định `DNest_settings.json`, `DNest_cad-command.json`, `DNest_window.json` nằm cạnh đúng `Dnest.exe` đã chọn. DUser vẫn dùng riêng cho `MIS_SET.SET` khi chạy trong CAD. Không tự chuyển settings portable về DUser hay áp cách lưu này sang module khác.
 - Trường hợp có nguồn settings/log/job riêng đã công bố phải khai báo rõ trong manifest/hợp đồng module; đó là vị trí được chỉ định, không phải đích dự phòng khi DIRECT lỗi. Không mở rộng ngoại lệ ngầm từ mã legacy. Mã cũ còn nhận PARENT phải ghi không tuân thủ DIRECT-only và chỉ sửa khi có yêu cầu sửa phần mềm.
+
+## Phân tách resolver dữ liệu khỏi SDK CAD — 11/11/2026
+
+- Host Adapter chỉ đọc danh sách Support File Search Path của đúng CAD/profile hiện hành bằng API tương ứng; chuyển danh sách đó đến resolver dùng chung DIRECT-only.
+- Parser DAT, Settings, PlateCode, schema và validation độc lập SDK, không dùng trực tiếp biến riêng AutoCAD như ACADPREFIX trong hàm phân tích dữ liệu.
+- Host khác nhau có thể cấp Support Paths theo cách khác, nhưng cùng áp dụng tiêu chí tên thư mục logic cuối đường dẫn, Required theo DataManifest, xử lý xung đột và không dùng PARENT/fallback.
+- Dữ liệu dùng chung (ví dụ Ti.dat, MIS_SET.SET) giữ một nguồn runtime theo DataManifest, không nhân bản vào từng plugin/target; không viết lại DAT khi port.
+- Khi chuyển SDK/host, dùng cùng ca DAT/Settings để so kết quả parser, lỗi dữ liệu, Unicode và hành vi thiếu tài nguyên.
