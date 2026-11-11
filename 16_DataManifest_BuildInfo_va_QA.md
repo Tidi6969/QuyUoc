@@ -91,7 +91,7 @@
 | HOST-02 | Core/Data/UI chung không gọi trực tiếp CAD SDK | Static scan và review |
 | HOST-03 | Adapter chỉ xử lý CAD host, giữ contract Geometry/XData | Diff và test |
 | HOST-04 | Không tạo project, SDK, nhánh, build output cho host chưa được yêu cầu | ZIP tree, script, project |
-| HOST-05 | Geometry, layer, XData/XRecord, DAT/Settings không đổi khi tách | Regression vàng/expected/actual |
+| HOST-05 | Geometry, layer, XData/XRecord, DAT/Settings không đổi khi tách | Regression dữ liệu chuẩn/expected/actual |
 | HOST-06 | Preview/hình ảnh và bố cục UI không đổi khi nằm ngoài yêu cầu | Diff, ảnh/runtime khi có |
 | HOST-07 | Build, APPLOAD/NETLOAD, lệnh, Palette, vẽ, Undo/ESC trên host hiện tại | Log và run |
 | HOST-08 | SDK/host mới phải kiểm riêng ABI, document lifecycle, Palette, XData | PASS/FAIL/NotVerified mỗi host |
