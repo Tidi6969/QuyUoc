@@ -1,7 +1,7 @@
 # DCAD-STD-04 — Build CMD đa phiên bản CAD
 
-**Phiên bản:** 1.14  
-**Cập nhật:** 11/11/2026  
+**Phiên bản:** 1.13  
+**Cập nhật:** 03/11/2026  
 **Mức áp dụng:** Bắt buộc theo target
 
 ## Target CAD, framework, reference, Build CMD và version [CORE theo target]
@@ -154,11 +154,3 @@ endlocal & exit /b %BUILD_EXIT_CODE%
 10. Với module đang chỉ duyệt một target, chỉ test/publish target đó và ghi rõ **one approved target**; không xuất hiện tên project, output, Reference hay log của host chưa được duyệt.
 
 **Trạng thái riêng:** `CMD_BYTES_QA`, `CMD_WINDOWS_QA`, `ARTIFACT_NAME_QA`, `PACKAGE_TREE_QA`, `BUILD_RESULT`, `NETLOAD` và `SMOKE_TEST` phải báo riêng PASS/FAIL/NotVerified. `CMD_BYTES_QA=PASS` không suy ra `CMD_WINDOWS_QA=PASS` hoặc `BUILD_RESULT=PASS`.
-
-## Cô lập SDK và cấu hình build theo host — 11/11/2026
-
-- Core/Data/UI chung không chứa cấu hình framework, SDK, ABI hoặc import CAD. Chỉ project và Host Adapter của target được duyệt liên kết các thư viện tương ứng.
-- Khi SDK nâng cấp, kiểm tra trước import, host adapter, command entry và project/script. Chỉ sửa Core/Geometry/Data/UI nếu đã có bằng chứng hợp đồng chung cần thay đổi.
-- Không tự thêm nhánh, Reference, biến môi trường, file build, đầu ra và log cho CAD chưa được yêu cầu, ngay cả khi sơ đồ kiến trúc đã dự kiến.
-- Native C++ ARX/GRX/ZRX/BRX phải build bằng toolset/SDK phù hợp từng host, không trộn host. Không suy runtime PASS từ test GCC/Clang thuần C++ hoặc từ kết quả build khác host.
-- Khi bổ sung CAD mới: test compile/link, load, command, Palette/dock, vẽ, Undo/ESC và XData round-trip theo đúng host; phân biệt PASS, FAIL, NotVerified.
