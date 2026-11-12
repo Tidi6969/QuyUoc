@@ -1,8 +1,8 @@
 # DCAD-STD-17 — Autoupdate: Tự động chuẩn hóa, build, đóng gói và cập nhật GitHub
 
 **Mã quy ước:** 17  
-**Phiên bản:** 1.1  
-**Cập nhật:** 03/11/2026  
+**Phiên bản:** 1.2  
+**Cập nhật:** 12/11/2026  
 **Mức áp dụng:** Bắt buộc khi người dùng yêu cầu tạo hoặc cập nhật phiên bản phần mềm trong kho GitHub.
 
 ## 1. Mục đích và thẩm quyền
@@ -40,7 +40,7 @@ Ví dụ yêu cầu hợp lệ không cần nêu số: **“Sửa lỗi này c�
 4. **Sửa theo yêu cầu:** chỉ thay đổi code trong phạm vi được người dùng cho phép; giữ nguyên logic còn lại.
 5. **Build:** thực hiện Release build riêng cho từng CAD mục tiêu bằng môi trường/SDK phù hợp; kiểm tra mã thoát, DLL mới thực sự được tạo và log. Kết quả **PASS, FAIL, NotVerified** phải ghi chính xác cho từng host; không lấy build host này suy ra host khác.
 6. **Kiểm thử:** rà cấu trúc, tên DLL, manifest, thay đổi và hồi quy. NETLOAD/smoke test trên CAD thực là một trạng thái riêng; không tự gắn PASS nếu chưa thử.
-7. **Đóng gói:** tạo một file `<ProjectName>-<Version>.zip` chứa toàn bộ source cần thiết, project, script và Reference/SDK được phép phân phối, tài nguyên và các DLL **mới build thành công**. Kiểm lại ZIP sau khi xuất, không để DLL cũ/giả hoặc thiếu file thiết yếu.
+7. **Đóng gói:** tạo một file `<ProjectName>-<Version>.zip` chứa source, project, script và tài nguyên; SDK đúng host có thể nhúng khi được phép phân phối **hoặc khai báo SDK dùng chung ở máy build và preflight theo STD-04**. Gói **source/chờ build** chưa có binary phải ghi đúng trạng thái. Với release đã build, chỉ công bố DLL/ARX/GRX **mới build thành công**, không thay bằng binary cũ/giả.
 8. **Changelog:** lập `Change log/<Version>.txt` với nội dung thay đổi, target, build/test status, vấn đề còn tồn tại và các hạn chế (nếu có).
 9. **Upload:** khi cổng phát hành đạt yêu cầu, tự commit/push bằng GitHub connector hoặc công cụ được cấp quyền vào đúng repository và nhánh. Kiểm tra blob thực tế sau commit, kích thước/đường dẫn và tính toàn vẹn tệp khi có thể.
 10. **Báo kết quả:** chỉ khi bước build, QA, đóng gói và upload bắt buộc đều thành công mới trả **duy nhất liên kết GitHub trực tiếp đến ZIP** theo dạng `https://github.com/<owner>/<repo>/blob/<branch>/<version-folder>/<project>-<version>.zip`.
@@ -70,7 +70,7 @@ Mỗi phiên bản là một snapshot độc lập; ví dụ `DBox/V5/DBox-V5.zi
 ## 5. Cổng phát hành bắt buộc — HARD STOP
 
 - **Không upload bản được gọi là hoàn tất** nếu bất kỳ CAD target bắt buộc nào build FAIL hoặc NotVerified; không dùng DLL cũ để thay thế DLL thiếu.
-- **Không upload** nếu ZIP thiếu source/Reference hợp lệ, sai cấu trúc, chưa kiểm chứng nội dung hoặc còn lỗi kiểm tra bắt buộc.
+- **Không upload bản gọi là hoàn tất** nếu ZIP thiếu source, sai cấu trúc, chưa kiểm chứng nội dung hoặc thiếu Reference hợp lệ (SDK nhúng đúng host **hoặc SDK dùng chung đã được preflight và build thực tế theo STD-04**). Bản nguồn/chờ kiểm thử tách biệt chỉ được lưu với trạng thái rõ, không tự gán PASS.
 - **Không upload** nếu quá trình cần nghiệm thu runtime mà NETLOAD/smoke test vẫn chưa được xác nhận, trừ khi người dùng yêu cầu rõ một bản `source/chờ kiểm thử` tách biệt và có trạng thái minh bạch; bản đó không được gọi là bản hoàn chỉnh.
 - Khi môi trường không có Windows, CAD SDK hoặc công cụ build tương thích, ghi `BuildStatus=NotVerified` và báo trở ngại; **không giả nhận đã build**.
 - Nếu thiếu quyền GitHub, connector không thể upload binary, giới hạn dung lượng hoặc lỗi commit/push, báo lỗi thực tế; không nói đã upload khi chưa kiểm chứng.
@@ -143,3 +143,8 @@ Không chờ một thao tác GitHub thủ công của người dùng ở các b�
 | AUTO-14 | Xác nhận OK rõ module/version kích hoạt cập nhật metadata GitHub trong cùng lượt, không cần nhắc lần hai | PASS/FAIL/NotVerified |
 | AUTO-15 | Repository module và DCAD được cập nhật, đọc lại và đối chiếu; báo chính xác nếu đồng bộ một phần | PASS/FAIL/NotVerified |
 | AUTO-16 | Không tự tăng version, ghi đè ZIP hoặc gán Build/NETLOAD/runtime PASS ngoài phạm vi bằng chứng | PASS/FAIL/NotVerified |
+
+## Bổ sung 12/11/2026 — SDK native ngoài ZIP
+
+- Khi SDK native được dùng từ thư mục Reference chung, không ép chép toàn bộ SDK vào ZIP source; phải ghi rõ root, cách tìm đệ quy, file bắt buộc, quy tắc xung đột SHA và hướng dẫn chạy preflight (STD-03/04).
+- ZIP source chưa biên dịch Windows được bàn giao để **người dùng build/thử nghiệm** với `BuildStatus=NotVerified`; không ghi phát hành đã build/Runtime PASS. Chỉ cập nhật trạng thái theo chứng cứ thật, giữ nguyên cổng phát hành và quy trình nghiệm thu tại các mục trước.

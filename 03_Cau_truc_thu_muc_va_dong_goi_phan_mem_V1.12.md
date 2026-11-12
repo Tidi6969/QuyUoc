@@ -1,7 +1,7 @@
 # DCAD-STD-03 — Cấu trúc thư mục và đóng gói phần mềm
 
-**Phiên bản:** 1.13  
-**Cập nhật:** 03/11/2026  
+**Phiên bản:** 1.14  
+**Cập nhật:** 12/11/2026  
 **Mức áp dụng:** Bắt buộc
 
 ## Một cây project cho một CAD mục tiêu
@@ -45,7 +45,7 @@
 ```
 
 - Một ZIP duy nhất cho mỗi lần bàn giao. Các nhánh độc lập cùng version, không trộn framework/reference/source giữa các host. Baseline mặc định là bản gần nhất và version đích mặc định tăng đúng 1 theo STD-01/17; đồng bộ version ZIP/thư mục/project/BuildInfo/changelog, không ghi đè bản cũ.
-- Không đóng thư mục Tests/Test, file tạm và dữ liệu QA rác vào gói bàn giao; vẫn giữ đủ source, reference và dữ liệu runtime cần thiết.
+- Không đóng thư mục Tests/Test, file tạm và dữ liệu QA rác vào gói bàn giao; vẫn giữ đủ source, tham chiếu hợp lệ và dữ liệu runtime cần thiết. Với SDK native dùng chung, tham chiếu được cung cấp tại máy build theo STD-04 thay vì chép vào ZIP.
 - `Dprogram` ở root ZIP là **đích xuất DLL portable dạng phẳng** (`Dprogram/<AssemblyNameHost>.dll`), **không** tự thêm thư mục `AutoCAD2022/`, `AutoCAD2025/` hoặc `GstarCAD2027/` bên trong nếu không có chuẩn module riêng đã duyệt. Không tự coi đây là `DProgram` runtime của Support File Search Path.
 - Quy chuẩn `.md` nằm trong **ZIP tiêu chuẩn DCAD**, không chèn vào ZIP phần mềm.
 
@@ -78,3 +78,10 @@ Mỗi module đặt **một tên gốc ổn định** cho `Module`, ZIP và thư
 - Kiểm tra cây file trong ZIP thực tế: chỉ có nhánh host đã duyệt, tên nhánh và version đúng; không lẫn Reference hoặc DLL của host khác.
 - Kiểm tra đồng thời cây thư mục, tên project, `.sln/.csproj`, target build, SDK/Reference, DLL, log và manifest. Không chấp nhận tình trạng xóa cây host ngoài phạm vi nhưng còn giữ cấu hình hoặc đầu ra phục vụ host đó.
 - Kiểm tra đầu ra DLL, cấu trúc thư mục phẳng và tài liệu runtime bằng kiểm tra nội dung ZIP; kết quả lưu trong biên bản DCAD-STD-16.
+
+## Bổ sung 12/11/2026 — SDK native dùng chung ở giai đoạn build
+
+- **Áp dụng riêng cho ARX/GRX native khi người dùng đã cung cấp thư mục SDK dùng chung.** Giữ nguyên bộ SDK/cây `inc`, `lib-x64`, `arx/inc`... của nhà phát hành trong thư mục máy build; ZIP source không cần chứa bản sao SDK lớn. Thư mục logic `Reference` của nhánh được phép để rỗng trong ZIP nhằm bảo toàn cấu trúc nguồn.
+- Mặc định tra cứu dưới `I:\ABC\Reference\Autocad 2022`, `I:\ABC\Reference\Autocad 2025`, `I:\ABC\Reference\GstarCAD 2027`; root có thể cấu hình rõ trên máy build. Tên thư mục CAD là phạm vi tìm kiếm, gốc SDK có thể nằm nhiều tầng bên dưới.
+- Build phải kiểm tra **một bộ SDK hoàn chỉnh và đúng host** trước khi compiler chạy; không ghép `.h`/`.lib` từ nhiều bộ, không fallback sang SDK host khác. ZIP không nhúng SDK là **source/chờ build** nếu chưa có bằng chứng build; không gọi thành phẩm đã biên dịch.
+- `Reference` của **C# managed** giữ hợp đồng thư viện host chính xác và không sao chép DLL CAD tham chiếu vào `bin` hay triển khai runtime. SDK native máy build khác năm thư mục dữ liệu/Support Path CAD tại STD-05.

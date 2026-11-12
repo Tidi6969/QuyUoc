@@ -1,7 +1,7 @@
 # DCAD-STD-04 — Build CMD đa phiên bản CAD
 
-**Phiên bản:** 1.13  
-**Cập nhật:** 03/11/2026  
+**Phiên bản:** 1.14  
+**Cập nhật:** 12/11/2026  
 **Mức áp dụng:** Bắt buộc theo target
 
 ## Target CAD, framework, reference, Build CMD và version [CORE theo target]
@@ -154,3 +154,17 @@ endlocal & exit /b %BUILD_EXIT_CODE%
 10. Với module đang chỉ duyệt một target, chỉ test/publish target đó và ghi rõ **one approved target**; không xuất hiện tên project, output, Reference hay log của host chưa được duyệt.
 
 **Trạng thái riêng:** `CMD_BYTES_QA`, `CMD_WINDOWS_QA`, `ARTIFACT_NAME_QA`, `PACKAGE_TREE_QA`, `BUILD_RESULT`, `NETLOAD` và `SMOKE_TEST` phải báo riêng PASS/FAIL/NotVerified. `CMD_BYTES_QA=PASS` không suy ra `CMD_WINDOWS_QA=PASS` hoặc `BUILD_RESULT=PASS`.
+
+## Bổ sung 12/11/2026 — SDK native dùng chung và preflight cho ARX/GRX
+
+**Hợp đồng:** `DCAD-NATIVE-REFERENCE-001`. Áp dụng SDK native khi biên dịch trên Windows, không thay cơ chế Support File Search Path runtime của STD-05.
+
+1. **Root tham chiếu mặc định:** `I:\ABC\Reference\Autocad 2022`, `I:\ABC\Reference\Autocad 2025`, `I:\ABC\Reference\GstarCAD 2027`; có thể cấu hình lại root một cách tường minh tại máy build. Không dùng các root này làm DataManifest/DIRECT runtime.
+2. **Tìm sâu:** quét đệ quy toàn bộ thư mục con trong đúng vùng CAD; nhận diện *gốc SDK* theo cấu trúc nhà phát hành (như `inc/arx.props`, `lib-x64`; với GRX thêm `inc`, `arx/inc`). Không giới hạn tầng. Không thêm bừa tất cả thư mục header vào include path, không làm phẳng cấu trúc.
+3. **Kiểm tra trước compiler:** kiểm đủ các CAD target được giao trước khi biên dịch bất kỳ target nào. Kiểm file header được source dùng trực tiếp, file `.props` và `.lib` mà project và các props import cần; báo thiếu/không rỗng bằng `[MISSING]` kèm host, tên file, thư mục dự kiến. Có lỗi: `BUILD ALL: FAIL`, chưa gọi MSBuild, không thay đầu ra đã công bố.
+4. **Trùng tên không bảo đảm trùng nội dung:** khi có nhiều gốc SDK đầy đủ, so SHA-256 các file bắt buộc (ví dụ `rxapi.lib`); đồng nhất có thể chọn ổn định, khác nhau phải báo `[CONFLICT]` và dừng để người dùng xác nhận nguồn. Không chọn ngẫu nhiên hoặc trộn file.
+5. **ZIP nguồn nhẹ:** được phép không chép SDK vào gói nguồn nếu đã khai báo Reference dùng chung, có script preflight/hướng dẫn và ghi build `NotVerified` trước khi chạy Windows. Không dùng SDK từ CAD khác hay file giả để chữa lỗi.
+6. **Build các target:** sau preflight PASS, `Build_All.cmd` gọi đủ các nhánh ARX/GRX thuộc phạm vi, liên tục không `pause` ở script con. Log/exit-code từng host riêng; chỉ publish tất cả output native mới vào `DProgram` khi mọi host PASS. Không sửa Geometry/XData/UI hay mã C# đang chạy để xử lý đường dẫn.
+7. **Phân biệt chứng cứ:** Reference preflight PASS ≠ build PASS ≠ APPLOAD/runtime PASS. QA theo STD-16/17/18.
+
+**QA:** REF-N01 (SDK nhiều tầng), REF-N02 (thiếu thư mục CAD), REF-N03 (thiếu header), REF-N04 (thiếu thư viện trong props), REF-N05 (hai SDK cùng SHA), REF-N06 (hai SDK khác SHA → FAIL), REF-N07 (build đủ C22/C25/G27), REF-N08 (preflight FAIL không gọi compiler/không ghi đè output), REF-N09 (gói nguồn không nhúng SDK và không tự gán Build PASS).

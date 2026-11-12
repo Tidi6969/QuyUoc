@@ -1,4 +1,4 @@
-# BỘ TIÊU CHUẨN DCAD — V1.15
+# BỘ TIÊU CHUẨN DCAD — V1.16
 
 **Phạm vi CAD hỗ trợ:** AutoCAD 2022, AutoCAD 2025 và GstarCAD 2027. Mỗi dự án triển khai các target đã được duyệt trong danh sách này.  
 **Bàn giao:** Một file ZIP chứa các file Markdown độc lập, không chứa bản sao tài liệu nguồn hoặc file phụ trợ.  
@@ -46,7 +46,7 @@
 - **Build PASS**, **tuân thủ tiêu chuẩn PASS** và **NETLOAD/runtime PASS** là các kết quả độc lập. Lỗi trình bày CMD không được đổi một kết quả biên dịch thành FAIL, nhưng bản bàn giao chính thức không được tuyên bố đạt chuẩn khi yêu cầu trình bày bắt buộc chưa đạt.
 - Có thể bàn giao bản nguồn đang kiểm thử với các mục `NotVerified` được công bố rõ, nhưng không gọi bản đó là đã nghiệm thu đầy đủ. Không được suy diễn tình trạng CAD đích từ kết quả của host khác.
 - Mọi nhánh CAD, cấu hình build, SDK/Reference, DLL, log và manifest thuộc phạm vi bàn giao phải khớp danh sách target đã được duyệt theo quy chuẩn 03/04; không đưa target ngoài phạm vi vào gói.
-- Phiên bản ZIP tổng là **V1.15**; số phiên bản ở đầu từng file cho biết lần sửa nội dung của chính quy chuẩn đó, nên một số file không sửa vẫn giữ phiên bản cũ.
+- Phiên bản ZIP tổng là **V1.16**; số phiên bản ở đầu từng file cho biết lần sửa nội dung của chính quy chuẩn đó, nên một số file không sửa vẫn giữ phiên bản cũ.
 
 ## Cập nhật V1.12 — 03/11/2026
 
@@ -76,3 +76,10 @@
 - STD-09 v1.6: PlateCode → layer Hole Normal `_O`, W/T `_W`, không cắt sai các mã như `PH_P` và không ghi đè màu layer hiện có.
 - STD-11 v1.6: chọn layer theo PlateCode đã chuẩn hóa, giữ nguyên công thức Gap/Depth và xử lý A/B.
 - Đồng bộ bản lưu Skill D5/D9/D11, README, changelog, ZIP V1.15; không chỉnh mã nguồn CAD. Các bản V1.14 trở về trước được giữ lại.
+
+## Cập nhật V1.16 — 12/11/2026
+
+- STD-03 v1.14: cho phép SDK native dùng chung tại máy build, ZIP nguồn không cần nhúng SDK nặng.
+- STD-04 v1.14: tìm SDK đệ quy đúng host, kiểm đủ file trước compiler, phát hiện xung đột SHA, build đủ ARX/GRX.
+- STD-17 v1.2: phân biệt gói source/chờ build với release đã biên dịch khi Reference ở ngoài ZIP.
+- STD-05 runtime và STD-18 được giữ nguyên; không thay đổi logic phần mềm CAD.
