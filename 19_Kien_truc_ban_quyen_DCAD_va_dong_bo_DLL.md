@@ -1,8 +1,8 @@
 # DCAD-STD-19 — Kiến trúc bản quyền DCAD và đồng bộ DCADManage ↔ DLL
 
 **Mã quy ước:** 19  
-**Phiên bản:** 1.0  
-**Ngày cập nhật:** 09/11/2026  
+**Phiên bản:** 1.1  
+**Ngày cập nhật:** 13/11/2026  
 **Mức áp dụng:** BẮT BUỘC khi phát triển, quản trị, cấp phép hoặc tích hợp bản quyền DCAD. Chỉ chấm yêu cầu trong phạm vi chức năng đã triển khai; hạng mục chưa có bằng chứng là `NotVerified`.  
 **Hợp đồng:** `DCAD-LICENSE-ARCH-001`.  
 **Tham chiếu:** DCAD-STD-01, 03, 04, 05, 07, 13, 15, 16, 17 và 18. STD-19 không thay các quy chuẩn này.
@@ -25,6 +25,8 @@ Một hệ thống Dmanage cấp quyền tập trung cho nhiều DLL CAD. Công 
 **Bất biến:** DLL khai báo *có gì*; Dmanage quyết định *đăng ký và cấp quyền nào*; License Client quyết định *có được chạy hay không*. Dmanage không thể tự suy ra các hàm nghiệp vụ của DLL hay tự bảo vệ hàm chưa có gate.
 
 ## 2. Tool ID, Feature ID và UID
+
+*Xem quy tắc sinh, vòng đời, tính duy nhất và tương thích từng định danh tại mục 12.*
 
 1. Mỗi công cụ khai báo `ToolId` ổn định, ví dụ `DPunch`. Mỗi tính năng khai báo `FeatureId` ổn định **trong phạm vi Tool**, ví dụ `HOLE_THREAD`. Mã dùng ASCII không dấu, không khoảng trắng; so sánh chính xác, phân biệt hoa thường; không tự đổi nghĩa.
 2. Dmanage cấp `ToolUid` và `FeatureUid` dạng UUID v4 duy nhất khi đăng ký lần đầu. UID là **danh tính công khai, không phải bí mật**, không thay chữ ký số. Một FeatureUid thuộc đúng một ToolUid.
@@ -176,3 +178,103 @@ Các dự án chưa tích hợp license không tự bị coi là sai STD-19; sau
 - **STD-03/05** có thẩm quyền về 5 thư mục runtime và DIRECT-only; **STD-04** về CAD target/build; **STD-07/13** về UI/logo; **STD-16** về bằng chứng và QA; **STD-17** về phiên bản/đồng bộ GitHub; **STD-18** về cách triển khai code; **STD-19** về bản quyền/UID/cấp phép/xác minh. Nếu có xung đột **báo người dùng**, không âm thầm sửa quy ước cũ.
 - Mẫu JSON, `ToolCertificate`, API và các file `.g.cs` là **hợp đồng mục tiêu cần triển khai**, không phải xác nhận V9 đã có. V9 có nền tảng cấp Tool nhưng chưa có Tool/Feature Registry, cấp quyền theo Feature hay bộ mã tích hợp hoàn chỉnh; kiểm tra thực tế từng bản trước khi ghi PASS.
 - STD-19 v1.0 hiệu lực từ **bộ quy ước V1.14**, không tự nâng phiên bản hoặc sửa code DCADManage/DLL chỉ vì cập nhật tài liệu.
+
+## 12. Quy chuẩn tạo mã và quản lý định danh DCAD (bổ sung 13/11/2026)
+
+**Mục đích:** Mọi mã phải có quy tắc tạo, đầu vào, định dạng, phạm vi duy nhất, cách lưu và điều kiện thay đổi/khôi phục; không chấp nhận mô tả chung “Dmanage tự sinh”. Đây là **hợp đồng định danh** cho Dmanage, manifest, công cụ CAD, License Client và hồ sơ hỗ trợ. Phân biệt rõ **đã có trong Test-V15** với **quy tắc mục tiêu cần phát triển**.
+
+### 12.1. Danh mục mã và công thức tổng quát
+
+| Mã | Ai/cái gì tạo, công thức | Định dạng, phạm vi | Trạng thái đối chiếu V15 |
+|---|---|---|---|
+| Application ID | Người dùng khai báo; Dmanage kiểm tra trùng, lưu cố định | Ví dụ `Dtesr`; tên logic, **không phải** tên file `DtesrC22.arx` | **Mới đề xuất**; V15 chưa có Application Registry độc lập |
+| CAD Host ID | Danh mục cố định, không sinh ngẫu nhiên | `C22` / `C25` / `G27` tương ứng AutoCAD 2022 / AutoCAD 2025 / GstarCAD 2027 | V15 phát hành C22; giấy phép đang sử dụng host token `AutoCAD2022` |
+| Tool ID | Người phát triển/chủ ứng dụng đặt, Dmanage kiểm tra trùng | Ví dụ `Dcad1050`, giữ nguyên cho một công cụ | Có |
+| Tool UID | UUID v4, sinh lần đầu, lưu Registry | 36 ký tự, hex thường và 4 dấu `-` | Có |
+| Tool Version | Người phát triển tăng số theo STD-01/17 | `V14`, `V15`...; **không phải** CAD Host | Có |
+| Feature/Process ID | Người phát triển khai báo; mã tuần tự theo tầng | `P01`, `P02`, `P01_S01` | Feature ID có; cây Process chưa có |
+| Feature UID | UUID v4 riêng cho từng Feature, gắn Tool UID cha | 36 ký tự, duy nhất trong Registry | Có; chưa có quan hệ Process nhiều tầng |
+| Tool Key ID | SHA-256 của khóa công khai Tool Signing Key | 12 byte đầu, 24 HEX **hoa** | Có |
+| Issuer Key ID | Cùng cách tính Key ID, nhưng từ Issuer Public Key | 24 HEX **hoa**, khác Tool Key ID | Có |
+| Machine ID | SHA-256 từ vật liệu máy chuẩn hóa, có nhánh dự phòng CNG | `DCAD1-` + 32 HEX **hoa** | Có |
+| License ID | UUID v4 mới mỗi lần phát hành | 32 HEX **thường**, không gạch ngang | Có |
+| Customer ID | UUID v4 khi tạo khách hàng | 32 HEX thường, không gạch ngang | Có |
+| User/Issuer ID | UUID v4 khi tạo tài khoản; trong V15 IssuerId là ID người phát hành | 32 HEX thường, không gạch ngang | Có |
+
+**Phân biệt bắt buộc:** Application ID ≠ Tool ID ≠ Tool UID ≠ Feature ID/UID ≠ Tool/Issuer Key ID ≠ Machine ID ≠ License ID. Tên file `dcad_license.id` không phải License ID bên trong. Mã nhận diện **không phải** khóa bí mật, chữ ký số, mật khẩu hay quyền sử dụng.
+
+### 12.2. UUID v4: tạo, chống trùng và lưu giữ
+
+1. Theo RFC 9562, UUID v4 gồm 128 bit: 4 bit version đặt `0100`, 2 bit variant đặt `10`, 122 bit còn lại lấy từ nguồn ngẫu nhiên mật mã. Trong mã V15 dùng `Guid.NewGuid()` trên Windows/.NET; không suy UID bằng cách băm Tool ID, ngày tháng hay đếm số thứ tự.
+2. **Tool UID/Feature UID:** `Guid.NewGuid().ToString("D")`, mẫu `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`, với `y` là 8/9/a/b, chữ HEX thường; dài 36 ký tự.
+3. **License ID/Customer ID/User ID:** `Guid.NewGuid().ToString("N")`, 32 HEX thường, không dấu gạch ngang.
+4. Dmanage phải kiểm tra đúng format/UUID version, tính duy nhất tại Registry và các mã đã ngừng (tombstone); nếu va chạm, tạo lại và ghi nhận. Khả năng trùng xác suất rất thấp nhưng không bỏ kiểm tra ràng buộc duy nhất.
+5. Đăng ký lại cùng Tool ID và chủ sở hữu phải **giữ Tool UID cũ**; nhập lại Feature ID cùng Tool UID phải **giữ Feature UID cũ**. Đổi host C22/C25/G27, tên hiển thị hay Tool Version không được tự sinh UID mới.
+6. UID đã retired không tái sử dụng cho nghiệp vụ khác. Khôi phục Registry phải bảo toàn UID; không âm thầm sinh UID mới khi mất cơ sở dữ liệu rồi coi File ID cũ tương thích.
+
+### 12.3. Application ID, Tool ID, CAD Host và phiên bản
+
+1. **Application ID — quy tắc mục tiêu chưa triển khai:** chủ ứng dụng đặt mã ASCII không dấu/không khoảng trắng; đề xuất biểu thức `^[A-Za-z][A-Za-z0-9_]{1,63}$`. Ví dụ `Dtesr`, còn `DtesrC22.arx` là tên binary theo host. Kiểm tra trùng **không phân biệt hoa/thường** trong phạm vi Publisher, lưu nguyên mã gốc, không tái sử dụng mã đã ngừng.
+2. **Tool ID:** ổn định và không tự đổi khi cập nhật. V15 có hai ràng buộc **chưa thống nhất**: manifest `^[A-Za-z][A-Za-z0-9_]{1,63}$`; License Format 4 `^D[A-Za-z0-9]{1,79}$`. Công cụ đi qua File ID Format 4 hiện phải thỏa **cả hai**. Không giả định một regex mới đã được triển khai hoặc tự đổi ID để qua kiểm tra.
+3. **CAD Host:** quản lý mã ngắn `C22`, `C25`, `G27` nhưng **File ID dùng token canonical có chữ ký**; V15 thực tế dùng `AutoCAD2022`. Phải có bảng ánh xạ có phiên bản, QA từng host; đổi token đã ký chỉ bằng schema/migration có chứng cứ. Không cấp quyền chỉ vì tên ARX có hậu tố C22/C25/G27.
+4. **Tool Version:** `V` + số nguyên dương; trong V15 manifest chấp nhận `^V[1-9][0-9]{0,8}$`. Một Tool UID có thể có nhiều build/host/version; mỗi binary cần đường dẫn, Host và SHA-256 riêng. Build mới không tạo Tool UID hoặc Tool Key ID mới nếu không có sự kiện đổi danh tính/luân chuyển khóa.
+
+### 12.4. Feature/Process ID nhiều tầng (quy tắc mục tiêu; chưa code trong V15)
+
+1. Feature ID hiện có phải thỏa `^[A-Z][A-Z0-9_]{1,63}$`, duy nhất **trong phạm vi Tool**. Để đặt mã quá trình: `P` + số nguyên dương với ít nhất hai chữ số: `P01`, `P02`, `P10`, `P100`; cấm hai cách viết cùng một số, ví dụ `P1` và `P01`.
+2. Quá trình con: `P01_S01`, `P01_S02`; nếu cần sâu hơn: `P01_S01_S01`. Mỗi đoạn `S` đánh số tương tự. Đường dẫn hiển thị có thể là `Dcad1050/P01/P01_S01`, nhưng **Feature ID không nối Tool ID vào thành chuỗi khác**.
+3. Cấp một Feature UID v4 cho mỗi Process riêng; lưu chủ sở hữu Tool UID và quan hệ `ParentFeatureUid` (hoặc cấu trúc cha tương đương) tường minh. Kiểm tra không trùng, không chu trình, không nhận cha thuộc Tool khác; không suy quyền chỉ bằng cắt chuỗi mã.
+4. **Phân quyền theo cấp:** tại điểm nghiệp vụ phải có giấy phép hợp lệ, ToolGrant hợp lệ, **mọi FeatureGrant bắt buộc của các cấp cha**, và FeatureGrant hiện tại hợp lệ. Cha bị tắt/hết hạn ⇒ con DENY. License cũ không tự có quyền Feature mới; mọi đường thực thi nghiệp vụ có bảo vệ phải có gate thực.
+5. Đây là thay đổi **schema và quyền mục tiêu**, không phải hành vi đã có trong File ID Format 4 V15. Khi lập trình phải cập nhật payload ký, phiên bản hợp đồng, kiểm thử migration/compatibility và các ca DENY.
+
+### 12.5. Tool Key ID và Issuer Key ID: công thức byte chính xác của V15
+
+1. V15 tạo cặp khóa ký Tool **RSA 3072 bit**; chuỗi khóa công khai lấy bằng `rsa.ToXmlString(false)`, tuyệt đối không đưa private key vào manifest, ZIP tích hợp, ARX hoặc máy khách.
+2. Công thức trong `Dmanage/Core/LicenseCore.cs`:
+   **`KeyId = UpperHex(SHA256(UTF8(PublicKeyXml))[0..11])`**.
+   SHA-256 trả 32 byte, lấy **12 byte đầu**, biểu diễn thành **24 ký tự HEX HOA** không dấu phân cách.
+3. Issuer Key ID dùng **cùng thuật toán** nhưng trên **khóa công khai Issuer**, không dùng Tool public key. Tool/Issuer Key ID chỉ là mã chọn khóa để xác minh chữ ký theo trust chain DCAD; Key ID không phải chữ ký hoặc bằng chứng hợp lệ tự thân.
+4. V15 băm trực tiếp byte UTF-8 của chuỗi RSA XML, **không phải RFC 7638/JWK thumbprint** và chưa có canonical XML chung. Phải cố định cách xuất XML và lưu chính xác bản công khai đã đăng ký; thay whitespace/định dạng XML có thể làm Key ID đổi dù cùng khóa toán học.
+5. Tăng Tool Version/build host mới **không tự đổi Key ID**. Chỉ đổi khi có luân chuyển cặp khóa; phải lưu lịch sử Key ID, chính sách giấy phép cũ, audit và thu hồi/khôi phục phù hợp.
+6. **Recipient CNG private key của máy khách khác hoàn toàn khóa ký Tool/Issuer.** Khóa này dùng giải mã File ID, không bao giờ đưa vào `.dreq` hoặc thông tin hỗ trợ.
+
+### 12.6. Machine ID: công thức đầu vào chính xác của V15
+
+1. Đọc WMI tuần tự: `Win32_ComputerSystemProduct.UUID`, `Win32_BaseBoard.SerialNumber`, `Win32_BIOS.SerialNumber`. Với từng giá trị: `Trim()`, `ToUpperInvariant()`; loại trống, giá trị dài trên 160 ký tự và placeholder sau: `TO BE FILLED BY O.E.M.`, `DEFAULT STRING`, `NONE`, `UNKNOWN`, `NOT SPECIFIED`, `SYSTEM SERIAL NUMBER`, `INVALID`, `N/A`, `NO ASSET INFORMATION`. Chỉ giữ ký tự `char.IsLetterOrDigit`; loại chuỗi sau lọc ngắn hơn 6 ký tự hoặc tất cả ký tự giống nhau.
+2. Nếu **có ít nhất hai giá trị hợp lệ**, nối chuỗi *đúng thứ tự và ký tự LF*:
+   `"DCAD-MACHINE-ID-V1\n" + [dòng "UUID=<value>\n" nếu hợp lệ] + [dòng "BOARD=<value>\n" nếu hợp lệ] + [dòng "BIOS=<value>\n" nếu hợp lệ]`.
+   Không thêm trường bị thiếu; có LF kết thúc; **không thay LF bằng CRLF**.
+3. Nếu **dưới hai nguồn hợp lệ**, dùng khóa công khai CNG máy khách:
+   `"DCAD-MACHINE-KEY-FALLBACK-V1\n" + RecipientPublicXml + "\n"`.
+   V15 dùng khóa RSA 3072 bit tên `DCAD-License-Recipient-V1` từ `MicrosoftSoftwareKeyStorageProvider`; khóa riêng cấu hình `ExportPolicy=None`, gắn profile Windows.
+4. Với cả hai nhánh, công thức:
+   **`MachineId = "DCAD1-" + UpperHex(SHA256(UTF8(material))[0..15])`**.
+   SHA-256 lấy **16 byte đầu** ⇒ 32 ký tự HEX HOA. Tiền tố `DCAD1-` định danh thuật toán V1, không tự thay khi đang có File ID đã cấp.
+5. File yêu cầu `.dreq` V15 chứa **Machine ID và khóa Recipient công khai**, không chứa private key. Machine ID khớp một mình **không chứng minh** máy có private key; khi kích hoạt còn phải giải mã, xác minh chữ ký, host, hạn và quyền.
+6. Khi thay mainboard/SMBIOS, mất khóa CNG, cài lại Windows hoặc chuyển profile có thể cần cấp lại File ID. Việc thay thuật toán Machine ID phải dùng schema/phân nhánh phiên bản mới, kiểm tra hồi quy Managed/Native và không vô hiệu hóa giấy phép cũ một cách âm thầm.
+7. Không hiển thị serial phần cứng thô hoặc private key trong phiếu hỗ trợ. Machine ID là mã nhận diện/phục vụ đối chiếu, **không phải bí mật**.
+
+### 12.7. License ID, Customer ID, Issuer ID và thông báo lỗi
+
+1. Mỗi giao dịch phát hành File ID sinh **License ID mới** theo UUID v4 dạng `N`; không tính từ Machine ID, Tool ID hay ngày tháng. Gia hạn/cấp lại bằng lần phát hành mới => **License ID mới**, hồ sơ phải lưu quan hệ với bản cũ; không ghi đè định danh hoặc dùng lại License ID cũ.
+2. **Customer ID:** tạo một lần khi tạo hồ sơ khách hàng. **User/Issuer ID:** tạo một lần khi tạo tài khoản, trong V15 `IssuerId` của File ID là **ID tài khoản phát hành**, không phải Issuer Key ID. Giữ các ID khi sửa hồ sơ; xóa/khôi phục theo audit.
+3. Phân biệt ba trạng thái: **đã tìm thấy file ID**, **ID giải mã/xác minh hợp lệ**, **được quyền thực thi Tool/Process**. Chỉ trạng thái sau cùng được `ALLOW` tại License Gate.
+4. Giao diện thông báo lỗi mục tiêu cần có: Application/Tool ID, Tool Version, CAD Host, trạng thái ID, trạng thái xác minh, **mã lỗi ổn định**, cách khắc phục và khả năng sao chép phiếu hỗ trợ. License ID chỉ được hiển thị với ghi chú phù hợp nếu đã xác minh an toàn, không tin ID tự khai trong file hỏng.
+5. **Mã lỗi mục tiêu (chưa khẳng định V15 đã hỗ trợ):** `LIC-NOT-FOUND`, `LIC-SIGNATURE`, `LIC-MACHINE-MISMATCH`, `LIC-HOST-DENIED`, `LIC-EXPIRED`, `LIC-FEATURE-DENIED`, `LIC-CLIENT-KEY-MISSING`, `LIC-FORMAT`. Phải phân biệt thiếu file, không mở được khóa CNG, sai máy và lỗi xác minh; mặc định từ chối khi không chắc chắn.
+6. Phiếu hỗ trợ chỉ gồm mã lỗi, Tool, Host, phiên bản, giờ UTC, Machine ID và License ID **nếu đã xác minh**. Không gửi password, private key, raw hardware serial hoặc vật liệu ký số.
+
+### 12.8. Vòng đời và ma trận kiểm chứng STD-18
+
+- Với **mọi loại mã**, hồ sơ quy chuẩn phải có: `Algorithm`, `Inputs`, `Encoding/Normalization`, `Format`, `UniquenessScope`, `Persistence`, `Rotation/Migration`, `SourceOfTruth`. Mã băm bắt buộc chỉ rõ tiền tố domain, thứ tự trường, số byte cắt, chữ hoa/thường.
+- Không được thay UID, Machine ID, khóa hoặc mã định danh đang có trong V15 chỉ vì đổi tài liệu. Quy tắc mới phải được thực hiện bằng thay đổi code/schema riêng khi người dùng cho phép, kèm migration/test và giữ chức năng cấp phép đã nghiệm thu.
+- **QA-ID01:** UUID v4 đúng format/version, cấp duy nhất, nhập lại manifest giữ UID, mã retired không được tái sử dụng.
+- **QA-ID02:** Application/Tool/Process trùng, đổi nghĩa, sai owner, sai cha hoặc có chu trình phải bị từ chối và ghi audit.
+- **QA-ID03:** tính Key ID trùng khớp byte SHA-256 của public XML, đổi khóa dẫn đến ID mới, chữ ký/khóa không trusted phải DENY, không đóng gói private key.
+- **QA-ID04:** cùng SMBIOS chuẩn hóa cho cùng Machine ID; kiểm tra placeholder, thứ tự dữ liệu, LF, CNG fallback, Managed/Native parity.
+- **QA-ID05:** sai máy, thiếu/mất Recipient Key, host không được cấp, thiếu quyền hoặc hết hạn phải DENY với lỗi đúng, không crash CAD.
+- **QA-ID06:** mỗi lần phát hành mới có License ID mới, vẫn tra cứu được khách hàng, Issuer, Tool, liên kết cấp lại và dấu vết audit.
+- **QA-ID07:** kiểm thử mapping CAD Host và binary/hash theo C22/C25/G27 riêng; không suy PASS cho host chưa thử.
+- **QA-ID08:** từng Process có Gate thật, Tool/cha/con hết hạn, License cũ thiếu Process mới => DENY, dữ liệu ký không bị lách.
+- Từng ca trong phạm vi phải ghi `Expected / Actual / Evidence / Host` và `PASS / FAIL / NotVerified / N/A` theo STD-16/18. **Cập nhật quy ước không đồng nghĩa đã code hoặc test PASS**.
+
+**Nguồn đối chiếu:** `Test-V15.zip`, `Dmanage/Admin/ToolRegistryService.cs`, `Dmanage/Admin/AdminService.cs`, `Dmanage/Core/LicenseCore.cs`, `Dmanage/Core/MachineId.cs`, `Dmanage/Core/ClientRecipientKey.cs`, `Dmanage/Contracts/ToolManifestContract.cs`, `Dmanage/Core/LicenseFormat4.cs`; chuẩn UUID v4: RFC 9562.
