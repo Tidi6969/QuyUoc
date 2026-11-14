@@ -1,8 +1,8 @@
 # DCAD-STD-18 — Quy tắc AI lập trình theo 4 nguyên tắc Karpathy
 
 **Mã quy ước:** 18  
-**Phiên bản:** 1.0  
-**Ngày cập nhật:** 03/11/2026  
+**Phiên bản:** 1.1  
+**Ngày cập nhật:** 14/11/2026  
 **Mức áp dụng:** BẮT BUỘC với mọi yêu cầu AI phân tích, viết, sửa, gỡ lỗi hoặc rà soát mã nguồn của DCAD.  
 **Nguồn tham khảo:** https://github.com/multica-ai/andrej-karpathy-skills (MIT), dự án diễn giải các nhận xét của Andrej Karpathy về lỗi thường gặp của AI khi viết code. Nội dung dưới đây được điều chỉnh cho hệ thống DCAD, không sao chép toàn bộ tài liệu gốc.
 
@@ -62,6 +62,17 @@ Nếu phát hiện lỗi ngoài phạm vi, báo hiện tượng và rủi ro; kh
 
 **KHÔNG ĐƯỢC:** nói đã build, đã kiểm tra CAD, đã đồng bộ GitHub hoặc đã nghiệm thu khi chưa thực sự thực hiện/xác nhận.
 
+## 5.1. CHUYỂN NGÔN NGỮ TRAO ĐỔI THÀNH NGÔN NGỮ GIAO DIỆN (BẮT BUỘC)
+
+**PHẢI:**
+- Phân biệt **ký hiệu/quy ước dùng để trao đổi thiết kế hoặc viết mã** với **nhãn, thông báo, hướng dẫn dành cho người sử dụng**. Không bê nguyên các từ viết tắt tạm thời (ví dụ C1/C2), tên biến, câu trao đổi, hay hướng dẫn dành cho AI vào giao diện, trừ khi đó là mã kỹ thuật chính thức người dùng cần xem.
+- Viết thông báo theo ngôn ngữ tự nhiên, đúng nghiệp vụ, ngắn gọn và có hành động tiếp theo. Ví dụ: **“Vui lòng xác nhận thư mục nguồn trong Bộ phát hành.”**, không viết **“Trước tiên chọn thư mục nguồn C1/C2 trong Bộ phát hành.”**
+- Phân biệt các tình trạng thực tế: **chưa chọn thư mục**, **đã chọn nhưng chưa có hệ thống/phiên bản**, **đã nhận diện nhưng thiếu dữ liệu/thư mục con**, **không đọc được thư mục**. Không dùng một thông báo cho nhiều nguyên nhân khác nhau và không yêu cầu chọn lại thứ đã chọn.
+- Trước khi bàn giao, rà soát nhãn, tiêu đề, placeholder, tooltip, trạng thái, lỗi, thông báo xác nhận và văn bản xuất cho người dùng; bảo đảm thuật ngữ nhất quán, dễ hiểu, đúng quy chuẩn đa ngôn ngữ tại STD-07/13.
+- Chỉ thay đổi những chuỗi và logic hiển thị trực tiếp liên quan đến yêu cầu; không tự đổi mã định danh, schema, dữ liệu hay thuật ngữ kỹ thuật trong hợp đồng máy-máy để “làm đẹp” giao diện.
+
+**KIỂM CHỨNG:** thử tối thiểu luồng chưa có dữ liệu, đã thiết lập, dữ liệu thiếu và dữ liệu hợp lệ; kiểm tra thông báo đúng trạng thái. Với thay đổi giao diện, đối chiếu ảnh chụp hoặc kết quả UI thực tế khi có môi trường.
+
 ## 6. Quy trình 6 bước áp dụng cho AI
 
 | Bước | Công việc | Cổng kiểm chứng |
@@ -91,6 +102,7 @@ Nếu phát hiện lỗi ngoài phạm vi, báo hiện tượng và rủi ro; kh
 | AI-10 | Không sửa code/phát hành vượt quyền được giao | Lệnh người dùng, thay đổi thực |
 | AI-11 | Bảo toàn schema, dữ liệu, UI và hợp đồng liên quan | Ma trận ảnh hưởng STD-01/16 |
 | AI-12 | Minh bạch lỗi, giới hạn, tình trạng chưa kiểm chứng | PASS/FAIL/NotVerified và ghi chú |
+| AI-13 | Chuỗi giao diện dùng ngôn ngữ nghiệp vụ, không sao chép ký hiệu trao đổi; thông báo đúng trạng thái | Rà chuỗi và kiểm thử UI các trạng thái |
 
 Kết quả sử dụng `PASS`, `FAIL`, `NotVerified` hoặc `N/A` theo điều kiện áp dụng, có lý do/bằng chứng. Việc đọc hoặc bổ sung quy ước này **không có nghĩa phần mềm đã đạt chuẩn**.
 
