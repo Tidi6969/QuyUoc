@@ -89,3 +89,9 @@
 - Chuyển nguồn chọn ngôn ngữ DCAD sang `DUser/Shared_data.Set`: đọc đúng dòng 1, lấy số nguyên không âm trong `[]`, không dùng file cũ hoặc fallback English khi cấu hình sai.
 - Đồng bộ STD-05 v1.14, STD-06 v1.12, STD-07 v1.12 và STD-16 v1.15; bổ sung kiểm thử LANG01–LANG08. Giữ nguyên những quy định ngoài phạm vi.
 - Chỉ cập nhật tài liệu; không tự sửa mã, build hoặc xác nhận nghiệm thu ứng dụng CAD.
+
+## Bổ sung trực tuyến STD-19 v1.2 — 15/11/2026
+
+- Quy ước 19 bổ sung §13–14, chuẩn hóa chuỗi **Căn cứ thiết kế → Hai ZIP xuất ra → Mã tích hợp → Build → QA → Cấp key → License Gate thực thi**; chi tiết vai trò SourceStructure/IntegrationRequest, ToolContract SHA-256, Feature UID/Grant, adapter native và các cổng STOP.
+- Bổ sung LIC27–LIC36, giữ nguyên LIC01–LIC26 và mọi quy định mật mã/định danh hiện có; trạng thái mã V25 còn NotVerified không được quảng bá thành PASS.
+- **Phân biệt bản lưu:** ZIP bộ tiêu chuẩn V1.17 vẫn là snapshot đã phát hành; quy ước 19 v1.2 là bản Markdown trực tuyến cập nhật riêng, chưa tạo ZIP tổng mới trong lần sửa quy ước này.
