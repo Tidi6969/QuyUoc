@@ -1,7 +1,7 @@
 # DCAD-STD-16 — DataManifest, BuildInfo và QA
 
-**Phiên bản:** 1.13  
-**Cập nhật:** 03/11/2026  
+**Phiên bản:** 1.15  
+**Cập nhật:** 15/11/2026  
 **Mức áp dụng:** Bắt buộc
 
 ## DataManifest, BuildInfo, checklist và nghiệm thu [CORE]
@@ -14,6 +14,7 @@
 - **Checklist trước bàn giao**:
 
   - [ ] Tất cả source thay đổi đều có lý do và phạm vi impact; bảo toàn baseline những phần ngoài scope.
+  - [ ] Với module dùng bản quyền DCAD, áp dụng STD-19: manifest, registry, UID, chứng nhận, Tool/Feature Gate, chữ ký tin cậy, không rò khóa, QA LIC01–LIC26 theo phạm vi.
   - [ ] Với AI, áp dụng STD-18: nêu mục tiêu, không suy diễn, không thêm chức năng ngoài phạm vi; diff tối thiểu và ca thử có expected/actual.
   - [ ] Target/framework/reference đúng cho từng CAD, không lẫn host.
   - [ ] Xác nhận các target được triển khai đều thuộc AutoCAD 2022, AutoCAD 2025 hoặc GstarCAD 2027 và đúng phạm vi dự án. Không còn nhánh source, SDK/Reference, script, project target, DLL, log, output portable hoặc mục manifest của CAD ngoài phạm vi.
@@ -29,8 +30,9 @@
   - [ ] `DataManifest` liệt kê đúng **các tài nguyên từng module/chức năng thực sự sử dụng** và mức `Required`. Khi chạy module, chỉ kiểm tra các thư mục/tệp bắt buộc trong phạm vi đó. **Không FATAL** vì thiếu `DData`, `DProgram`, `DHelp`, `Dicon`, `DUser` hoặc root `DCAD` nếu module/chức năng không sử dụng. DIRECT-only và phát hiện xung đột vẫn áp dụng cho thư mục cần dùng.
   - [ ] **Setup/QA cấp hệ thống và module** kiểm tài nguyên theo phạm vi chức năng triển khai; không ép đủ năm thư mục, cùng root, liền kề hoặc thứ tự/vị trí. Tên thư mục cuối của entry DIRECT phải khớp logic; `DUser\abc` không thay DUser, root không thay thư mục con. RelativePath ứng dụng phải khai báo rõ, không suy từ entry cha.
   - [ ] Chạy **DIR01–DIR38** theo phạm vi SYS/MOD của STD-05 hiện hành: không lỗi vì thư mục không dùng; reject PARENT và entry con sai tên cuối; chấp nhận tên cha tự do/khác hoa-thường; kiểm relative path ứng dụng cố định. DIR33 phải xác nhận Setup/QA và module không ép đủ năm khi chỉ cần DUser.
-  - [ ] Module **có sử dụng DUser** phải dùng một resolver DUser thống nhất cho settings/log. Lỗi ghi log hiển thị trong CAD mà không đòi file log và không ghi sang nơi khác; không gây FATAL nếu log là tùy chọn. `MIS_SET.SET` **bắt buộc đối với chức năng dùng ngôn ngữ DCAD**, không phải điều kiện cho module không dùng tệp này; fallback Lang_0 chỉ áp dụng cho key bản dịch thiếu trong bộ ngôn ngữ hợp lệ. Log BUILD tuân theo quy chuẩn 04.
+  - [ ] Module **có sử dụng DUser** phải dùng một resolver DUser thống nhất cho settings/log. Lỗi ghi log hiển thị trong CAD mà không đòi file log và không ghi sang nơi khác; không gây FATAL nếu log là tùy chọn. `Shared_data.Set` **bắt buộc đối với chức năng dùng ngôn ngữ DCAD**, không phải điều kiện cho module không dùng tệp này; fallback Lang_0 chỉ áp dụng cho key bản dịch thiếu trong bộ ngôn ngữ hợp lệ. Log BUILD tuân theo quy chuẩn 04.
   - [ ] 6 ngôn ngữ và font thể hiện không lỗi trên host mục tiêu nếu phần mềm có text/UI.
+  - [ ] Khi dùng ngôn ngữ DCAD, kiểm `DUser/Shared_data.Set` dòng 1, lấy số nguyên không âm trong `[]` và đối chiếu block `Lang_X` nhúng; không fallback file cũ hay English khi cấu hình sai. Chạy LANG01–LANG08 tại STD-07.
   - [ ] Geometry, layer, DIM, preview đúng và nhất quán; không để entity/command debug.
   - [ ] Khi có HoleType: catalog/key, Gap A/B, W/T/R/âm, Count lỗ thật và Create↔Read round-trip.
   - [ ] Khi có XData/XRecord: công bố **target schema + nguồn/version**; không dùng schema V356 để viết bản ghi V381; carrier, Tok0/STT, reader legacy, round-trip, không đếm descriptive entity.
@@ -52,7 +54,7 @@
 | STD-04 | Build mỗi nhánh; DLL mới; publish; màu hiển thị; pause; kết quả/log | Log build, `ERRORLEVEL`, kiểm tra DLL, kiểm thử màu quan sát trực tiếp và `NO_COLOR` |
 | STD-05 | SYS/MOD kiểm phụ thuộc thực tế; tên cuối DIRECT đúng; không ép đủ năm/cùng root/vị trí; không PARENT; relative path ứng dụng đúng hợp đồng | DataManifest/Required/RelativePath; DIR01–DIR38; thử entry DUser/abc và DProgram/Dnest, EXE cố định |
 | STD-06 | Khi tính năng dùng DUser: Save/Last Used/Factory đúng DUser, atomic + backup | File trước/sau Save/Cancel/Fail/Restore, test lỗi quyền và file hỏng |
-| STD-07 | Khi module dùng ngôn ngữ DCAD: MIS_SET.SET dòng 28; đủ 6 ngôn ngữ; Unicode | Đối chiếu key `lang.dat`, ảnh/text trong CAD theo từng ngôn ngữ |
+| STD-07 | Khi module dùng ngôn ngữ DCAD: Shared_data.Set dòng 1 lấy số trong `[]`; đủ 6 ngôn ngữ; Unicode | Đối chiếu key `lang.dat`, ảnh/text trong CAD theo từng ngôn ngữ |
 | STD-08 | Đúng command/selection/typed input; ESC không để state rác | NETLOAD và thao tác thực tế với đối tượng/ESC từng host |
 | STD-09 | Hình học, layer, DIM và sai số cùng logic | DWG đối chứng, số đo, layer và DIM sau lệnh |
 | STD-10 | HoleType canonical đúng nguồn hình học/số bước | Ma trận HoleType được hỗ trợ; hình học và reader kiểm chứng |
@@ -63,6 +65,7 @@
 | STD-15 | Lỗi hiển thị đúng, log/diagnostic đủ, HARD STOP khi lặp | Ca lỗi giả lập hoặc tái hiện; log lỗi và hành vi khôi phục |
 | STD-16 | Manifest, BuildInfo, release gating, trạng thái đúng | Bảng nghiệm thu cuối và đối chiếu thực tế từng file/host |
 | STD-18 | Hiểu yêu cầu, tối giản giải pháp, thay đổi đúng phạm vi, kiểm chứng theo mục tiêu | Scope, diff, ca kiểm thử, log và AI-01–AI-12 |
+| STD-19 | License DCAD: Tool/Feature UID, manifest, bộ tích hợp, chứng nhận, phát hành và gate quyền | Registry, diff, contract/certificate, bộ test LIC01–LIC26 và test thực tế host áp dụng |
 
 ### Trạng thái và điều kiện bàn giao
 
@@ -76,3 +79,5 @@
 - Kiểm tra cập nhật GitHub theo STD-17 AUTO-01–AUTO-13: chọn baseline gần nhất khi không có chỉ định; version mới mặc định max đã lưu + 1; không ghi đè bản cũ; README module và DCAD có trạng thái mới nhất/đã nghiệm thu riêng; đọc lại ZIP/changelog/metadata sau commit. Chỉ lưu bản gốc hoặc metadata không tự tăng version phần mềm.
 
 - Khi AI phân tích/viết/sửa/rà soát code, kiểm tra **STD-18, AI-01–AI-12** theo phạm vi; không gán PASS khi thiếu bằng chứng.
+
+- Với module **có tích hợp hoặc quản lý License DCAD**, kiểm tra **STD-19 / LIC01–LIC26** theo phạm vi; không coi sự tồn tại file ID/manifest/code sinh là bằng chứng feature thực sự bị khóa.

@@ -1,7 +1,7 @@
 # DCAD-STD-06 — Lưu settings và Reset Factory
 
-**Phiên bản:** 1.11  
-**Cập nhật:** 03/11/2026  
+**Phiên bản:** 1.12  
+**Cập nhật:** 15/11/2026  
 **Mức áp dụng:** Theo tính năng
 
 
@@ -25,7 +25,7 @@
 - **Thiếu settings riêng của module:** chỉ tạo tại DUser DIRECT hợp lệ nếu DataManifest cho phép khởi tạo lần đầu; không sử dụng default để che lỗi cấu hình hệ thống.
 - **Thiếu dữ liệu hệ thống bắt buộc:** cảnh báo yêu cầu thiết lập lại và dừng chức năng DCAD phụ thuộc môi trường; không trích xuất/khôi phục tự động để che lỗi.
 - **File hỏng:** giữ backup, báo tên file/dòng/khóa/lý do; không âm thầm ghi đè bằng default.
-- `MIS_SET.SET` là tệp chọn ngôn ngữ bắt buộc cho chức năng dùng cơ chế ngôn ngữ DCAD; plugin không quản trị ngôn ngữ chỉ đọc dòng 28 trong DUser DIRECT. Thiếu/sai: cảnh báo yêu cầu thiết lập lại, không tự tạo/sửa và không vận hành bằng lựa chọn ngôn ngữ giả định.
+- `Shared_data.Set` là tệp chọn ngôn ngữ bắt buộc cho chức năng dùng cơ chế ngôn ngữ DCAD; plugin không quản trị ngôn ngữ chỉ đọc dòng 1, lấy mã số trong `[]` từ `DUser DIRECT` theo STD-07. Thiếu/sai: cảnh báo yêu cầu thiết lập lại, không tự tạo/sửa và không vận hành bằng lựa chọn ngôn ngữ giả định.
 
 ## Reset Factory
 
@@ -37,4 +37,4 @@
 
 ## Hợp đồng settings portable riêng của module
 
-Các yêu cầu DUser ở trên áp dụng cho settings được khai báo lưu tại DUser; không chuyển settings có hợp đồng vị trí riêng về DUser. DNesting V49 lưu `DNest_settings.json`, `DNest_cad-command.json`, `DNest_window.json` cạnh đúng `DProgram\Dnest\Dnest.exe` đã chọn. CAD phân giải DProgram DIRECT trước, sau đó dùng relative path cố định; Desktop độc lập dùng thư mục EXE của chính nó. `MIS_SET.SET` vẫn đọc riêng từ DUser khi dùng ngôn ngữ CAD. Ghi an toàn/backup và báo lỗi vẫn áp dụng; không tự đổi sang DUser, TEMP hoặc AppData để cứu lỗi lưu. Các vị trí log/job riêng chỉ dùng khi đã được hợp đồng module khai báo; không dùng làm settings fallback. Chi tiết entry cuối và relative path ở STD-05.
+Các yêu cầu DUser ở trên áp dụng cho settings được khai báo lưu tại DUser; không chuyển settings có hợp đồng vị trí riêng về DUser. DNesting V49 lưu `DNest_settings.json`, `DNest_cad-command.json`, `DNest_window.json` cạnh đúng `DProgram\Dnest\Dnest.exe` đã chọn. CAD phân giải DProgram DIRECT trước, sau đó dùng relative path cố định; Desktop độc lập dùng thư mục EXE của chính nó. `Shared_data.Set` vẫn đọc riêng từ DUser khi dùng ngôn ngữ CAD. Ghi an toàn/backup và báo lỗi vẫn áp dụng; không tự đổi sang DUser, TEMP hoặc AppData để cứu lỗi lưu. Các vị trí log/job riêng chỉ dùng khi đã được hợp đồng module khai báo; không dùng làm settings fallback. Chi tiết entry cuối và relative path ở STD-05.

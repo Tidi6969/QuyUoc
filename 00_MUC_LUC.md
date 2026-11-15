@@ -1,4 +1,4 @@
-# BỘ TIÊU CHUẨN DCAD — V1.16
+# BỘ TIÊU CHUẨN DCAD — V1.17
 
 **Phạm vi CAD hỗ trợ:** AutoCAD 2022, AutoCAD 2025 và GstarCAD 2027. Mỗi dự án triển khai các target đã được duyệt trong danh sách này.  
 **Bàn giao:** Một file ZIP chứa các file Markdown độc lập, không chứa bản sao tài liệu nguồn hoặc file phụ trợ.  
@@ -46,7 +46,7 @@
 - **Build PASS**, **tuân thủ tiêu chuẩn PASS** và **NETLOAD/runtime PASS** là các kết quả độc lập. Lỗi trình bày CMD không được đổi một kết quả biên dịch thành FAIL, nhưng bản bàn giao chính thức không được tuyên bố đạt chuẩn khi yêu cầu trình bày bắt buộc chưa đạt.
 - Có thể bàn giao bản nguồn đang kiểm thử với các mục `NotVerified` được công bố rõ, nhưng không gọi bản đó là đã nghiệm thu đầy đủ. Không được suy diễn tình trạng CAD đích từ kết quả của host khác.
 - Mọi nhánh CAD, cấu hình build, SDK/Reference, DLL, log và manifest thuộc phạm vi bàn giao phải khớp danh sách target đã được duyệt theo quy chuẩn 03/04; không đưa target ngoài phạm vi vào gói.
-- Phiên bản ZIP tổng là **V1.16**; số phiên bản ở đầu từng file cho biết lần sửa nội dung của chính quy chuẩn đó, nên một số file không sửa vẫn giữ phiên bản cũ.
+- Phiên bản ZIP tổng là **V1.17**; số phiên bản ở đầu từng file cho biết lần sửa nội dung của chính quy chuẩn đó, nên một số file không sửa vẫn giữ phiên bản cũ.
 
 ## Cập nhật V1.12 — 03/11/2026
 
@@ -83,3 +83,9 @@
 - STD-04 v1.14: tìm SDK đệ quy đúng host, kiểm đủ file trước compiler, phát hiện xung đột SHA, build đủ ARX/GRX.
 - STD-17 v1.2: phân biệt gói source/chờ build với release đã biên dịch khi Reference ở ngoài ZIP.
 - STD-05 runtime và STD-18 được giữ nguyên; không thay đổi logic phần mềm CAD.
+
+## Cập nhật V1.17 — 15/11/2026
+
+- Chuyển nguồn chọn ngôn ngữ DCAD sang `DUser/Shared_data.Set`: đọc đúng dòng 1, lấy số nguyên không âm trong `[]`, không dùng file cũ hoặc fallback English khi cấu hình sai.
+- Đồng bộ STD-05 v1.14, STD-06 v1.12, STD-07 v1.12 và STD-16 v1.15; bổ sung kiểm thử LANG01–LANG08. Giữ nguyên những quy định ngoài phạm vi.
+- Chỉ cập nhật tài liệu; không tự sửa mã, build hoặc xác nhận nghiệm thu ứng dụng CAD.

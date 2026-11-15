@@ -1,7 +1,7 @@
 # DCAD-STD-05 — Support File Search Path và phân giải dữ liệu
 
-**Phiên bản:** 1.13  
-**Cập nhật:** 10/11/2026  
+**Phiên bản:** 1.14  
+**Cập nhật:** 15/11/2026  
 **Mức áp dụng:** Bắt buộc theo tài nguyên mà module sử dụng; Setup/QA kiểm theo phạm vi chức năng được triển khai  
 **Hợp đồng:** `DCAD-DATA-DIR-001` — DIRECT-only và phân giải theo phạm vi DataManifest
 
@@ -23,7 +23,7 @@ Tệp nhúng assembly và XData/XRecord trong DWG không phải tài nguyên c�
 | Thư mục | Mục đích | Khi module phải kiểm tra |
 |---|---|---|
 | `DData` | Bảng dữ liệu kỹ thuật | Khi dùng tệp kỹ thuật từ DData |
-| `DUser` | Settings, Last Used, `MIS_SET.SET`, log runtime | Khi đọc/ghi tệp tương ứng ở DUser |
+| `DUser` | Settings, Last Used, `Shared_data.Set`, log runtime | Khi đọc/ghi tệp tương ứng ở DUser |
 | `DProgram` | Ứng dụng phụ trợ và metadata runtime | Khi gọi/đọc tài nguyên DProgram |
 | `DHelp` | Tài liệu trợ giúp | Khi truy cập trợ giúp ngoài DLL |
 | `Dicon` | Icon/ảnh ngoài DLL | Khi nạp tài nguyên ngoài DLL từ Dicon |
@@ -50,9 +50,9 @@ E:\UngDung\DProgram
 
 1. Mỗi module phải khai báo mọi **tài nguyên ngoài DWG thực sự sử dụng** trong `DataManifest`: tối thiểu `FileName/ResourceName`, `LogicalFolder`, `OwnerModule`, `Required`, `AccessMode`, `DefaultBehavior`; những trường nguồn/đích, version, schema/encoding áp dụng cho từng dạng tệp. `Required=true` là yêu cầu bắt buộc cho **chức năng dùng tài nguyên đó**, không suy rộng sang mọi module DCAD.
 2. Trước khi thực hiện chức năng, tạo tập phụ thuộc từ các mục `Required=true` và các phụ thuộc runtime bắt buộc được khai báo cho chức năng. **Chỉ phân giải thư mục chứa tài nguyên bắt buộc hoặc tài nguyên tùy chọn mà chức năng thực sự đang truy cập**. Tài nguyên tùy chọn (`Required=false`) chỉ được kiểm tra khi tính năng thực sự truy cập; thiếu tài nguyên tùy chọn không gây `FATAL` nếu `DefaultBehavior` có phương án được công bố.
-3. Không suy ra phụ thuộc vào năm thư mục từ việc module mang tên DCAD hoặc do Setup/QA đang kiểm nhiều module. Một module chỉ đọc `DUser\MIS_SET.SET` không phải xác định `DData`, `DProgram`, `DHelp`, `Dicon` hay thư mục nguồn.
+3. Không suy ra phụ thuộc vào năm thư mục từ việc module mang tên DCAD hoặc do Setup/QA đang kiểm nhiều module. Một module chỉ đọc `DUser\Shared_data.Set` không phải xác định `DData`, `DProgram`, `DHelp`, `Dicon` hay thư mục nguồn.
 4. Thiếu/không chính xác DataManifest là **lỗi tuân thủ/QA** cần hoàn thiện, không phải lý do để tự động bắt toàn bộ module kiểm tra năm đường dẫn. Không chế tạo mục file hoặc đường dẫn thay thế để bỏ qua manifest.
-5. `MIS_SET.SET` bắt buộc với module **sử dụng cơ chế ngôn ngữ DCAD**. Các module không sử dụng tài nguyên này không phải đọc hoặc kiểm tra nó. Khi đã áp dụng, phải đọc trong `DUser` DIRECT; lỗi bắt buộc dẫn đến cảnh báo thiết lập lại và dừng **chức năng phụ thuộc**.
+5. `Shared_data.Set` (dòng 1, mã ngôn ngữ trong `[]` theo STD-07) bắt buộc với module **sử dụng cơ chế ngôn ngữ DCAD**. Các module không sử dụng tài nguyên này không phải đọc hoặc kiểm tra nó. Khi đã áp dụng, phải đọc trong `DUser` DIRECT; lỗi bắt buộc dẫn đến cảnh báo thiết lập lại và dừng **chức năng phụ thuộc**.
 6. Lỗi ghi log thuộc DUser phải được thông báo trong CAD, không chuyển sang TEMP/AppData làm đích dự phòng. Log/job có hợp đồng vị trí riêng áp dụng mục 7. Nếu log chỉ là tài nguyên phụ trợ không bắt buộc cho nghiệp vụ thì lỗi log không được tạo `FATAL` giả; nếu DataManifest xác định log là điều kiện bắt buộc của chức năng thì thực hiện xử lý lỗi đúng mức đó.
 
 ### 3.1. Danh mục tấm (PlateCatalog) từ DData [THEO TÍNH NĂNG]
@@ -108,7 +108,7 @@ Hướng dẫn: Kiểm tra tệp và thư mục tương ứng;
 | DIR06 | SYS/MOD | DUser đã đăng ký nhưng thư mục bị xóa, có phụ thuộc DUser | Cảnh báo thiết lập lại; không tự tạo |
 | DIR07 | SYS/MOD | DUser không truy cập được, có phụ thuộc DUser | Cảnh báo thiết lập lại; không chuyển đích |
 | DIR08 | SYS/MOD | DUser lỗi ghi log | Hiển thị trong CAD, không ghi TEMP/AppData; chỉ FATAL nếu log bắt buộc |
-| DIR09 | SYS/MOD | `MIS_SET.SET` thiếu/sai, chức năng sử dụng ngôn ngữ DCAD | Cảnh báo thiết lập lại; dừng chức năng cần ngôn ngữ |
+| DIR09 | SYS/MOD | `Shared_data.Set` thiếu, dòng 1 sai hoặc mã trong `[]` không có block Lang_X, chức năng sử dụng ngôn ngữ DCAD | Cảnh báo thiết lập lại; dừng chức năng cần ngôn ngữ |
 | DIR10 | SYS | Một hay nhiều entry khác xen giữa năm DIRECT hợp lệ | Cấu hình hợp lệ; không bắt buộc liền kề |
 | DIR11 | SYS | Năm DIRECT nằm đầu/giữa/cuối theo vị trí người dùng chọn | Cấu hình hợp lệ; không bắt buộc đặt cuối |
 | DIR12 | SYS/MOD | DData và DUser DIRECT thuộc hai thư mục cha/ổ đĩa khác nhau | Hợp lệ nếu từng tài nguyên cần dùng đạt; không ép cùng nguồn |
@@ -121,8 +121,8 @@ Hướng dẫn: Kiểm tra tệp và thư mục tương ứng;
 | DIR19 | SYS/MOD | Thiếu tệp bắt buộc được khai báo trong DataManifest của chức năng | Dừng chức năng phụ thuộc, không âm thầm tiếp tục |
 | DIR20 | SYS | CAD có path mặc định trước/giữa/sau năm DIRECT | Setup/QA đạt; giữ nguyên path mặc định nếu người dùng không chỉnh |
 | DIR21 | SYS/MOD | Hai DUser DIRECT khác đích, một thư mục không truy cập được, cần DUser | Báo xung đột/không khả dụng; không bỏ một DIRECT để chọn cái còn lại |
-| DIR22 | MOD | Module chỉ cần DUser/MIS_SET.SET; DData/DHelp/Dicon/DProgram/nguồn thiếu | Module vẫn hoạt động nếu DUser/MIS_SET.SET hợp lệ |
-| DIR23 | MOD | Module chỉ cần DUser/MIS_SET.SET; năm entry không liền kề hoặc không ở cuối | Module không FATAL do vị trí/thứ tự entry |
+| DIR22 | MOD | Module chỉ cần DUser/Shared_data.Set; DData/DHelp/Dicon/DProgram/nguồn thiếu | Module vẫn hoạt động nếu DUser/Shared_data.Set dòng 1 hợp lệ |
+| DIR23 | MOD | Module chỉ cần DUser/Shared_data.Set; năm entry không liền kề hoặc không ở cuối | Module không FATAL do vị trí/thứ tự entry |
 | DIR24 | MOD | Module không dùng DData; DData DIRECT thiếu hoặc không truy cập được | Không phân giải DData; không cảnh báo/FATAL liên quan DData |
 | DIR25 | MOD | Module dùng DProgram cho EXE bắt buộc, không dùng DData/DHelp/Dicon | Chỉ kiểm tra DProgram và các phụ thuộc thực tế đã khai báo |
 | DIR26 | MOD | Tệp `Required=false` không tồn tại | Không FATAL nếu DefaultBehavior đã công bố; không fallback đường dẫn trái phép |
@@ -145,5 +145,5 @@ Hướng dẫn: Kiểm tra tệp và thư mục tương ứng;
 
 - Phân biệt **entry đăng ký** và **đường dẫn tài nguyên bên trong**. Entry luôn kết thúc bằng tên logic; tài nguyên có thể nằm trong đường dẫn con cố định nếu DataManifest khai báo `LogicalFolder`, `RelativePath`, owner, Required, AccessMode và chính sách lưu. RelativePath không được tuyệt đối hoặc chứa `..` thoát khỏi thư mục logic.
 - Ví dụ DNesting: đăng ký `D:\DCAD\DProgram`, rồi tìm đúng `Dnest\Dnest.exe`; không đăng ký `DProgram\Dnest` thay DProgram và không dò từ root. Đây là hợp đồng riêng DNesting, không cho phép mọi module quét các thư mục con tùy ý.
-- DNesting V49 quy định `DNest_settings.json`, `DNest_cad-command.json`, `DNest_window.json` nằm cạnh đúng `Dnest.exe` đã chọn. DUser vẫn dùng riêng cho `MIS_SET.SET` khi chạy trong CAD. Không tự chuyển settings portable về DUser hay áp cách lưu này sang module khác.
+- DNesting V49 quy định `DNest_settings.json`, `DNest_cad-command.json`, `DNest_window.json` nằm cạnh đúng `Dnest.exe` đã chọn. DUser vẫn dùng riêng cho `Shared_data.Set` khi chạy trong CAD. Không tự chuyển settings portable về DUser hay áp cách lưu này sang module khác.
 - Trường hợp có nguồn settings/log/job riêng đã công bố phải khai báo rõ trong manifest/hợp đồng module; đó là vị trí được chỉ định, không phải đích dự phòng khi DIRECT lỗi. Không mở rộng ngoại lệ ngầm từ mã legacy. Mã cũ còn nhận PARENT phải ghi không tuân thủ DIRECT-only và chỉ sửa khi có yêu cầu sửa phần mềm.

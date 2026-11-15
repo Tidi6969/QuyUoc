@@ -1,0 +1,13 @@
+QuyUoc V1.17 — 15/11/2026
+
+Baseline: QuyUoc V1.16. Đổi quy định chọn ngôn ngữ chung; không sửa code CAD.
+- STD-07 1.12: DUser/Shared_data.Set; dòng 1; chỉ số nguyên không âm trong []; bỏ qua phần mô tả sau ]; đối chiếu Lang_X nhúng, không fallback cấu hình sai; kiểm thử LANG01–LANG08.
+- STD-05 1.14: phân giải DUser DIRECT và DataManifest cho Shared_data.Set; cập nhật DIR09/22/23 và ví dụ DNesting.
+- STD-06 1.12: Shared_data.Set là file read-only; không tự sửa hoặc chuyển nơi lưu.
+- STD-16 1.15: checklist và ma trận STD-07 đọc Shared_data.Set dòng 1 trong [].
+- Mục lục, README và bản lưu chụp Skill D5/D6/D7/D16 đồng bộ.
+- Không thay đổi STD-01/02/03/04/08–15/17–19 hoặc ZIP V1.16 cũ.
+
+Package: Releases/V1.17/QuyUoc-V1.17.zip (20 .md tại root).
+Source status: DOCS UPDATED; CAD Build/NETLOAD/runtime=N/A (không thay code).
+QA: kiểm tra tên file, schema dòng 1, cơ chế cảnh báo, nội dung 4 quy ước; chưa thử với Shared_data.Set thực tế trên máy người dùng.

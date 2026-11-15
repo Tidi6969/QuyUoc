@@ -1,10 +1,10 @@
-# QuyUoc — Bộ tiêu chuẩn DCAD V1.16
+# QuyUoc — Bộ tiêu chuẩn DCAD V1.17
 
-Cập nhật 12/11/2026. Xem [mục lục 00–19](00_MUC_LUC.md).
+Cập nhật 15/11/2026. Xem [mục lục 00–19](00_MUC_LUC.md).
 
 - Support Path: tên thư mục cuối phải khớp DData/DUser/DProgram/Dicon/Dhelp; không bắt đủ năm, cùng root hoặc vị trí cuối danh sách. Module/Setup chỉ kiểm phụ thuộc thực tế; đường dẫn con ứng dụng khai báo riêng (STD-05/06).
 - Phiên bản phần mềm: không chỉ định baseline thì lấy bản gần nhất đã lưu; không chỉ định version đích thì max đã lưu + 1. Giữ các ZIP/changelog cũ, thêm bản mới, đồng bộ README module và DCAD; tách mới nhất/đã nghiệm thu (STD-01/17).
-- [ZIP bộ quy ước V1.16](Releases/V1.16/QuyUoc-V1.16.zip). Tên file Markdown hiện có được giữ để bảo toàn URL; phiên bản hiệu lực nằm trong nội dung.
+- [ZIP bộ quy ước V1.17](Releases/V1.17/QuyUoc-V1.17.zip). Tên file Markdown hiện có được giữ để bảo toàn URL; phiên bản hiệu lực nằm trong nội dung.
 - Lần cập nhật này chỉ sửa tài liệu, không sửa hoặc build lại phần mềm CAD. Bản tài liệu trước có thể xem trong lịch sử Git; các ZIP tài liệu đã lưu được giữ nguyên.
 - **STD-18:** AI suy nghĩ trước khi code, ưu tiên đơn giản, sửa tối thiểu và kiểm chứng theo mục tiêu. [Chi tiết quy ước 18](18_Karpathy_Guidelines_cho_AI_lap_trinh.md).
 - **STD-19:** kiến trúc License DCAD, ToolUid/FeatureUid, Manifest, Dmanage xuất bộ mã, File ID, License Client và QA LIC01–LIC26. [Chi tiết quy ước 19](19_Kien_truc_ban_quyen_DCAD_va_dong_bo_DLL.md).
@@ -13,3 +13,5 @@ Cập nhật 12/11/2026. Xem [mục lục 00–19](00_MUC_LUC.md).
 - V1.15 chỉ cập nhật quy ước và tài liệu, không build hay thay đổi ứng dụng CAD; các bản V1.14 trở về trước vẫn được giữ lại.
 
 - **V1.16 — Reference native dùng chung:** Build ARX/GRX tìm sâu theo cấu trúc SDK tại `I:\ABC\Reference\<CAD>`, kiểm tra file và xung đột SHA trước compiler; ZIP source không cần chép SDK nặng. Chi tiết STD-03/04/17; STD-05 runtime giữ nguyên.
+
+- **V1.17 — Chọn ngôn ngữ DCAD:** theo STD-07 chỉ đọc dòng 1 của `DUser/Shared_data.Set` và lấy số trong `[]`. Đồng bộ STD-05/06/16, không dùng file cấu hình cũ hoặc giả định English. Chỉ cập nhật tài liệu, không build CAD.
