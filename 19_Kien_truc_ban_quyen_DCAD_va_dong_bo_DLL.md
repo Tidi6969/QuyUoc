@@ -1,10 +1,10 @@
 # DCAD-STD-19 — Kiến trúc bản quyền DCAD và đồng bộ DCADManage ↔ DLL
 
 **Mã quy ước:** 19  
-**Phiên bản:** 1.1  
-**Ngày cập nhật:** 13/11/2026  
+**Phiên bản:** 1.2  
+**Ngày cập nhật:** 15/11/2026  
 **Mức áp dụng:** BẮT BUỘC khi phát triển, quản trị, cấp phép hoặc tích hợp bản quyền DCAD. Chỉ chấm yêu cầu trong phạm vi chức năng đã triển khai; hạng mục chưa có bằng chứng là `NotVerified`.  
-**Hợp đồng:** `DCAD-LICENSE-ARCH-001`.  
+**Hợp đồng:** `DCAD-LICENSE-ARCH-001`; bổ sung `DCAD-LICENSE-CHAIN-007` tại §13–14.  
 **Tham chiếu:** DCAD-STD-01, 03, 04, 05, 07, 13, 15, 16, 17 và 18. STD-19 không thay các quy chuẩn này.
 
 ## 1. Mục tiêu và phân chia 8 tầng
@@ -60,6 +60,8 @@ Mỗi tool nộp một manifest **UTF-8 JSON** trong nguồn `Buildtime/DCAD.Too
 - Build/QA phải đối chiếu FeatureId khai báo với mã được dùng và các vị trí License Gate. Chỉ có file JSON không chứng minh tính năng đã được bảo vệ.
 
 ## 4. Quy trình đăng ký và xuất bộ tích hợp
+
+*Danh sách `.g.cs` dưới đây là ví dụ adapter managed. Với ARX/GRX native, bộ mã `.h/.cpp` và hai ZIP theo chuỗi 7 bước được quy định tại §13. Không được coi một file mẫu hoặc bộ mã sinh là bằng chứng đã tích hợp.*
 
 **Luồng phát triển → quản trị → phát triển:**
 
@@ -130,6 +132,8 @@ Mô hình chuẩn: **License → ToolGrant → FeatureGrant**. Gói/bundle chỉ
 
 ## 9. Trình tự triển khai và tương thích
 
+*Trình tự kỹ thuật bên dưới được giữ để bảo toàn kiến trúc 8 tầng; luồng bàn giao/nghiệm thu chính thức gồm **7 bước liên thông** tại §13. Không bỏ qua các cổng QA hoặc tin cậy mật mã khi quy đổi giữa hai cách nhìn.*
+
 1. **Chốt hợp đồng** Manifest, Registry, Tool Certificate, payload ký, trust anchor, API, Machine ID và schema/migration.
 2. **Dmanage Registry:** import/diff/approve danh mục Tool/Feature, cấp/giữ UID, audit.
 3. **Integration Export:** sinh mã `.g.cs`, contract JSON, chứng nhận ký, báo cáo; test không chứa private key.
@@ -141,6 +145,8 @@ Mô hình chuẩn: **License → ToolGrant → FeatureGrant**. Gói/bundle chỉ
 Các dự án chưa tích hợp license không tự bị coi là sai STD-19; sau khi một feature được quảng bá là có license thì mọi đường thực thi feature đó phải kiểm tra đúng. Không chấp nhận “có chứng nhận là đã bảo vệ” hoặc “build PASS là license PASS”.
 
 ## 10. Ma trận QA DCAD-STD-19
+
+*LIC01–LIC26 giữ nguyên. Các ca kiểm chứng theo bảy mắt xích nằm tại LIC27–LIC36 ở §13.10.*
 
 | ID | Ca kiểm tra | Kết quả bắt buộc |
 |---|---|---|
@@ -180,6 +186,8 @@ Các dự án chưa tích hợp license không tự bị coi là sai STD-19; sau
 - STD-19 v1.0 hiệu lực từ **bộ quy ước V1.14**, không tự nâng phiên bản hoặc sửa code DCADManage/DLL chỉ vì cập nhật tài liệu.
 
 ## 12. Quy chuẩn tạo mã và quản lý định danh DCAD (bổ sung 13/11/2026)
+
+*Các cột mô tả V15 trong mục này là dữ kiện lịch sử, không phải chứng nhận V25 đã đạt. Các quy tắc phiên bản/migration và cổng kiểm tra hiện tại đọc thêm tại §13–14.*
 
 **Mục đích:** Mọi mã phải có quy tắc tạo, đầu vào, định dạng, phạm vi duy nhất, cách lưu và điều kiện thay đổi/khôi phục; không chấp nhận mô tả chung “Dmanage tự sinh”. Đây là **hợp đồng định danh** cho Dmanage, manifest, công cụ CAD, License Client và hồ sơ hỗ trợ. Phân biệt rõ **đã có trong Test-V15** với **quy tắc mục tiêu cần phát triển**.
 
@@ -278,3 +286,135 @@ Các dự án chưa tích hợp license không tự bị coi là sai STD-19; sau
 - Từng ca trong phạm vi phải ghi `Expected / Actual / Evidence / Host` và `PASS / FAIL / NotVerified / N/A` theo STD-16/18. **Cập nhật quy ước không đồng nghĩa đã code hoặc test PASS**.
 
 **Nguồn đối chiếu:** `Test-V15.zip`, `Dmanage/Admin/ToolRegistryService.cs`, `Dmanage/Admin/AdminService.cs`, `Dmanage/Core/LicenseCore.cs`, `Dmanage/Core/MachineId.cs`, `Dmanage/Core/ClientRecipientKey.cs`, `Dmanage/Contracts/ToolManifestContract.cs`, `Dmanage/Core/LicenseFormat4.cs`; chuẩn UUID v4: RFC 9562.
+## 13. Hợp đồng bắt buộc của chuỗi 7 bước (bổ sung 15/11/2026)
+
+**Hợp đồng:** DCAD-LICENSE-CHAIN-007. **Phạm vi:** ứng dụng quản trị DCADLicense/Dmanage, bộ xuất SourceStructure/IntegrationRequest, mã License Gate/Client và từng add-in CAD được bảo vệ. Đây là **quy trình nghiệm thu**, không phải tuyên bố các chương trình hiện có đã PASS.
+
+**Chuỗi chính thức, không được bỏ mắt xích:** **Căn cứ thiết kế → Hai ZIP xuất ra → Mã tích hợp → Build → QA → Cấp key → License Gate thực thi.**
+
+### 13.1. Bất biến dùng chung cho bảy bước
+
+1. **Một nguồn danh tính:** Registry đã duyệt là nguồn gốc duy nhất của Application ID/UID, Tool ID/UID, Feature ID/UID, chủ sở hữu, các host được duyệt và chính sách Edition. Không sinh UID mới khi tạo ZIP, build, cấp key hoặc đổi CAD host.
+2. **Một hợp đồng bất biến theo bản phát hành:** mỗi hồ sơ phải tham chiếu đúng **byte SHA-256 của DCAD.ToolContract.json** đã duyệt. Phải định nghĩa cách serialize canonical (UTF-8 không BOM, thứ tự trường, số, dấu xuống dòng) theo SchemaVersion; không băm tùy tiện JSON sau khi parse rồi xuất lại.
+3. **Tách danh tính và quyền:** Tool ID/Feature ID là mã nghiệp vụ; Tool UID/Feature UID là UUID v4 được đối chiếu khi cấp quyền/chạy; ToolVersion là phiên bản nghiệp vụ, không phải CAD host; Edition ST/PRO/UL không tự đồng nghĩa mọi Feature đều được cấp.
+4. **Tách checkpoint và Feature:** P01/P02/P01_S01 là mã **điểm hoặc quá trình tích hợp** nếu chưa khai báo là tính năng có UID riêng. Không suy FeatureGrant bằng cách cắt chuỗi P01. Nếu cấp phép theo cây tính năng, phải có schema ParentFeatureUid, quyền các cấp cha và kiểm thử migration trước khi sử dụng.
+5. **Tách loại bằng chứng:** ZIP mẫu, JSON, mã nguồn có lời gọi Gate, build PASS, QA tĩnh, QA runtime và license đã ký là các trạng thái khác nhau. Không suy bước sau PASS chỉ vì bước trước PASS.
+6. **Tin cậy theo chữ ký:** SHA-256 dùng để đối chiếu tính toàn vẹn với bản đã duyệt, **không thay chữ ký hoặc chứng nhận**. Khóa Issuer được tin phải đến từ root/chuỗi ủy quyền ghim trước theo §6–7; khóa public tự chứa trong ZIP hoặc trong File ID không tự tạo trust.
+7. **Không phá tương thích ngầm:** các token host đã ký, Machine ID, canonical payload, Tool/Feature UID, thuật toán ký, đường dẫn DUser DIRECT và format license cũ phải giữ nguyên cho đến khi có schema mới + migration + negative test.
+8. **Không key sản xuất khi thiếu bằng chứng:** thiếu Root/Issuer trust chain, xác minh .dreq, QA bản build hoặc Gate runtime có liên quan ⇒ không công bố hồ sơ là sẵn sàng phát hành thương mại. Không thay bằng khóa mẫu, kiểm tra giả hoặc cho phép vượt Gate.
+
+### 13.2. Bước 1 — Căn cứ thiết kế
+
+**Đầu vào:** hồ sơ công cụ, định danh được khai báo bởi nhà phát triển, manifest tính năng thực có, danh sách host và chính sách ST/PRO/UL. **Xử lý:** kiểm tra schema, ID trùng, owner, UID, trạng thái Draft/Approved/Retired, quan hệ Feature–Tool, thay đổi chính sách; ghi diff và người duyệt. **Đầu ra:** Registry Approved có audit, ToolContract theo schema hiện hành và SHA-256 của đúng byte hợp đồng.
+
+**Nhà phát triển khai báo** Tool/Feature ID và nghiệp vụ thực tế; **ứng dụng quản trị** cấp/giữ Tool/Feature UID. Không đưa Device ID, .dreq, hạn khách hàng hoặc private key vào ToolContract. Một Tool UID dùng chung C22/C25/G27 theo cùng công cụ; ToolVersion và CAD target phải được xác định ở từng bản build.
+
+**Cổng 1:** không có trạng thái Approved, có UID trùng/sai owner, Feature thiếu UID hoặc ToolContract không tái tạo được cùng SHA-256 ⇒ **STOP**, không xuất hồ sơ tích hợp chính thức.
+
+### 13.3. Bước 2 — Hai ZIP xuất ra, vai trò và cách đọc
+
+| Gói | Người tạo | Nội dung tối thiểu | Người đọc / mục đích |
+|---|---|---|---|
+| **SourceStructure ZIP** | Bộ phát hành | DCAD.ToolContract.json, manifest cấu trúc nguồn, hash hợp đồng, cây host thuộc phạm vi duyệt, adapter/mã Gate tương ứng hoặc vị trí chèn đã quy định, README trạng thái | Nhà phát triển lấy cấu trúc làm nền; **không** được coi ZIP mẫu là nguồn ARX/GRX nghiệp vụ đã hoàn thiện |
+| **IntegrationRequest ZIP** | Yêu cầu build | **Cùng byte** DCAD.ToolContract.json, mã phiếu, Tool/host/version, Edition, danh sách Feature ID/UID, CheckPositions P01/P02, SourceRef/SourceSHA256, yêu cầu QA, bộ tích hợp liên quan | Nhà phát triển thực hiện yêu cầu cụ thể; bộ QA đối chiếu hồ sơ với nguồn và binary |
+
+- Cả hai phải có **hợp đồng cùng SHA-256**, cùng Tool UID, Feature UID, host và phiên bản tương ứng; thay đổi Registry sau khi xuất làm hồ sơ cũ không còn tự động đạt.
+- **SourceStructure là mẫu**, không khẳng định chứa toàn bộ source CAD thật; **IntegrationRequest là yêu cầu thiết kế**, không phải giấy chứng nhận build/QA hay key. ZIP nào chứa mã Gate cũng chưa chứng minh Gate được gọi.
+- Mỗi gói phải nêu SchemaVersion, nguồn phát hành, mã/phiên bản công cụ, các hash nguồn và trạng thái được kiểm chứng; không chứa khóa ký riêng, password, secret hoặc private key CNG của khách hàng.
+- Tên trường hash hiện còn khác nhau giữa một số tệp V25 như **toolContractSHA256**, **ToolContractSHA256**, **toolContractSha256**. Không dùng cách viết khác nhau làm nguồn sự thật độc lập: parser phải giải theo **schema và loại tệp**, đối chiếu cùng byte hash; khi chọn một tên canonical mới phải tăng schema/migration, không đổi ngầm chữ ký/file đã xuất.
+- Khi Source ZIP được nhà phát triển nộp lại, phải đối chiếu **SourceSHA256** trên file ZIP thực, manifest được công cụ khai báo và hợp đồng Approved. Không tin trường Publisher hoặc đường dẫn tự khai là bằng chứng nguồn chính thức.
+
+**Cổng 2:** thiếu một ZIP, SHA không khớp, mất Feature UID/Edition/target, sai source hash hoặc lấy dữ liệu từ Registry chưa duyệt ⇒ **STOP** trước build/QA.
+
+### 13.4. Bước 3 — Mã tích hợp: tạo, chèn và xác minh
+
+**Đối với ARX/GRX native:** bộ tích hợp có thể gồm ApprovedScope.h, IssuerPublicKey.h, DcadLicenseCheck.h/.cpp, DcadGate.h/.cpp, CngDetail.h và Integration.json; **đối với DLL managed:** bộ mã .g.cs tương đương theo host/framework đã duyệt. Tên tệp cụ thể phụ thuộc schema/adapter, nhưng **không thay đổi danh tính hay quyền**.
+
+**Quy trình bắt buộc:**
+1. Adapter lấy Tool UID, ToolVersion, host token, Feature ID → Feature UID, Edition tối thiểu từ ToolContract Approved; không nhập thủ công các UUID khác vào từng nhánh.
+2. Mã công cụ thực sự gọi **CheckTool** trước thao tác ToolOnly; với FeatureRequired gọi **CheckTool + CheckFeature** tại tất cả đường thực thi tính năng. Kiểm tra trước khi sửa hình học/XData/bản vẽ hoặc thực hiện nghiệp vụ được bảo vệ.
+3. Đường dẫn **dcad_license.id** được resolve từ **DUser DIRECT** qua hợp đồng DataManifest/STD-05; không đọc tùy tiện từ thư mục source, registry key bí mật, PARENT, TEMP hay AppData fallback khi DUser là bắt buộc.
+4. Bộ tích hợp nhúng public trust anchor/chuỗi ủy quyền đã duyệt, UID và chứng nhận cần thiết trong binary; không mở rộng tin cậy chỉ vì file tích hợp đi kèm public key.
+5. Tool Manifest do nhà phát triển khai báo phải khớp Feature ID thực tế, LicenseMode, các vị trí CheckPositions; không tự tạo manifest giả từ danh sách Registry rồi coi là bằng chứng code có feature.
+
+**Cổng 3:** thiếu lời gọi Gate ở đường thực thi, ID trong code khác hợp đồng, thiếu trust anchor hợp lệ, chọn sai host, hoặc module chỉ chép thư viện nhưng không gọi Gate ⇒ **QA FAIL / không quảng bá đã bảo vệ**.
+
+### 13.5. Bước 4 — Build có chứng cứ mới
+
+- Build từng host **chỉ khi thuộc phạm vi duyệt**: C22 = AutoCAD 2022, C25 = AutoCAD 2025, G27 = GstarCAD 2027; SDK/framework/reference đúng host theo STD-03/04, không trộn header/lib giữa CAD.
+- Hệ thống build nhận **ZIP nguồn thật**, phiếu tích hợp, ToolContract hash, SDK khai báo và mã Gate; không tự đổi Tool UID/Feature UID, Edition policy, version hay license schema.
+- Ghi tên binary đúng target, SHA-256 của source ZIP và **binary mới** vừa build, toolchain, return code, log và thời điểm. Kết quả compiler PASS không thay chứng cứ tích hợp hoặc QA runtime.
+- Build_All.cmd là điểm chạy duy nhất ở gói build; script con dùng /nopause, script tổng log/hiển thị màu/pause cuối khi chạy trực tiếp, bảo toàn ERRORLEVEL, không publish artifact cũ hoặc chỉ PASS một phần các target được giao.
+- **DCADLicense.exe của ứng dụng quản trị** là sản phẩm riêng với **DJoinC22.arx / DJoinC25.arx / DJoinG27.grx** của add-in. Build ứng dụng quản trị không được coi là đã build add-in.
+
+**Cổng 4:** thiếu log/return code, binary mới, SHA256, SDK, sai tên/host hoặc bất kỳ nhánh bắt buộc chưa PASS ⇒ **BUILD FAIL/NotVerified**, không đánh dấu release approved.
+
+### 13.6. Bước 5 — QA độc lập với Build
+
+- **QA tĩnh:** so ToolContract hash giữa Registry, hai ZIP, source và artifact manifest; Tool/Feature UID, host/version/Edition, public trust anchor/chứng nhận và mã gọi Gate; source ZIP hash, binary hash và danh mục vị trí P01/P02. Kiểm biểu hiện thiếu Gate nhưng không công nhận runtime chỉ qua tìm chuỗi nguồn.
+- **QA thực thi:** dùng CAD/host thật với license đúng, thiếu file, sai chữ ký, sai máy, sai Tool UID, sai host/version, Edition dưới mức yêu cầu, thiếu FeatureGrant, hết hạn Tool/Feature, sửa byte license; thử mọi entry point của nghiệp vụ; bản vẽ không thay đổi khi DENY/ERROR.
+- **QA riêng từng host:** C22, C25, G27 không kế thừa PASS từ host khác; với feature có parent, kiểm cả chuỗi cha/con đã ký; legacy license không mở Feature mới.
+- **Chứng cứ:** lưu hồ sơ build, thời gian, binary hash, QA checklist, log và kết quả **PASS/FAIL/NotVerified** riêng cho build, gate static, CAD runtime và an toàn phát hành.
+
+**Cổng 5:** chỉ khi các thử nghiệm bắt buộc của scope PASS mới đánh dấu QA Approved để được cấp key. QA static PASS nhưng CAD runtime NotVerified **không được công bố License Gate đã chạy thành công**.
+
+### 13.7. Bước 6 — Người dùng yêu cầu .dreq và người quản trị cấp key
+
+**Người dùng:** chạy lệnh **Dcad_id** tạo **.dreq** từ Device/Machine ID, khóa công khai recipient CNG, Request ID và chữ ký yêu cầu theo schema đã chốt. **Không** tự điền Tool UID, Edition hay ngày hết hạn vào .dreq.
+
+**Dmanage/DCADLicense:** đọc byte .dreq, xác minh format, chữ ký và ràng buộc máy/recipient, lưu hash + bản gốc; liên kết khách hàng và nhiều quyền độc lập. Mỗi quyền chọn **một bản build QA approved** với Tool UID, host, ToolVersion, Edition, Feature UID, số suất và hạn riêng. Quyền con phải được phép theo chính sách Edition/Feature đã duyệt; không cấp Feature không nằm trong hợp đồng.
+
+**Issuer:** tái xác minh .dreq, hạn, quyền, QA, source/binary hash và ToolContract rồi ký payload canonical. Mô hình là **License → ToolGrant → FeatureGrant**, không tự cấp mọi Feature chỉ vì có PRO/UL. Ký toàn bộ trường ảnh hưởng quyết định chạy; có License ID mới, Issuer/Key ID và biên nhận/audit, không ghi đè giấy phép cũ. Cơ chế key production phải đáp ứng chuỗi Root → Authorized Issuer của §6–7; private key không rời miền phát hành.
+
+**Tương thích V25:** payload DCAD-LICENSE-1 trong mã nguồn V25 hiện diễn đạt dòng quyền **ToolUid|CadTarget|ToolVersion|-|Edition|ExpiresUnix** và **ToolUid|CadTarget|ToolVersion|FeatureUid|Edition|ExpiresUnix**; Tool ID và ToolContract SHA nằm trong Registry/biên nhận nhưng **không phải trường Gate V4 trực tiếp so trong payload đã ký**. Không tuyên bố Gate đang kiểm tra Tool ID/hash nếu chưa có schema mới và mã reader tương thích. Không chuyển máy khách sang schema mới hoặc mã hóa mới chỉ bằng sửa quy ước.
+
+**Cổng 6:** .dreq lỗi, thiếu bằng chứng QA, quyền không thuộc Tool/Feature, khác host/version/Edition, thiếu issuer trust hoặc khóa sản xuất không đủ bảo vệ ⇒ **KHÔNG KÝ**. Chỉ phát hành khi hành động ký là thực, có biên nhận và tệp license đã xác thực.
+
+### 13.8. Bước 7 — License Gate thực thi trong add-in
+
+**Đầu vào:** license byte từ DUser DIRECT, trust anchor nhúng đã ủy quyền, device key ở máy khách, Scope có Tool UID, host, ToolVersion, Edition tối thiểu và Feature UID được yêu cầu.
+
+**Thứ tự kiểm tra logic (phụ thuộc format):** (1) file/schema/giới hạn độ dài; (2) chữ ký Issuer và trust chain; (3) giải mã/xác thực nếu schema áp dụng; (4) thiết bị/recipient; (5) Tool UID; (6) CAD host token; (7) ToolVersion/Edition; (8) ToolGrant đang bật, còn hạn; (9) FeatureGrant thuộc đúng Tool, còn hạn và tất cả cha bắt buộc nếu schema hỗ trợ. Dữ liệu chưa xác thực không dùng để cho phép thực thi.
+
+**Đầu ra:** ALLOW hoặc DENY/ERROR kèm mã chẩn đoán ổn định. Khi khác máy/host/tool/version, thiếu Feature hay mất DUser, code **không thực hiện nghiệp vụ được bảo vệ**, không gây crash CAD, không sửa bản vẽ. Thiếu file hoặc lỗi parse **không** chuyển thành license mặc định.
+
+**Không đánh đồng:** add-in tìm thấy file ≠ file hợp lệ ≠ có quyền Tool ≠ có quyền Feature ≠ gate được gọi tại mọi điểm nghiệp vụ. Thu hồi offline chỉ có hiệu lực trên khách hàng khi cơ chế cập nhật/kiểm tra phù hợp đến được máy khách.
+
+### 13.9. Sổ đối chiếu nguồn → kết quả → điều kiện dừng
+
+| Mắt xích | Nguồn đọc chính | Kết quả phải giữ | Kiểm tra bắt buộc |
+|---|---|---|---|
+| Căn cứ thiết kế | Registry + Manifest nhà phát triển | ToolContract Approved, UID, chính sách, SHA | Duyệt, uniqueness, owner, schema |
+| ZIP 1 & ZIP 2 | **Cùng** ToolContract + yêu cầu build | SourceStructure & IntegrationRequest | Contract SHA giống nhau, Source SHA đúng, danh mục Feature đủ |
+| Mã tích hợp | Hai ZIP + source CAD thật | Header/adapter, manifest, gate tại nghiệp vụ | Mã ID/UID/host/Feature đúng, vị trí gọi thực |
+| Build | Source ZIP + SDK/target + integration | Binary mới + hash + log | Compiler return code, đúng target/version |
+| QA | Registry + source + binary + license thử | Build QA record và runtime evidence | LIC01–LIC26 + ca bổ sung, deny trước nghiệp vụ |
+| Cấp key | .dreq thật + khách hàng + grants + QA | License được ký + biên nhận | Device, Tool/Feature, scope, Edition, hạn, issuer |
+| Gate thực thi | License + trust anchor + Scope | ALLOW/DENY/ERROR | Ký, thiết bị, host/version, Tool/Feature grant |
+
+### 13.10. Ma trận bổ sung cho chuỗi 7 bước (không thay LIC01–LIC26)
+
+| ID | Trường hợp | Kết quả bắt buộc |
+|---|---|---|
+| LIC27 | Hai ZIP cùng ToolContract theo đúng byte SHA-256 | Khớp; thay đổi 1 byte hoặc sai Registry → STOP |
+| LIC28 | SourceStructure chỉ là mẫu / IntegrationRequest là hồ sơ | Không công bố build/runtime PASS từ ZIP mẫu hoặc JSON |
+| LIC29 | Features trong Registry khác hồ sơ/mã sinh | QA FAIL; không bỏ rơi Feature ID/UID khi xuất |
+| LIC30 | C++ native và managed adapter trên host riêng | Không đổi UID/host/schema; mã Gate được gọi thật |
+| LIC31 | Source SHA và binary SHA/host/version bị thay | QA FAIL; không cấp key cho binary không được duyệt |
+| LIC32 | .dreq thật của khách hàng, gắn nhiều Tool/Feature | Verify máy/request, quyền từng mục, hạn riêng |
+| LIC33 | ToolGrant hợp lệ nhưng FeatureRequired thiếu/sai UID | DENY trước xử lý hình học |
+| LIC34 | Gate có tên trong ZIP nhưng không được gọi tại một entry point | QA FAIL, không công bố bảo vệ |
+| LIC35 | Mã Host/ToolVersion/Edition thay đổi giữa Issuer và Gate | DENY hoặc migration được định nghĩa; không đổi token đã ký âm thầm |
+| LIC36 | Root/Issuer certificate hoặc khóa signing production chưa hợp lệ | KHÔNG PHÁT HÀNH thương mại; ghi lý do cụ thể |
+
+**Mỗi LIC27–LIC36:** ghi Applies, Expected, Actual, Evidence, Host, kết quả PASS/FAIL/NotVerified/N/A theo STD-16/18. Test tĩnh và hình thức ZIP không được thay thế test thật trong Windows/CAD.
+
+## 14. Tương thích lịch sử và ranh giới nghiệm thu (bổ sung 15/11/2026)
+
+1. **Giữ nguyên dữ liệu đã cấp:** Tool UID, Feature UID, Key ID, Machine ID, License ID, các token CAD được ký và License V4 hiện hữu không được thay đổi hoặc cấp lại chỉ vì cập nhật quy ước. Reader legacy phải chọn theo schema và fail-closed nếu không xác định được.
+2. **V25 là mốc đối chiếu mã nguồn, không phải chứng nhận phát hành:** SourceStructure, IntegrationRequest, CheckTool/CheckFeature wrapper và cấp quyền Feature đã có mã tại V25, nhưng Windows MSBuild, .dreq→CNG→Gate thực tế, C22/C25/G27 và Root/Issuer trust chain đầy đủ **chưa có bằng chứng nghiệm thu**. Không mô tả chúng là PASS.
+3. **Feature theo cây** (P01/P01_S01 là license Feature thực sự) chỉ được áp dụng khi có quan hệ cha, schema được ký và reader kiểm tra cha/con. Ở hợp đồng V25, mã P01/P02 là checkpoint tích hợp, không tự phát sinh FeatureGrant.
+4. **Mã hóa license nhị phân** là mục tiêu bảo mật nêu tại §6, không phải xác nhận DCAD-LICENSE-1 V4 hiện đã mã hóa. Chuyển từ text-signed V4 sang binary encrypted format phải có schema mới, encoder/decoder, tương thích và kiểm thử sửa byte/tamper; không đổi ngầm hoặc giả tạo bảo mật.
+5. **Quản trị bảo mật:** account phát triển admin/admin, chuỗi Root/Issuer chưa có, hoặc key phát hành chưa được ủy quyền là các điều kiện khiến RELEASE_APPROVED=NO dù source/build có thể PASS.
+6. **Ưu tiên triển khai sau cập nhật quy ước:** (a) chốt schema/host token/trust anchor; (b) thống nhất hai ZIP và Feature UID; (c) tích hợp Gate vào một add-in C22 thật; (d) build + CAD runtime + negative tests; (e) cấp key production sau khi Root/Issuer, quản trị khóa và chứng cứ QA đều PASS. Port C25/G27 sau khi baseline đã được nghiệm thu theo phạm vi.
+7. **Thẩm quyền:** §13–14 diễn giải chi tiết chuỗi triển khai, **không bãi bỏ** §1–12 hoặc STD-01–18. Khi dữ liệu V25 chưa tuân thủ yêu cầu mới, ghi FAIL/NotVerified và sửa phần mềm có version +1 ở một yêu cầu triển khai riêng; **không sửa ngầm schema thông qua tài liệu**.
