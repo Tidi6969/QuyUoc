@@ -1,10 +1,12 @@
 # DCAD-STD-16 — DataManifest, BuildInfo và QA
 
-**Phiên bản:** 1.15  
-**Cập nhật:** 15/11/2026  
+**Phiên bản:** 1.16  
+**Cập nhật:** 17/11/2026  
 **Mức áp dụng:** Bắt buộc
 
 ## DataManifest, BuildInfo, checklist và nghiệm thu [CORE]
+
+*Cập nhật v1.16: loại các yêu cầu dẫn chiếu STD-19 đã rút; các kiểm thử XData theo STD-12 v1.6 được áp dụng ở phạm vi module tương ứng. Không thay đổi quy tắc build/QA còn lại.*
 
 **Mỗi package** tối thiểu cần có hoặc khai báo rõ:
 
@@ -14,7 +16,6 @@
 - **Checklist trước bàn giao**:
 
   - [ ] Tất cả source thay đổi đều có lý do và phạm vi impact; bảo toàn baseline những phần ngoài scope.
-  - [ ] Với module dùng bản quyền DCAD, áp dụng STD-19: manifest, registry, UID, chứng nhận, Tool/Feature Gate, chữ ký tin cậy, không rò khóa, QA LIC01–LIC26 theo phạm vi.
   - [ ] Với AI, áp dụng STD-18: nêu mục tiêu, không suy diễn, không thêm chức năng ngoài phạm vi; diff tối thiểu và ca thử có expected/actual.
   - [ ] Target/framework/reference đúng cho từng CAD, không lẫn host.
   - [ ] Xác nhận các target được triển khai đều thuộc AutoCAD 2022, AutoCAD 2025 hoặc GstarCAD 2027 và đúng phạm vi dự án. Không còn nhánh source, SDK/Reference, script, project target, DLL, log, output portable hoặc mục manifest của CAD ngoài phạm vi.
@@ -65,7 +66,6 @@
 | STD-15 | Lỗi hiển thị đúng, log/diagnostic đủ, HARD STOP khi lặp | Ca lỗi giả lập hoặc tái hiện; log lỗi và hành vi khôi phục |
 | STD-16 | Manifest, BuildInfo, release gating, trạng thái đúng | Bảng nghiệm thu cuối và đối chiếu thực tế từng file/host |
 | STD-18 | Hiểu yêu cầu, tối giản giải pháp, thay đổi đúng phạm vi, kiểm chứng theo mục tiêu | Scope, diff, ca kiểm thử, log và AI-01–AI-12 |
-| STD-19 | License DCAD: Tool/Feature UID, manifest, bộ tích hợp, chứng nhận, phát hành và gate quyền | Registry, diff, contract/certificate, bộ test LIC01–LIC26 và test thực tế host áp dụng |
 
 ### Trạng thái và điều kiện bàn giao
 
@@ -80,4 +80,3 @@
 
 - Khi AI phân tích/viết/sửa/rà soát code, kiểm tra **STD-18, AI-01–AI-12** theo phạm vi; không gán PASS khi thiếu bằng chứng.
 
-- Với module **có tích hợp hoặc quản lý License DCAD**, kiểm tra **STD-19 / LIC01–LIC26** theo phạm vi; không coi sự tồn tại file ID/manifest/code sinh là bằng chứng feature thực sự bị khóa.
