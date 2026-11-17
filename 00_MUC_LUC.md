@@ -19,14 +19,13 @@
 | 09 | [Hình học, layer, text và DIM](09_Hinh_hoc_layer_text_va_DIM.md) | Theo tính năng |
 | 10 | [Danh mục HoleType và ý nghĩa hình học](10_Danh_muc_HoleType_va_y_nghia_hinh_hoc.md) | Theo tính năng |
 | 11 | [Gap, Dia, Depth và Offset](11_Gap_Dia_Depth_va_Offset.md) | Theo tính năng |
-| 12 | [Ghi, đọc XData và XRecord](12_Ghi_doc_XData_va_XRecord.md) | Theo tính năng |
+| 12 | [XData/XRecord và khôi phục hình học dùng chung](12_Ghi_doc_XData_va_XRecord.md) | Bắt buộc khi module ghi/đọc XData hoặc tham gia Drestore |
 | 13 | [Giao diện, icon và Preview](13_Giao_dien_icon_va_Preview.md) | Theo tính năng |
 | 14 | [Transaction, Undo và hiệu năng](14_Transaction_Undo_va_hieu_nang.md) | Bắt buộc theo thao tác |
 | 15 | [Xử lý lỗi và HARD STOP](15_Xu_ly_loi_va_HARD_STOP.md) | Bắt buộc |
 | 16 | [DataManifest, BuildInfo và QA](16_DataManifest_BuildInfo_va_QA.md) | Bắt buộc |
 | 17 | [Autoupdate — Tự động build, đồng bộ GitHub và ghi nhận xác nhận OK](17_Autoupdate.md) | Bắt buộc khi cập nhật GitHub hoặc người dùng xác nhận phiên bản OK |
 | 18 | [Nguyên tắc AI lập trình theo Karpathy](18_Karpathy_Guidelines_cho_AI_lap_trinh.md) | Bắt buộc khi AI phân tích/viết/sửa/rà soát code |
-| 19 | [Kiến trúc bản quyền DCAD và đồng bộ DCADManage ↔ DLL](19_Kien_truc_ban_quyen_DCAD_va_dong_bo_DLL.md) | Bắt buộc khi xây dựng/tích hợp/quản lý bản quyền DCAD |
 
 ## Nguyên tắc sử dụng
 
@@ -90,8 +89,8 @@
 - Đồng bộ STD-05 v1.14, STD-06 v1.12, STD-07 v1.12 và STD-16 v1.15; bổ sung kiểm thử LANG01–LANG08. Giữ nguyên những quy định ngoài phạm vi.
 - Chỉ cập nhật tài liệu; không tự sửa mã, build hoặc xác nhận nghiệm thu ứng dụng CAD.
 
-## Bổ sung trực tuyến STD-19 v1.3 — 15/11/2026
+## Cập nhật tài liệu trực tuyến — 17/11/2026
 
-- Quy ước 19 bổ sung §13–15, chuẩn hóa chuỗi **Căn cứ thiết kế → Một ZIP hợp đồng tích hợp (gồm Contract/ và SourceStructure/) → Mã tích hợp → Build → QA → Cấp key → License Gate thực thi**; Source SHA và binary SHA chỉ kiểm tra SAU khi lập trình viên nộp kết quả; giữ các cổng STOP, ToolContract SHA-256, Feature UID/Grant, adapter native.
-- Bổ sung LIC27–LIC36, giữ nguyên LIC01–LIC26 và mọi quy định mật mã/định danh hiện có; trạng thái mã V25 còn NotVerified không được quảng bá thành PASS.
-- **Phân biệt bản lưu:** ZIP bộ tiêu chuẩn V1.17 vẫn là snapshot đã phát hành; quy ước 19 v1.2 là bản Markdown trực tuyến cập nhật riêng, chưa tạo ZIP tổng mới trong lần sửa quy ước này.
+- STD-12 v1.6: bổ sung cấu trúc MASTER XData thống nhất theo Dtscr1 V84, Drestore và nhánh đọc DPunch V381/legacy. Chưa sửa dữ liệu bản vẽ hoặc mã ứng dụng.
+- Rút STD-19 khỏi danh mục và xóa tài liệu đang áp dụng theo yêu cầu chủ dự án; nội dung lịch sử vẫn truy được từ Git. Các mục V1.14 phía trên là ghi chép lịch sử, **không còn là quy ước hiện hành**.
+- ZIP V1.17 là snapshot lịch sử, không được coi là ZIP đã chứa lần cập nhật trực tuyến này.
