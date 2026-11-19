@@ -1,6 +1,6 @@
 # DCAD-STD-03 — Cấu trúc thư mục và đóng gói phần mềm
 
-**Phiên bản:** 1.16  
+**Phiên bản:** 1.17  
 **Cập nhật:** 19/11/2026  
 **Mức áp dụng:** Bắt buộc
 
@@ -91,3 +91,11 @@ Mỗi module giữ **một tên gốc ổn định** cho Module, ZIP và project
 
 - Phân biệt host bằng thư mục project và portable, không bằng basename DLL/ARX/GRX; giữ output đúng module và không ghi đè giữa các host.
 - `Dprogram/<Host>/` là cấu trúc **đóng gói**; `DProgram` runtime vẫn dạng phẳng khi cài đúng file theo CAD. Chỉ sửa tài liệu, không tự nhận đã đổi tên/built binary hiện hữu.
+
+## Bổ sung 19/11/2026 — SQLite Runtime dùng chung cho các add-in DCAD
+
+- Khi module sử dụng SQLite, **runtime chuẩn của DCAD là một tệp `sqlite3.dll` Windows x64 dùng chung**, triển khai trực tiếp tại thư mục logic `DProgram` đã đăng ký theo STD-05. Không cài SQLite vào `System32`, không bắt buộc ổ `C:`, không cần cài đặt SQLite/SQL Server hoặc chạy dịch vụ cơ sở dữ liệu trên máy dùng CAD.
+- **Chỉ một bản runtime dùng chung** cho các add-in cùng môi trường CAD. Gói từng module khai báo phụ thuộc trong `DataManifest`, **không tự đóng gói/cài lại mỗi module một bản DLL trùng nhau**; bộ triển khai chung của DCAD đảm trách cấp phát runtime một lần. Không thay các tệp `.db` bằng DLL: dữ liệu vẫn là tệp riêng tại thư mục đã khai báo (`DData`/`DUser`, v.v.).
+- `sqlite3.dll` là **thư viện chạy**; `sqlite3.h` và tệp dành cho biên dịch, nếu cần, là **đầu vào build**, không phải file cài đặt runtime. Bản dùng chung phải có nguồn chính thức, phiên bản/kiến trúc x64 và SHA-256 được ghi nhận; giữ phiên bản đã kiểm thử thay vì tự nâng cấp mỗi khi build một add-in.
+- Cài đặt/cập nhật DLL dùng chung chỉ theo thao tác triển khai có chủ đích: kiểm tra bản hiện có, không ghi đè khi AutoCAD/GstarCAD đang sử dụng, không tự tải hoặc thay bản DLL trong khi chạy CAD, kiểm chứng các module phụ thuộc trước khi thay phiên bản. Nếu DLL đã có và đúng phiên bản/chữ ký kiểm tra thì giữ nguyên.
+- **Không coi mọi module phải phụ thuộc SQLite.** Module không dùng SQLite không phải kiểm `DProgram\sqlite3.dll`. Module dùng SQLite phải thực hiện cơ chế nạp và xử lý thiếu runtime tại STD-05; kiểm chứng theo STD-16.
