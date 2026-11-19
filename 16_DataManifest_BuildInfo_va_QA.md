@@ -1,7 +1,7 @@
 # DCAD-STD-16 — DataManifest, BuildInfo và QA
 
-**Phiên bản:** 1.19  
-**Cập nhật:** 19/11/2026  
+**Phiên bản:** 1.20  
+**Cập nhật:** 20/11/2026  
 **Mức áp dụng:** Bắt buộc
 
 ## DataManifest, BuildInfo, checklist và nghiệm thu [CORE]
@@ -99,3 +99,35 @@
 - **Kiểm build/native import:** đối chiếu project/linker và import table của ARX/GRX. Không để liên kết `WinSQLite3.lib` hoặc `sqlite3.lib` khiến DLL SQLite trở thành phụ thuộc bắt buộc ngay lúc CAD nạp ARX; dùng nạp động theo đường dẫn tuyệt đối từ `DProgram`, kiểm API và phiên bản.
 - **Kiểm runtime độc lập:** thực hiện SQL01–SQL08 trong STD-05. Tách `ARX LOAD` khi thiếu DLL, khi có DLL, thao tác đọc/ghi DB, trường hợp không có DProgram DIRECT, DLL sai kiến trúc, DB hỏng/khóa, hai add-in dùng chung. Các trạng thái Build/Load/DB Runtime phải ghi riêng `PASS/FAIL/NotVerified`, không lấy compile PASS làm ARX LOAD PASS.
 - **DataManifest:** khai báo SQLite DLL là runtime dùng chung ở DProgram theo tính năng; khai báo riêng từng DB với LogicalFolder/AccessMode/schema, không gộp DLL và dữ liệu. Module không dùng SQLite ghi `N/A`, không yêu cầu `DProgram` chỉ vì hệ thống có SQLite.
+
+
+## Bổ sung 20/11/2026 — QA chung cho bảng dữ liệu và SQLite Grid
+
+**Áp dụng mọi module có bảng sửa được, bất kể nguồn dữ liệu.** Kiểm theo hợp đồng `DCAD-GRID-001` (STD-13); module SQLite kiểm thêm `DCAD-SQLITE-GRID-001` (STD-05) và SQL01–SQL08 về thư viện chạy. Không tự đánh Build PASS thay cho UI/runtime PASS.
+
+| Mã | Ca kiểm thử | Kết quả bắt buộc |
+|---|---|---|
+| GRID01 | Mở bảng có nhiều hàng và cột, giá trị Unicode, ký tự dài | Đúng tiêu đề, đúng ô, đúng trường; không ghép TAB/CSV thành một `EDIT` |
+| GRID02 | Sửa lần lượt ô đầu/giữa/cuối, Enter, click ra ngoài, ESC | Đúng ô được chốt/hủy; không làm đổi ô liền kề |
+| GRID03 | Thêm/xóa/move/sort/filter rồi sửa ô | Khóa bản ghi ổn định, không ghi vào hàng khác do đổi thứ tự |
+| GRID04 | Dán TAB/xuống dòng hoặc giá trị vượt giới hạn vào ô | Bị từ chối có ý nghĩa hoặc xử lý qua tính năng paste-bảng đã khai báo; không lệch cột |
+| GRID05 | Kéo cột tới giới hạn, kéo hàng, resize cửa sổ, đổi DPI | Cột không biến mất; dữ liệu không sang cột khác; có giới hạn nhỏ nhất |
+| GRID06 | Bảng đủ rộng và bảng hẹp | Mép cuối khép kín khi đủ rộng; cuộn ngang đúng khi thiếu rộng; không có khoảng trống ngoài cột cuối |
+| GRID07 | Rê chuột liên tục, cuộn bánh xe, Home/End/Page Up/Down | Không vẽ chồng/nhấp nháy bất thường; không thay giá trị |
+| GRID08 | Đang sửa rồi cuộn/kéo/resize/đóng; mở lại | Editor không “trôi” sai hàng/cột; Save/Cancel rõ; trạng thái hợp lệ |
+| GRID09 | Trường khóa, quan hệ và tên nhóm | Không đổi ngầm khóa; lỗi nhập xác định đúng hàng/cột |
+| GRID10 | Nhiều cửa sổ cùng sửa dữ liệu | Cảnh báo xung đột, không ghi đè âm thầm |
+
+**Chỉ module SQLite:** có thêm ca kiểm chứng dữ liệu, không thay thế SQL01–SQL08.
+
+| Mã | Ca kiểm thử | Kết quả bắt buộc |
+|---|---|---|
+| SQL09 | Ánh xạ SELECT cột tường minh → grid → UPDATE/INSERT bind theo khóa | Một ô = một cột; không dùng `SELECT *` hoặc phụ thuộc chỉ số hàng hiển thị |
+| SQL10 | Thay một trường rồi lưu, so DB trước/sau | Chỉ bản ghi liên quan thay đổi; không DELETE toàn bảng và reinsert |
+| SQL11 | Xóa/thêm, mã trùng, nhóm sai, khóa ngoại, số âm/NaN, Unicode/TAB | Validation theo cột; transaction rollback và backup nhất quán khi thất bại |
+| SQL12 | Lưu sau khi DB bị phiên khác sửa; DB khóa/bận, DB read-only | Không mất dữ liệu, báo xung đột/lỗi đúng; không tự fallback sang nguồn khác |
+| SQL13 | DData nguồn và DUser cấu hình | Form cấu hình không ghi vào nguồn; chỉ form quản lý danh mục được quyền ghi nguồn |
+| SQL14 | Không có shared `DProgram\\sqlite3.dll`; chỉ có `winsqlite3.dll` hoặc DLL khác PATH | Không fallback DLL; ARX nạp độc lập, phần DB báo lỗi rõ và dừng an toàn |
+| SQL15 | DB schema cũ/khác version và cài lại source | Không tự ghi đè DB, không tự sửa schema khi thiếu chính sách migration |
+
+Ma trận nghiệm thu mỗi ca: `RequirementID | Applies | Expected | Actual | Evidence | Host | PASS/FAIL/NotVerified`. Kiểm thử C++ độc lập có thể PASS cho logic, nhưng các ca đòi Win32/CAD runtime vẫn **NotVerified** nếu chưa chạy thực tế.
