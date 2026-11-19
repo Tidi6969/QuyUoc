@@ -106,3 +106,10 @@
 - Ba root tham chiếu mặc định: `D:\000\Reference\Autocad 2022`, `D:\000\Reference\Autocad 2025`, `D:\000\Reference\GstarCAD 2027`; dùng cho managed và native, kiểm đúng host trước build.
 - STD-16 v1.17: bổ sung QA đối chiếu filename, Reference và host-specific staging. Đây là cập nhật tài liệu; không tự động đổi code module, build hoặc nghiệm thu runtime.
 - ZIP V1.17 vẫn là snapshot trước các cập nhật tài liệu trực tuyến, không được xem là đã chứa quy định mới.
+
+## Cập nhật tài liệu trực tuyến — 19/11/2026: SQLite dùng chung trong DProgram
+
+- STD-03 v1.17: một `DProgram\sqlite3.dll` Windows x64 dùng chung, không cài đặt SQLite/SQL Server hay ghi DLL vào System32, không trùng bản sao theo mỗi add-in; cập nhật runtime có kiểm tra tương thích.
+- STD-05 v1.15: hợp đồng `DCAD-SQLITE-RUNTIME-001`, nạp động DLL bằng đường dẫn tuyệt đối từ `DProgram` DIRECT, không hard-link `WinSQLite3.lib` làm lỗi ARX LOAD; thiếu runtime chỉ dừng đúng chức năng dùng DB; bổ sung SQL01–SQL08.
+- STD-16 v1.18: DataManifest, QA và điều kiện kiểm chứng bản DLL dùng chung, import table ARX, ARX LOAD, đọc/ghi dữ liệu.
+- Chỉ sửa quy ước trực tuyến; **ZIP phát hành gần nhất vẫn V1.17**, chưa tạo bản ZIP tổng mới, không sửa/build các add-in.
