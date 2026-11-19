@@ -1,7 +1,7 @@
 # DCAD-STD-05 — Support File Search Path và phân giải dữ liệu
 
-**Phiên bản:** 1.16  
-**Cập nhật:** 19/11/2026  
+**Phiên bản:** 1.17  
+**Cập nhật:** 20/11/2026  
 **Mức áp dụng:** Bắt buộc theo tài nguyên mà module sử dụng; Setup/QA kiểm theo phạm vi chức năng được triển khai  
 **Hợp đồng:** `DCAD-DATA-DIR-001` — DIRECT-only và phân giải theo phạm vi DataManifest
 
@@ -185,3 +185,19 @@ Hướng dẫn: Kiểm tra tệp và thư mục tương ứng;
 | SQL06 | Ghi SQLite có Unicode, lỗi quyền ghi, DB khóa/bận hoặc transaction lỗi | Đọc/ghi đúng khi hợp lệ; lỗi rollback, không mất bản ghi đang có |
 | SQL07 | Hai add-in cùng dùng SQLite; cập nhật runtime khi CAD đang mở | Cùng dùng runtime được quản lý; không thay DLL đang sử dụng; kiểm tương thích trước cập nhật |
 | SQL08 | Kiểm tra phụ thuộc file ARX và thử nạp trên đúng CAD host | Không nhập trực tiếp `WinSQLite3.dll`/`sqlite3.dll` trong import table; ARX LOAD và thao tác DB có kết quả riêng PASS/FAIL/NotVerified |
+
+
+## 8.2. Bản ghi SQLite và ánh xạ hàng/cột an toàn [BẮT BUỘC KHI CÓ BẢNG DỮ LIỆU]
+
+**Hợp đồng:** `DCAD-SQLITE-GRID-001`. Đây là **nguyên tắc dùng chung cho mọi module DCAD đọc/sửa bảng SQLite**, không quy định tên bảng hay schema nghiệp vụ của một công cụ cụ thể. Nếu dùng bảng dữ liệu thuộc nguồn khác (CSV, DBMS khác, bảng cấu hình), các nguyên tắc ánh xạ và tính toàn vẹn ở STD-13 vẫn áp dụng.
+
+1. **Một ô — một trường:** mỗi ô sửa được trong UI phải ánh xạ đúng **một cột dữ liệu đã khai báo** của **một bản ghi có khóa ổn định**. Truy vấn dùng tên cột tường minh và thứ tự ánh xạ công bố; không dùng `SELECT *` phụ thuộc thứ tự vật lý hoặc lấy tọa độ hiển thị làm khóa lưu.
+2. **Không giả bảng bằng chuỗi:** KHÔNG ghép nhiều trường thành một dòng TAB/CSV/chuỗi dấu phân cách trong ô `EDIT` nhiều dòng để người dùng sửa; KHÔNG tách lại theo vị trí ký tự khi lưu. SQLite lưu kiểu số, chữ, NULL và BLOB theo kiểu phù hợp; UI có thể hiển thị giá trị đã định dạng, nhưng phải lưu đúng cột nguồn.
+3. **Khóa và thứ tự độc lập:** khóa chính/khóa duy nhất xác định bản ghi; số dòng, vị trí kéo, sắp xếp, bộ lọc, scroll và STT lắp ghép không tự thay thế khóa bản ghi. Thứ tự nghiệp vụ phải có trường riêng khi cần.
+4. **Sửa có kiểm tra:** trước khi nhận thay đổi một ô, kiểm tra theo kiểu và ràng buộc của cột (số hữu hạn/giới hạn, mã/khóa duy nhất, nhóm hợp lệ, Unicode, độ dài, quan hệ). Không để dữ liệu một ô lan sang ô bên cạnh khi dán văn bản có TAB/xuống dòng. Lỗi phải xác định được hàng và cột; dữ liệu cũ không bị ghi đè.
+5. **Ghi theo định danh và phạm vi:** dùng prepared statement + binding; `UPDATE`/`INSERT`/`DELETE` dựa trên khóa đã xác nhận, chỉ tác động bản ghi thuộc chức năng đang sửa. Không mặc định `DELETE` toàn bảng rồi `INSERT` lại chỉ để ghi thay đổi một ô. Xóa bản ghi phải có thao tác/đồng ý rõ; thay mã khóa có liên kết phải theo chính sách migration/khóa ngoại, không xem là sửa tên thông thường.
+6. **Giao dịch và đồng thời:** kiểm tra bản gốc hoặc revision trong giao dịch ghi đã khóa hợp lệ; người khác sửa sau khi cửa sổ mở phải gây cảnh báo xung đột, không ghi đè im lặng. Trước commit phải kiểm tra constraint, kiểm `sqlite3_step`/số hàng ảnh hưởng; khi lỗi rollback và giữ dữ liệu cũ, có bản sao lưu nhất quán.
+7. **Nguồn khác dữ liệu riêng:** DB danh mục nguồn không bị sửa bởi thao tác cài đặt cá nhân; tệp DB, schema và quan hệ khác nhau của từng module vẫn do DataManifest công bố. Không suy diễn từ tên bảng của module A để tự thay schema module B.
+8. **Kiểm nghiệm:** kiểm thử ánh xạ đủ mọi cột, thêm/sửa/xóa một bản ghi không đổi bản ghi cạnh bên, sắp xếp/lọc rồi sửa vẫn trúng khóa gốc, Unicode và dấu TAB, mã trùng, giới hạn số, ghi lỗi, stale revision, rollback, không cập nhật DB nguồn từ form settings. UI thực tế theo STD-13; QA theo STD-16.
+
+**Không thay thế hợp đồng runtime mục 8:** ứng dụng SQLite vẫn phải nạp **duy nhất `DProgram\\sqlite3.dll`** qua đường dẫn DIRECT tuyệt đối, không fallback `winsqlite3.dll`. Các quy tắc hàng/cột này không cho phép module tự thêm DLL SQLite, đổi dữ liệu hoặc chuyển thư mục đã chuẩn hóa.
