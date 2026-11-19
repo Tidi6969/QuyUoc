@@ -89,6 +89,11 @@
 - Đồng bộ STD-05 v1.14, STD-06 v1.12, STD-07 v1.12 và STD-16 v1.15; bổ sung kiểm thử LANG01–LANG08. Giữ nguyên những quy định ngoài phạm vi.
 - Chỉ cập nhật tài liệu; không tự sửa mã, build hoặc xác nhận nghiệm thu ứng dụng CAD.
 
+## Cập nhật tài liệu trực tuyến — 19/11/2026
+
+- STD-03 v1.15 và STD-04 v1.15: đổi ba thư mục tra cứu Reference/SDK mặc định trên máy build sang `D:\000\Reference\Autocad 2022`, `D:\000\Reference\Autocad 2025`, `D:\000\Reference\GstarCAD 2027`. Giữ quy tắc tìm SDK đệ quy trong phạm vi host, kiểm đủ thư viện, đối chiếu SHA khi nhiều bản và không trộn thư viện giữa CAD.
+- Các đường dẫn này là nguồn tham chiếu **lúc build**, không phải DData/DUser/DProgram/Dicon/Dhelp của Support File Search Path lúc chạy. Chỉ thay tài liệu trực tuyến, không sửa source module hay gán Build PASS.
+
 ## Cập nhật tài liệu trực tuyến — 17/11/2026
 
 - STD-12 v1.6: bổ sung cấu trúc MASTER XData thống nhất theo Dtscr1 V84, Drestore và nhánh đọc DPunch V381/legacy. Chưa sửa dữ liệu bản vẽ hoặc mã ứng dụng.
