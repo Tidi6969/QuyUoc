@@ -1,12 +1,12 @@
 # DCAD-STD-16 — DataManifest, BuildInfo và QA
 
-**Phiên bản:** 1.16  
-**Cập nhật:** 17/11/2026  
+**Phiên bản:** 1.17  
+**Cập nhật:** 19/11/2026  
 **Mức áp dụng:** Bắt buộc
 
 ## DataManifest, BuildInfo, checklist và nghiệm thu [CORE]
 
-*Cập nhật v1.16: loại các yêu cầu dẫn chiếu STD-19 đã rút; các kiểm thử XData theo STD-12 v1.6 được áp dụng ở phạm vi module tương ứng. Không thay đổi quy tắc build/QA còn lại.*
+*Cập nhật v1.17: bổ sung nghiệm thu root Reference đúng CAD, output không suffix host và portable phân nhánh; giữ nguyên các kiểm thử XData và điều kiện khác.*
 
 **Mỗi package** tối thiểu cần có hoặc khai báo rõ:
 
@@ -21,7 +21,9 @@
   - [ ] Xác nhận các target được triển khai đều thuộc AutoCAD 2022, AutoCAD 2025 hoặc GstarCAD 2027 và đúng phạm vi dự án. Không còn nhánh source, SDK/Reference, script, project target, DLL, log, output portable hoặc mục manifest của CAD ngoài phạm vi.
   - [ ] Release build từng target được kiểm chứng riêng; `Build_All.cmd` ở root điều phối `Build_Release.cmd /nopause` đúng thư mục `%~3`, không dùng nhãn `%~2` thay đường dẫn.
   - [ ] Kiểm tra ngay `ERRORLEVEL` của script con + sự tồn tại DLL mới; dù một nhánh FAIL các nhánh còn lại vẫn chạy để tổng hợp.
-  - [ ] Staging/publish portable `Dprogram/` chỉ sau khi toàn bộ target PASS; lỗi copy không để DLL công bố dở.
+  - [ ] Staging/publish portable `Dprogram/<Host>/` chỉ sau khi toàn bộ target PASS; không trộn hoặc ghi đè file cùng tên giữa hai CAD.
+  - [ ] Output dùng đúng basename module, không có `C22`/`C25`/`G27`; extension `.dll`/`.arx`/`.grx` theo công nghệ. Đối chiếu project, script, BuildInfo, manifest, NETLOAD/APPLOAD.
+  - [ ] Reference/SDK đúng ba root mặc định `D:\\000\\Reference\\Autocad 2022`, `D:\\000\\Reference\\Autocad 2025`, `D:\\000\\Reference\\GstarCAD 2027` hoặc override tường minh có log; không trộn CAD.
   - [ ] Khi chạy trực tiếp `Build_All.cmd` hoặc `Build_Release.cmd`, **dù PASS hoặc FAIL**, sau tổng kết/log đều in `Nhấn phím bất kỳ để thoát...` và `pause >nul`; cửa sổ chỉ đóng sau khi có phím nhấn, kể cả lỗi sớm (thiếu SDK/script, build/publish lỗi).
   - [ ] Script con chạy với `/nopause` không chờ giữa các nhánh; script tổng chạy thủ công chỉ chờ **một lần ở cuối**; mọi đường kết thúc đi qua `:FINISH`.
   - [ ] Sau khi chờ phím, mã thoát vẫn là `0` khi PASS, khác `0` khi FAIL; không dùng `ERRORLEVEL` của lệnh `pause` làm kết quả build. Màu PASS xanh/FAIL đỏ khi terminal hỗ trợ và fallback chữ thuần khi `NO_COLOR`.
@@ -51,8 +53,8 @@
 |---|---|---|
 | STD-01 | Baseline chỉ định hoặc gần nhất; version đích mặc định max đã lưu + 1; phạm vi thay đổi và lịch sử đúng | Version nguồn, version lớn nhất đã lưu, lý do chọn, version đích và biên bản ảnh hưởng |
 | STD-02 | Một command; tách module; không pha API host | Danh sách command từ source, đối chiếu dependency và reference |
-| STD-03 | Cây riêng từng host; đủ 7 thư mục; không có cấu hình hoặc artifact của CAD ngoài phạm vi | Kiểm tra ZIP/csproj/Reference/manifest và danh sách host |
-| STD-04 | Build mỗi nhánh; DLL mới; publish; màu hiển thị; pause; kết quả/log | Log build, `ERRORLEVEL`, kiểm tra DLL, kiểm thử màu quan sát trực tiếp và `NO_COLOR` |
+| STD-03 | Cây riêng host, basename không suffix, portable chia host, không có artifact CAD ngoài phạm vi | ZIP, tên binary, cây `Dprogram/<Host>/`, Reference/manifest |
+| STD-04 | Build đúng Reference từng host; artifact DLL/ARX/GRX mới không suffix, publish chia host; màu/pause/log | Log, `ERRORLEVEL`, so tên file, kiểm ghi đè và màu/`NO_COLOR` |
 | STD-05 | SYS/MOD kiểm phụ thuộc thực tế; tên cuối DIRECT đúng; không ép đủ năm/cùng root/vị trí; không PARENT; relative path ứng dụng đúng hợp đồng | DataManifest/Required/RelativePath; DIR01–DIR38; thử entry DUser/abc và DProgram/Dnest, EXE cố định |
 | STD-06 | Khi tính năng dùng DUser: Save/Last Used/Factory đúng DUser, atomic + backup | File trước/sau Save/Cancel/Fail/Restore, test lỗi quyền và file hỏng |
 | STD-07 | Khi module dùng ngôn ngữ DCAD: Shared_data.Set dòng 1 lấy số trong `[]`; đủ 6 ngôn ngữ; Unicode | Đối chiếu key `lang.dat`, ảnh/text trong CAD theo từng ngôn ngữ |
