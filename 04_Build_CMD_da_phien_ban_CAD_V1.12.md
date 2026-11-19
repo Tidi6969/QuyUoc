@@ -20,9 +20,9 @@
 
 | CAD | Đường dẫn trên máy build |
 |---|---|
-| AutoCAD 2022 | `D:\\000\\Reference\\Autocad 2022` |
-| AutoCAD 2025 | `D:\\000\\Reference\\Autocad 2025` |
-| GstarCAD 2027 | `D:\\000\\Reference\\GstarCAD 2027` |
+| AutoCAD 2022 | `D:\000\Reference\Autocad 2022` |
+| AutoCAD 2025 | `D:\000\Reference\Autocad 2025` |
+| GstarCAD 2027 | `D:\000\Reference\GstarCAD 2027` |
 
 - Managed phải resolve chính xác các DLL CAD của đúng host dưới root đó (được tìm sâu), kiểm đủ file trước compiler và tránh copy DLL CAD vào runtime; SDK native áp dụng preflight phía dưới. Không trộn host, không tự động fallback sang root khác. Override chỉ khi khai báo rõ và ghi log đường dẫn thực.
 
@@ -64,7 +64,7 @@ call :TARGET S22 "AutoCAD 2022" "<ProjectName>-AutoCAD2022-Vxxx" "AutoCAD2022.lo
 
 - `%~1`: biến ghi kết quả (`S22`).
 - `%~2`: **nhãn hiển thị** (`AutoCAD 2022`), không phải tên thư mục.
-- `%~3`: **tên thư mục project thật** (`<ProjectName>-AutoCAD2022-Vxxx`), dùng resolve `Build_Release.cmd` và `bin\\<ProjectName>.<ext>` (managed `.dll`, native `.arx`/`.grx`).
+- `%~3`: **tên thư mục project thật** (`<ProjectName>-AutoCAD2022-Vxxx`), dùng resolve `Build_Release.cmd` và `bin\<ProjectName>.<ext>` (managed `.dll`, native `.arx`/`.grx`).
 - `%~4`: tên log của nhánh (`AutoCAD2022.log`).
 
 **HARD RULE:** Không được đảo `%~2` với `%~3`; nếu đảo sẽ gây lỗi không tìm thấy script. Không lấy chuỗi nhãn hiển thị làm đường dẫn file.
@@ -73,7 +73,7 @@ call :TARGET S22 "AutoCAD 2022" "<ProjectName>-AutoCAD2022-Vxxx" "AutoCAD2022.lo
 
 1. Trước khi gọi script con, kiểm tra `Build_Release.cmd` tồn tại đúng đường dẫn; nếu thiếu, ghi `[FAIL]` và đường dẫn thiếu, **tiếp tục kiểm tra các target còn lại**.
 2. Gọi script con với `/nopause`; bắt **mã trả về ngay sau `CALL`** (`ERRORLEVEL`), không đánh giá theo câu `BUILD OK`.
-3. Xác nhận có `bin\\<ProjectName>.<ext>` **mới từ lượt build này**; kiểm đúng extension theo target, không dùng file cũ để báo PASS. Dọn staging/portable cũ trước lượt build, không công bố kết quả chưa đủ nhánh.
+3. Xác nhận có `bin\<ProjectName>.<ext>` **mới từ lượt build này**; kiểm đúng extension theo target, không dùng file cũ để báo PASS. Dọn staging/portable cũ trước lượt build, không công bố kết quả chưa đủ nhánh.
 4. Gom artifact theo **staging riêng từng host**; chỉ publish `Dprogram/<Host>/` khi **tất cả target thuộc phạm vi build** đều PASS. Không để hai output khác host cùng basename ghi đè. Copy/publish lỗi phải xóa công bố dở.
 5. `BUILD ALL: PASS` + `ERRORLEVEL=0` **chỉ khi toàn bộ nhánh đã PASS và publish hoàn tất**. Nếu một nhánh FAIL hoặc publish lỗi: `BUILD ALL: FAIL`, `ERRORLEVEL` khác 0.
 6. Không thay đổi business logic, tài nguyên người dùng hoặc dữ liệu Factory để sửa build.
@@ -161,7 +161,7 @@ endlocal & exit /b %BUILD_EXIT_CODE%
 
 **Nhóm tên artifact:**
 
-7. Lấy `AssemblyName` từ `.csproj` hoặc `TargetName` từ project native; basename đầu ra **đúng `<ProjectName>`**, không kèm hậu tố `C22`, `C25`, `G27` hoặc mã CAD tương tự. Mọi nơi trong script, output, staging, portable, manifest và hướng dẫn NETLOAD/APPLOAD phải khớp. Ví dụ: `bin\\DProject.dll` → `Dprogram\\AutoCAD2022\\DProject.dll` (managed); `bin\\DProject.arx` → `Dprogram\\AutoCAD2022\\DProject.arx` (native).
+7. Lấy `AssemblyName` từ `.csproj` hoặc `TargetName` từ project native; basename đầu ra **đúng `<ProjectName>`**, không kèm hậu tố `C22`, `C25`, `G27` hoặc mã CAD tương tự. Mọi nơi trong script, output, staging, portable, manifest và hướng dẫn NETLOAD/APPLOAD phải khớp. Ví dụ: `bin\DProject.dll` → `Dprogram\AutoCAD2022\DProject.dll` (managed); `bin\DProject.arx` → `Dprogram\AutoCAD2022\DProject.arx` (native).
 8. `Dprogram` portable **bắt buộc có thư mục host riêng**: `AutoCAD2022`, `AutoCAD2025`, `GstarCAD2027` theo phạm vi đã duyệt. File cùng tên ở các host khác nhau là hợp lệ; không được ghi đè trong gói. Khi cài, chép **đúng file của host hiện hành** vào `DProgram` runtime dạng phẳng; không bắt CAD đăng ký `Dprogram/<Host>/` như Support Path.
 9. Trước và sau khi nén ZIP, đối chiếu: thư mục nhánh, `Build_Release.cmd`, project, `BuildInfo`, tên artifact không suffix, thư mục portable host, tham số `:TARGET`, `log` và manifest. Sai bất kỳ mắt xích nào → **PACKAGING QA FAIL, không bàn giao**.
 10. Với module đang chỉ duyệt một target, chỉ test/publish target đó và ghi rõ **one approved target**; không xuất hiện tên project, output, Reference hay log của host chưa được duyệt.
