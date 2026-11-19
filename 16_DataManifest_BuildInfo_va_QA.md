@@ -1,6 +1,6 @@
 # DCAD-STD-16 — DataManifest, BuildInfo và QA
 
-**Phiên bản:** 1.17  
+**Phiên bản:** 1.18  
 **Cập nhật:** 19/11/2026  
 **Mức áp dụng:** Bắt buộc
 
@@ -82,3 +82,9 @@
 
 - Khi AI phân tích/viết/sửa/rà soát code, kiểm tra **STD-18, AI-01–AI-12** theo phạm vi; không gán PASS khi thiếu bằng chứng.
 
+## Bổ sung 19/11/2026 — Cổng QA cho SQLite Runtime dùng chung
+
+- **Chỉ áp dụng cho module dùng SQLite:** kiểm `DProgram\sqlite3.dll` x64, nguồn/phiên bản/SHA-256 đã phê duyệt, đúng một runtime dùng chung; không cần cài SQLite trên máy, không tìm/cài DLL ở `System32`, không cho module tự thay bản runtime của module khác. Theo STD-03 và hợp đồng `DCAD-SQLITE-RUNTIME-001` tại STD-05.
+- **Kiểm build/native import:** đối chiếu project/linker và import table của ARX/GRX. Không để liên kết `WinSQLite3.lib` hoặc `sqlite3.lib` khiến DLL SQLite trở thành phụ thuộc bắt buộc ngay lúc CAD nạp ARX; dùng nạp động theo đường dẫn tuyệt đối từ `DProgram`, kiểm API và phiên bản.
+- **Kiểm runtime độc lập:** thực hiện SQL01–SQL08 trong STD-05. Tách `ARX LOAD` khi thiếu DLL, khi có DLL, thao tác đọc/ghi DB, trường hợp không có DProgram DIRECT, DLL sai kiến trúc, DB hỏng/khóa, hai add-in dùng chung. Các trạng thái Build/Load/DB Runtime phải ghi riêng `PASS/FAIL/NotVerified`, không lấy compile PASS làm ARX LOAD PASS.
+- **DataManifest:** khai báo SQLite DLL là runtime dùng chung ở DProgram theo tính năng; khai báo riêng từng DB với LogicalFolder/AccessMode/schema, không gộp DLL và dữ liệu. Module không dùng SQLite ghi `N/A`, không yêu cầu `DProgram` chỉ vì hệ thống có SQLite.
