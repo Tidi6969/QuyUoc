@@ -1,6 +1,6 @@
 # DCAD-STD-05 — Support File Search Path và phân giải dữ liệu
 
-**Phiên bản:** 1.15  
+**Phiên bản:** 1.16  
 **Cập nhật:** 19/11/2026  
 **Mức áp dụng:** Bắt buộc theo tài nguyên mà module sử dụng; Setup/QA kiểm theo phạm vi chức năng được triển khai  
 **Hợp đồng:** `DCAD-DATA-DIR-001` — DIRECT-only và phân giải theo phạm vi DataManifest
@@ -147,6 +147,19 @@ Hướng dẫn: Kiểm tra tệp và thư mục tương ứng;
 - Ví dụ DNesting: đăng ký `D:\DCAD\DProgram`, rồi tìm đúng `Dnest\Dnest.exe`; không đăng ký `DProgram\Dnest` thay DProgram và không dò từ root. Đây là hợp đồng riêng DNesting, không cho phép mọi module quét các thư mục con tùy ý.
 - DNesting V49 quy định `DNest_settings.json`, `DNest_cad-command.json`, `DNest_window.json` nằm cạnh đúng `Dnest.exe` đã chọn. DUser vẫn dùng riêng cho `Shared_data.Set` khi chạy trong CAD. Không tự chuyển settings portable về DUser hay áp cách lưu này sang module khác.
 - Trường hợp có nguồn settings/log/job riêng đã công bố phải khai báo rõ trong manifest/hợp đồng module; đó là vị trí được chỉ định, không phải đích dự phòng khi DIRECT lỗi. Không mở rộng ngoại lệ ngầm từ mã legacy. Mã cũ còn nhận PARENT phải ghi không tuân thủ DIRECT-only và chỉ sửa khi có yêu cầu sửa phần mềm.
+
+### 7.1. Tìm EXE của ứng dụng portable trong DProgram khi cần
+
+**Phạm vi:** chỉ áp dụng khi module/chức năng **có yêu cầu mở ứng dụng portable bằng EXE**. Giữ cơ chế DIRECT-only đối với đường dẫn đăng ký: **chỉ** nhận `DProgram` từ Support File Search Path; thư mục con là nơi chứa tài nguyên, **không** phải một entry DIRECT mới.
+
+1. **Đầu vào xác định:** DataManifest khai báo tên file EXE **chính xác** (ví dụ `SQLiteStudio.exe`), `LogicalFolder=DProgram`, `Type=RuntimeProgram`, `AccessMode=Execute`, `Required` theo chức năng, và có thể khai báo `RelativePath` nếu biết tên thư mục. Chỉ cho phép tự phát hiện khi khai báo `PortableExeDiscovery=DirectChild`. Không dò mọi `*.exe` rồi tự chọn theo tên thư mục hoặc vị trí.
+2. **Thứ tự tìm:** (a) dùng `RelativePath` cố định đã khai báo, nếu file tồn tại/hợp lệ; (b) khi bật `PortableExeDiscovery=DirectChild` và chưa có đường dẫn hợp lệ, kiểm tra đúng `DProgram\<TenExe>`; (c) nếu chưa thấy, **chỉ liệt kê các thư mục con trực tiếp** của `DProgram` và kiểm tra `DProgram\<TenThuMucCon>\<TenExe>`. Nếu không bật discovery, thiếu đường dẫn khai báo phải báo thiếu, không tự quét. Không tìm sâu hai cấp trở lên, không tìm thư mục cha, ổ đĩa, `PATH`, `AppData` hoặc `System32`.
+3. **Chống chọn sai:** Chấp nhận chính xác **một** ứng viên hợp lệ tại cấp tìm tương ứng. Nhiều thư mục con cùng chứa EXE đúng tên → báo trùng/không rõ nguồn, dừng chức năng, yêu cầu khai báo `RelativePath` cụ thể; không tự chọn file đầu tiên. Kiểm tra EXE đúng ứng dụng/nguồn phát hành đã khai báo (khi có version, publisher hoặc checksum), khả năng truy cập và đường dẫn đích sau khi giải quyết junction/reparse point không thoát khỏi phạm vi `DProgram`.
+4. **Giữ trọn portable:** Khởi chạy bằng đường dẫn EXE tuyệt đối đã xác định, đặt working directory theo **thư mục chứa EXE** nếu ứng dụng yêu cầu, giữ các DLL/tài nguyên riêng cạnh EXE; không tự di chuyển/chỉ chép EXE. Không dùng kết quả dò EXE làm đường dẫn lưu settings của module CAD: settings/DB vẫn theo DataManifest và STD-06.
+5. **Lỗi theo tính năng:** EXE thiếu, trùng, sai ứng dụng hoặc không chạy được → báo rõ tên EXE/thư mục và dừng **chức năng gọi portable**. Không gây `FATAL` khi module không sử dụng ứng dụng đó.
+6. **Phân biệt SQLite runtime:** `sqlite3.dll` dùng chung vẫn phải nạp từ **`DProgram\sqlite3.dll`** đúng mục 8. Không tìm `sqlite3.dll` trong các thư mục con chứa EXE hoặc coi `sqlite3.exe` là yêu cầu chạy các add-in SQLite.
+
+**Ví dụ:** `D:\DCAD\DProgram\SQLiteStudio\SQLiteStudio.exe` hợp lệ khi `DProgram` là entry DIRECT và module khai báo đúng `SQLiteStudio.exe`. `D:\DCAD\DProgram\ToolSuite\SQLiteStudio\SQLiteStudio.exe` không nằm trong phạm vi tự tìm một cấp; chỉ dùng nếu `RelativePath=ToolSuite\SQLiteStudio\SQLiteStudio.exe` được khai báo rõ và được kiểm tra không thoát phạm vi.
 
 ## 8. SQLite Runtime dùng chung từ DProgram [THEO TÍNH NĂNG]
 
