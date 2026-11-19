@@ -1,7 +1,7 @@
 # DCAD-STD-04 — Build CMD đa phiên bản CAD
 
-**Phiên bản:** 1.14  
-**Cập nhật:** 12/11/2026  
+**Phiên bản:** 1.15  
+**Cập nhật:** 19/11/2026  
 **Mức áp dụng:** Bắt buộc theo target
 
 ## Target CAD, framework, reference, Build CMD và version [CORE theo target]
@@ -159,7 +159,7 @@ endlocal & exit /b %BUILD_EXIT_CODE%
 
 **Hợp đồng:** `DCAD-NATIVE-REFERENCE-001`. Áp dụng SDK native khi biên dịch trên Windows, không thay cơ chế Support File Search Path runtime của STD-05.
 
-1. **Root tham chiếu mặc định:** `I:\ABC\Reference\Autocad 2022`, `I:\ABC\Reference\Autocad 2025`, `I:\ABC\Reference\GstarCAD 2027`; có thể cấu hình lại root một cách tường minh tại máy build. Không dùng các root này làm DataManifest/DIRECT runtime.
+1. **Root tham chiếu mặc định:** `D:\000\Reference\Autocad 2022`, `D:\000\Reference\Autocad 2025`, `D:\000\Reference\GstarCAD 2027`; có thể cấu hình lại root một cách tường minh tại máy build. Không dùng các root này làm DataManifest/DIRECT runtime.
 2. **Tìm sâu:** quét đệ quy toàn bộ thư mục con trong đúng vùng CAD; nhận diện *gốc SDK* theo cấu trúc nhà phát hành (như `inc/arx.props`, `lib-x64`; với GRX thêm `inc`, `arx/inc`). Không giới hạn tầng. Không thêm bừa tất cả thư mục header vào include path, không làm phẳng cấu trúc.
 3. **Kiểm tra trước compiler:** kiểm đủ các CAD target được giao trước khi biên dịch bất kỳ target nào. Kiểm file header được source dùng trực tiếp, file `.props` và `.lib` mà project và các props import cần; báo thiếu/không rỗng bằng `[MISSING]` kèm host, tên file, thư mục dự kiến. Có lỗi: `BUILD ALL: FAIL`, chưa gọi MSBuild, không thay đầu ra đã công bố.
 4. **Trùng tên không bảo đảm trùng nội dung:** khi có nhiều gốc SDK đầy đủ, so SHA-256 các file bắt buộc (ví dụ `rxapi.lib`); đồng nhất có thể chọn ổn định, khác nhau phải báo `[CONFLICT]` và dừng để người dùng xác nhận nguồn. Không chọn ngẫu nhiên hoặc trộn file.
