@@ -78,12 +78,12 @@ Mỗi module giữ **một tên gốc ổn định** cho Module, ZIP và project
 
 - Kiểm tra cây file trong ZIP thực tế: chỉ có nhánh host đã duyệt, tên nhánh và version đúng; không lẫn Reference hoặc DLL của host khác.
 - Kiểm tra đồng thời cây thư mục, tên project, `.sln/.csproj`, target build, SDK/Reference, DLL, log và manifest. Không chấp nhận tình trạng xóa cây host ngoài phạm vi nhưng còn giữ cấu hình hoặc đầu ra phục vụ host đó.
-- Kiểm tra đầu ra DLL, cấu trúc thư mục phẳng và tài liệu runtime bằng kiểm tra nội dung ZIP; kết quả lưu trong biên bản DCAD-STD-16.
+- Kiểm tra output trong `bin` của từng host, cấu trúc `Dprogram/<Host>/` của ZIP, tên thành phẩm và tài liệu triển khai runtime; kết quả lưu trong biên bản DCAD-STD-16.
 
 ## Bổ sung 12/11/2026 — SDK native dùng chung ở giai đoạn build
 
 - **Áp dụng riêng cho ARX/GRX native khi người dùng đã cung cấp thư mục SDK dùng chung.** Giữ nguyên bộ SDK/cây `inc`, `lib-x64`, `arx/inc`... của nhà phát hành trong thư mục máy build; ZIP source không cần chứa bản sao SDK lớn. Thư mục logic `Reference` của nhánh được phép để rỗng trong ZIP nhằm bảo toàn cấu trúc nguồn.
-- Root Reference mặc định trên máy build cho **managed và native**: `D:\\000\\Reference\\Autocad 2022`, `D:\\000\\Reference\\Autocad 2025`, `D:\\000\\Reference\\GstarCAD 2027`. Chỉ override bằng cấu hình tường minh có log. Tìm sâu trong phạm vi host để xác định DLL managed hoặc gốc SDK native; không fallback sang thư viện của CAD khác.
+- Root Reference mặc định trên máy build cho **managed và native**: `D:\000\Reference\Autocad 2022`, `D:\000\Reference\Autocad 2025`, `D:\000\Reference\GstarCAD 2027`. Chỉ override bằng cấu hình tường minh có log. Tìm sâu trong phạm vi host để xác định DLL managed hoặc gốc SDK native; không fallback sang thư viện của CAD khác.
 - Build phải kiểm tra **một bộ SDK hoàn chỉnh và đúng host** trước khi compiler chạy; không ghép `.h`/`.lib` từ nhiều bộ, không fallback sang SDK host khác. ZIP không nhúng SDK là **source/chờ build** nếu chưa có bằng chứng build; không gọi thành phẩm đã biên dịch.
 - `Reference` của **C# managed** giữ hợp đồng thư viện host chính xác và không sao chép DLL CAD tham chiếu vào `bin` hay triển khai runtime. SDK native máy build khác năm thư mục dữ liệu/Support Path CAD tại STD-05.
 
