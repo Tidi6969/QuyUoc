@@ -1,5 +1,8 @@
 # QuyUoc — Bộ tiêu chuẩn DCAD V1.17
 
+- **Cập nhật trực tuyến 20/11/2026 — Bảng dữ liệu có cấu trúc:** STD-05 v1.17 bổ sung `DCAD-SQLITE-GRID-001` (đọc/ghi SQLite theo đúng bản ghi/cột, khóa ổn định, prepared statement, transaction); STD-13 v1.8 bổ sung `DCAD-GRID-001` dùng chung cho mọi module và mọi nguồn bảng, không tạo ô EDIT dạng TAB giả bảng; STD-16 v1.20 bổ sung GRID01–GRID10 và SQL09–SQL15. Vẫn áp dụng `DProgram\\sqlite3.dll` dùng chung theo STD-03/05. Chỉ sửa tài liệu trực tuyến, ZIP V1.17 chưa được cập nhật.
+
+
 Tài liệu trực tuyến cập nhật 19/11/2026 (Reference và tên output không suffix CAD); ZIP phát hành gần nhất vẫn là bản lưu V1.17. Xem [mục lục 00–18](00_MUC_LUC.md).
 
 - Support Path: tên thư mục cuối phải khớp DData/DUser/DProgram/Dicon/Dhelp; không bắt đủ năm, cùng root hoặc vị trí cuối danh sách. Module/Setup chỉ kiểm phụ thuộc thực tế; đường dẫn con ứng dụng khai báo riêng (STD-05/06).
