@@ -1,7 +1,7 @@
 # DCAD-STD-13 — Giao diện, icon và Preview
 
-**Phiên bản:** 1.7
-**Cập nhật:** 05/11/2026  
+**Phiên bản:** 1.8
+**Cập nhật:** 20/11/2026  
 **Mức áp dụng:** Theo tính năng
 
 
@@ -35,3 +35,21 @@
 - Khi có preview di chuyển theo chuột, dùng DrawJig: clone object tạm, biến đổi bằng `Matrix`, hiển thị qua `WorldDraw`, không sửa object thật.
 - Chỉ commit geometry khi người dùng xác nhận; ESC/cancel phải hủy preview, dispose tài nguyên tạm, không để entity rác.
 - Không dùng `SendStringToExecute MOVE` thay cho cơ chế preview realtime khi workflow cần bắt chuột mượt.
+
+
+## Bảng hàng/cột có cấu trúc — tiêu chuẩn chung DCAD
+
+**Hợp đồng UI:** `DCAD-GRID-001`. Áp dụng cho **mọi bảng dữ liệu chỉnh sửa được trong tất cả module DCAD**, bất kể nguồn là SQLite, DAT, CSV hay cấu hình trong bộ nhớ. Không dùng tên bảng/cột riêng của một project để đặt làm quy tắc cho project khác.
+
+1. **Đơn vị hiển thị:** hàng = một bản ghi nghiệp vụ; cột = một thuộc tính có tên/kiểu/đơn vị xác định; ô = giao điểm của một hàng và một cột. Một ô sửa được chỉ sửa một thuộc tính. Không tạo “bảng giả” bằng một `EDIT` nhiều dòng chứa các dòng phân cách TAB, CSV hoặc dấu cách.
+2. **Định danh:** mỗi hàng có khóa nghiệp vụ ổn định, độc lập với thứ tự hiển thị, chỉ số hàng, lọc/sắp xếp và scroll; mỗi cột có khóa thuộc tính ổn định, độc lập với vị trí kéo hoặc độ rộng. Trước ghi phải đối chiếu cả hai khóa. STT chỉ là thứ tự nghiệp vụ khi schema có quy định, không làm khóa ngầm.
+3. **Hiển thị dễ kiểm soát:** tiêu đề cột rõ, đường kẻ hàng/cột hoặc phân cách đủ nhận biết, giá trị hiển thị đúng cột; loại dữ liệu và đơn vị không lẫn nhau. Màu, icon và phần trình bày phụ phải nằm trong ô được quy định, không được tự tạo cột logic mới nếu dữ liệu không có cột đó.
+4. **Sửa từng ô:** click/nhấp đúp/F2/Enter theo thiết kế đã công bố; Enter hoặc mất focus phải xác nhận đúng ô đang sửa; ESC hủy ô chưa lưu. Chuyển ô, cuộn, kéo cột/hàng, đóng form hoặc thay đổi kích thước phải xử lý editor đang mở một cách xác định; sự kiện focus/Enter của editor cũ không được tác động editor mới.
+5. **Kiểm tra đầu vào:** kiểm theo kiểu dữ liệu ngay tại ô; ngăn dán nhiều cột vào một ô khi tính năng dán bảng chưa được thiết kế. Trường khóa/định danh và quan hệ được khóa hoặc đổi qua quy trình có xác nhận. Thêm, xóa, đổi thứ tự hàng phải là thao tác riêng và có kiểm tra quan hệ.
+6. **Kích thước/căn chỉnh:** có giới hạn chiều rộng tối thiểu phù hợp label và khả năng đọc; không được kéo cột về 0 làm biến mất dữ liệu. Thay đổi kích thước cột không thay đổi cột được liên kết trong model. Khi tổng cột vừa vùng bảng, cột cuối phải khép kín tới mép phải và không để vùng trắng “không thuộc cột nào”. Khi tổng độ rộng tối thiểu lớn hơn vùng hiển thị, **được cuộn ngang đúng cách**, không ép cột nhỏ đến mất nội dung.
+7. **Hàng, cuộn, DPI:** chiều cao hàng đủ đọc; nếu cho kéo giãn phải giới hạn hợp lý, không làm mất nội dung; con lăn, thanh cuộn, bàn phím hoạt động tự nhiên và không làm đổi dữ liệu. Tính toán ở DPI thực, tránh vẽ chồng/lặp làm nhấp nháy khi rê chuột.
+8. **Trạng thái:** mở/đóng/phóng to/thu nhỏ/phục hồi phải nhất quán; khi đóng phải phân biệt Save/Cancel và cảnh báo thay đổi chưa lưu. Tùy chọn nhớ kích thước/vị trí chỉ lưu khi dự án yêu cầu, không tự tạo cấu hình ngoài phạm vi.
+9. **Giao dịch:** UI không tự serialize, ghi DB hoặc tự suy schema; tầng lưu nhận bản ghi có cấu trúc và khóa của bản ghi. Ghi dữ liệu SQLite theo `DCAD-SQLITE-GRID-001` tại STD-05; loại nguồn khác phải có hợp đồng ghi/rollback tương ứng.
+10. **Kiểm chứng bắt buộc:** thử chỉnh ô đầu/giữa/cuối, cột đầu/cuối, thêm/xóa/move, dán TAB, giá trị sai, cuộn/kéo cột/hàng lúc editor mở, đổi thứ tự rồi sửa, nhiều cửa sổ đồng thời, DPI nhỏ/lớn, đóng/ESC và khôi phục trạng thái. Cần bằng chứng UI thực tế trên host, không chỉ kiểm thử hàm tính kích thước.
+
+**Không áp đặt công nghệ giao diện:** Win32 ListView, DataGridView, WPF, Palette hoặc control tự vẽ đều có thể đạt nếu đáp ứng hành vi trên. Không tự thay control chỉ để đổi kiểu triển khai.
