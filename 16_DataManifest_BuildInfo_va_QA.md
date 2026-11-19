@@ -1,6 +1,6 @@
 # DCAD-STD-16 — DataManifest, BuildInfo và QA
 
-**Phiên bản:** 1.18  
+**Phiên bản:** 1.19  
 **Cập nhật:** 19/11/2026  
 **Mức áp dụng:** Bắt buộc
 
@@ -81,6 +81,17 @@
 - Kiểm tra cập nhật GitHub theo STD-17 AUTO-01–AUTO-13: chọn baseline gần nhất khi không có chỉ định; version mới mặc định max đã lưu + 1; không ghi đè bản cũ; README module và DCAD có trạng thái mới nhất/đã nghiệm thu riêng; đọc lại ZIP/changelog/metadata sau commit. Chỉ lưu bản gốc hoặc metadata không tự tăng version phần mềm.
 
 - Khi AI phân tích/viết/sửa/rà soát code, kiểm tra **STD-18, AI-01–AI-12** theo phạm vi; không gán PASS khi thiếu bằng chứng.
+
+## Bổ sung 19/11/2026 — Kiểm thử EXE portable trong thư mục con DProgram
+
+- Chỉ kích hoạt khi module dùng ứng dụng portable độc lập. `DataManifest` phải ghi chính xác tên EXE, `LogicalFolder=DProgram`, `RelativePath` nếu biết, và `PortableExeDiscovery=DirectChild` nếu cần tìm tự động một cấp. Chỉ xét `DProgram` DIRECT từ CAD, không nhận root/entry con như DIRECT thay thế, không quét sâu hoặc chọn tùy tiện `*.exe`.
+- **PORT01:** EXE tại đường dẫn `RelativePath` hợp lệ → chọn đúng và không thay bằng ứng viên khác.
+- **PORT02:** Bật discovery, EXE ở thư mục gốc hoặc đúng **một** thư mục con trực tiếp của `DProgram` → nhận diện và chạy đúng EXE; working directory theo thư mục EXE khi cần.
+- **PORT03:** Có hai thư mục con chứa EXE cùng tên → báo không rõ nguồn và dừng chức năng, không chọn tùy tiện.
+- **PORT04:** EXE chỉ có ở cấp con sâu hơn, root DCAD, `System32`, `PATH` hoặc `AppData` → không tự tìm; `RelativePath` cố định nhiều cấp chỉ hợp lệ khi đã khai báo và kiểm tra rõ.
+- **PORT05:** Thiếu EXE/thiếu DProgram, quyền truy cập sai, EXE không đúng hoặc reparse point thoát khỏi DProgram → cảnh báo đúng chức năng, không làm module khác FATAL.
+- **PORT06:** Không xê dịch DLL/dữ liệu đi kèm portable, không thay đổi quy định `DProgram\sqlite3.dll` cho SQLite Runtime, không chuyển DB/settings ra khỏi folder đã công bố.
+- Kết quả `PASS/FAIL/NotVerified` dựa trên thử nghiệm trên CAD/Windows thật; chỉ đọc quy ước hoặc có source dò file không được tính là runtime PASS.
 
 ## Bổ sung 19/11/2026 — Cổng QA cho SQLite Runtime dùng chung
 
