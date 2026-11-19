@@ -23,7 +23,7 @@
   - [ ] Kiểm tra ngay `ERRORLEVEL` của script con + sự tồn tại DLL mới; dù một nhánh FAIL các nhánh còn lại vẫn chạy để tổng hợp.
   - [ ] Staging/publish portable `Dprogram/<Host>/` chỉ sau khi toàn bộ target PASS; không trộn hoặc ghi đè file cùng tên giữa hai CAD.
   - [ ] Output dùng đúng basename module, không có `C22`/`C25`/`G27`; extension `.dll`/`.arx`/`.grx` theo công nghệ. Đối chiếu project, script, BuildInfo, manifest, NETLOAD/APPLOAD.
-  - [ ] Reference/SDK đúng ba root mặc định `D:\\000\\Reference\\Autocad 2022`, `D:\\000\\Reference\\Autocad 2025`, `D:\\000\\Reference\\GstarCAD 2027` hoặc override tường minh có log; không trộn CAD.
+  - [ ] Reference/SDK đúng ba root mặc định `D:\000\Reference\Autocad 2022`, `D:\000\Reference\Autocad 2025`, `D:\000\Reference\GstarCAD 2027` hoặc override tường minh có log; không trộn CAD.
   - [ ] Khi chạy trực tiếp `Build_All.cmd` hoặc `Build_Release.cmd`, **dù PASS hoặc FAIL**, sau tổng kết/log đều in `Nhấn phím bất kỳ để thoát...` và `pause >nul`; cửa sổ chỉ đóng sau khi có phím nhấn, kể cả lỗi sớm (thiếu SDK/script, build/publish lỗi).
   - [ ] Script con chạy với `/nopause` không chờ giữa các nhánh; script tổng chạy thủ công chỉ chờ **một lần ở cuối**; mọi đường kết thúc đi qua `:FINISH`.
   - [ ] Sau khi chờ phím, mã thoát vẫn là `0` khi PASS, khác `0` khi FAIL; không dùng `ERRORLEVEL` của lệnh `pause` làm kết quả build. Màu PASS xanh/FAIL đỏ khi terminal hỗ trợ và fallback chữ thuần khi `NO_COLOR`.
