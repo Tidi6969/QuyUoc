@@ -99,3 +99,10 @@
 - STD-12 v1.6: bổ sung cấu trúc MASTER XData thống nhất theo Dtscr1 V84, Drestore và nhánh đọc DPunch V381/legacy. Chưa sửa dữ liệu bản vẽ hoặc mã ứng dụng.
 - Rút STD-19 khỏi danh mục và xóa tài liệu đang áp dụng theo yêu cầu chủ dự án; nội dung lịch sử vẫn truy được từ Git. Các mục V1.14 phía trên là ghi chép lịch sử, **không còn là quy ước hiện hành**.
 - ZIP V1.17 là snapshot lịch sử, không được coi là ZIP đã chứa lần cập nhật trực tuyến này.
+
+## Cập nhật tài liệu trực tuyến — 19/11/2026 (chuẩn tên thành phẩm)
+
+- STD-03 v1.16, STD-04 v1.16: bỏ hậu tố CAD `C22`, `C25`, `G27` khỏi file sau build. Tên file theo đúng tên gốc module, ví dụ `DProject.dll`, `DProject.arx`, `DProject.grx`; mã host chỉ nằm ở nhánh project và `Dprogram/<Host>/` để không ghi đè hai bản build cùng tên. Khi triển khai chỉ chép binary đúng host vào `DProgram` runtime dạng phẳng.
+- Ba root tham chiếu mặc định: `D:\\000\\Reference\\Autocad 2022`, `D:\\000\\Reference\\Autocad 2025`, `D:\\000\\Reference\\GstarCAD 2027`; dùng cho managed và native, kiểm đúng host trước build.
+- STD-16 v1.17: bổ sung QA đối chiếu filename, Reference và host-specific staging. Đây là cập nhật tài liệu; không tự động đổi code module, build hoặc nghiệm thu runtime.
+- ZIP V1.17 vẫn là snapshot trước các cập nhật tài liệu trực tuyến, không được xem là đã chứa quy định mới.
