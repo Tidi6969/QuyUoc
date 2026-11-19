@@ -1,5 +1,13 @@
 # BỘ TIÊU CHUẨN DCAD — V1.17
 
+## Cập nhật trực tuyến 20/11/2026 — Quy tắc bảng dữ liệu dùng chung
+
+- STD-05 v1.17: hợp đồng `DCAD-SQLITE-GRID-001`, bắt buộc SQLite map bản ghi/cột theo khóa, kiểm tra từng ô, không dùng chuỗi TAB/CSV làm bảng, ghi có transaction và không xóa-chèn hàng loạt để sửa một ô; không thay hợp đồng nạp `DProgram\\sqlite3.dll` dùng chung.
+- STD-13 v1.8: hợp đồng `DCAD-GRID-001` áp dụng cho **mọi module và mọi bảng có thể chỉnh sửa**, không phụ thuộc SQLite hay công nghệ control cụ thể.
+- STD-16 v1.20: bộ test GRID01–GRID10 và SQL09–SQL15, tách QA logic, UI/CAD runtime và Build.
+- Đây là cập nhật tài liệu trực tuyến; ZIP tổng đã lưu V1.17 chưa chứa nội dung mới. Không tự thay đổi hay nghiệm thu app CAD.
+
+
 **Phạm vi CAD hỗ trợ:** AutoCAD 2022, AutoCAD 2025 và GstarCAD 2027. Mỗi dự án triển khai các target đã được duyệt trong danh sách này.  
 **Bàn giao:** Một file ZIP chứa các file Markdown độc lập, không chứa bản sao tài liệu nguồn hoặc file phụ trợ.  
 **Cách sử dụng:** Áp dụng quy chuẩn chung cho mọi project; tài nguyên của từng module được kiểm tra theo `DataManifest`. Setup/QA hệ thống kiểm tra cấu hình DCAD đầy đủ, độc lập với kiểm tra khởi động module.
