@@ -113,3 +113,10 @@
 - STD-05 v1.15: hợp đồng `DCAD-SQLITE-RUNTIME-001`, nạp động DLL bằng đường dẫn tuyệt đối từ `DProgram` DIRECT, không hard-link `WinSQLite3.lib` làm lỗi ARX LOAD; thiếu runtime chỉ dừng đúng chức năng dùng DB; bổ sung SQL01–SQL08.
 - STD-16 v1.18: DataManifest, QA và điều kiện kiểm chứng bản DLL dùng chung, import table ARX, ARX LOAD, đọc/ghi dữ liệu.
 - Chỉ sửa quy ước trực tuyến; **ZIP phát hành gần nhất vẫn V1.17**, chưa tạo bản ZIP tổng mới, không sửa/build các add-in.
+
+## Cập nhật tài liệu trực tuyến — 19/11/2026: Ứng dụng portable trong DProgram
+
+- STD-03 v1.18: ứng dụng portable có EXE được giữ cả thư mục con trong `DProgram`, không cần tách EXE ra thư mục phẳng. File add-in CAD vẫn triển khai phẳng đúng host.
+- STD-05 v1.16: ưu tiên đường dẫn `RelativePath` đã khai báo; khi có `PortableExeDiscovery=DirectChild` mới tìm đúng tên EXE ở `DProgram` và các thư mục con trực tiếp (một cấp). Nhiều kết quả báo xung đột, không tự chọn; không quét ổ đĩa/thư mục khác. Không thay cách nạp `DProgram\sqlite3.dll`.
+- STD-16 v1.19: bổ sung kiểm thử PORT01–PORT06 cho EXE portable.
+- Chỉ cập nhật tài liệu trực tuyến; ZIP quy ước đã phát hành V1.17 và mã các add-in không thay đổi.
