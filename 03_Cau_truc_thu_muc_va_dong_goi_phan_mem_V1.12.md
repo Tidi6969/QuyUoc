@@ -1,7 +1,7 @@
 # DCAD-STD-03 — Cấu trúc thư mục và đóng gói phần mềm
 
-**Phiên bản:** 1.14  
-**Cập nhật:** 12/11/2026  
+**Phiên bản:** 1.15  
+**Cập nhật:** 19/11/2026  
 **Mức áp dụng:** Bắt buộc
 
 ## Một cây project cho một CAD mục tiêu
@@ -82,6 +82,6 @@ Mỗi module đặt **một tên gốc ổn định** cho `Module`, ZIP và thư
 ## Bổ sung 12/11/2026 — SDK native dùng chung ở giai đoạn build
 
 - **Áp dụng riêng cho ARX/GRX native khi người dùng đã cung cấp thư mục SDK dùng chung.** Giữ nguyên bộ SDK/cây `inc`, `lib-x64`, `arx/inc`... của nhà phát hành trong thư mục máy build; ZIP source không cần chứa bản sao SDK lớn. Thư mục logic `Reference` của nhánh được phép để rỗng trong ZIP nhằm bảo toàn cấu trúc nguồn.
-- Mặc định tra cứu dưới `I:\ABC\Reference\Autocad 2022`, `I:\ABC\Reference\Autocad 2025`, `I:\ABC\Reference\GstarCAD 2027`; root có thể cấu hình rõ trên máy build. Tên thư mục CAD là phạm vi tìm kiếm, gốc SDK có thể nằm nhiều tầng bên dưới.
+- Mặc định tra cứu dưới `D:\000\Reference\Autocad 2022`, `D:\000\Reference\Autocad 2025`, `D:\000\Reference\GstarCAD 2027`; root có thể cấu hình rõ trên máy build. Tên thư mục CAD là phạm vi tìm kiếm, gốc SDK có thể nằm nhiều tầng bên dưới.
 - Build phải kiểm tra **một bộ SDK hoàn chỉnh và đúng host** trước khi compiler chạy; không ghép `.h`/`.lib` từ nhiều bộ, không fallback sang SDK host khác. ZIP không nhúng SDK là **source/chờ build** nếu chưa có bằng chứng build; không gọi thành phẩm đã biên dịch.
 - `Reference` của **C# managed** giữ hợp đồng thư viện host chính xác và không sao chép DLL CAD tham chiếu vào `bin` hay triển khai runtime. SDK native máy build khác năm thư mục dữ liệu/Support Path CAD tại STD-05.
