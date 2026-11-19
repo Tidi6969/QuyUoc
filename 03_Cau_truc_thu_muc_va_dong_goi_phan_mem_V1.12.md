@@ -1,6 +1,6 @@
 # DCAD-STD-03 — Cấu trúc thư mục và đóng gói phần mềm
 
-**Phiên bản:** 1.17  
+**Phiên bản:** 1.18  
 **Cập nhật:** 19/11/2026  
 **Mức áp dụng:** Bắt buộc
 
@@ -90,7 +90,7 @@ Mỗi module giữ **một tên gốc ổn định** cho Module, ZIP và project
 ## Cập nhật 19/11/2026 — Bỏ hậu tố CAD khi build
 
 - Phân biệt host bằng thư mục project và portable, không bằng basename DLL/ARX/GRX; giữ output đúng module và không ghi đè giữa các host.
-- `Dprogram/<Host>/` là cấu trúc **đóng gói**; `DProgram` runtime vẫn dạng phẳng khi cài đúng file theo CAD. Chỉ sửa tài liệu, không tự nhận đã đổi tên/built binary hiện hữu.
+- `Dprogram/<Host>/` là cấu trúc **đóng gói**; **file add-in CAD (`.arx`/`.grx`/`.dll`)** được cài vào `DProgram` runtime dạng phẳng khi chọn đúng host. **Ứng dụng portable độc lập có EXE và các tài nguyên đi kèm được phép giữ nguyên cây thư mục con của chính ứng dụng bên trong `DProgram`**, theo quy tắc tìm EXE tại STD-05 mục 7.1. Không buộc chép riêng EXE ra thư mục phẳng và không dùng thư mục con portable như một entry Support File Search Path. Chỉ sửa tài liệu, không tự nhận đã đổi tên/built binary hiện hữu.
 
 ## Bổ sung 19/11/2026 — SQLite Runtime dùng chung cho các add-in DCAD
 
@@ -99,3 +99,9 @@ Mỗi module giữ **một tên gốc ổn định** cho Module, ZIP và project
 - `sqlite3.dll` là **thư viện chạy**; `sqlite3.h` và tệp dành cho biên dịch, nếu cần, là **đầu vào build**, không phải file cài đặt runtime. Bản dùng chung phải có nguồn chính thức, phiên bản/kiến trúc x64 và SHA-256 được ghi nhận; giữ phiên bản đã kiểm thử thay vì tự nâng cấp mỗi khi build một add-in.
 - Cài đặt/cập nhật DLL dùng chung chỉ theo thao tác triển khai có chủ đích: kiểm tra bản hiện có, không ghi đè khi AutoCAD/GstarCAD đang sử dụng, không tự tải hoặc thay bản DLL trong khi chạy CAD, kiểm chứng các module phụ thuộc trước khi thay phiên bản. Nếu DLL đã có và đúng phiên bản/chữ ký kiểm tra thì giữ nguyên.
 - **Không coi mọi module phải phụ thuộc SQLite.** Module không dùng SQLite không phải kiểm `DProgram\sqlite3.dll`. Module dùng SQLite phải thực hiện cơ chế nạp và xử lý thiếu runtime tại STD-05; kiểm chứng theo STD-16.
+
+## Bổ sung 19/11/2026 — Triển khai ứng dụng portable chính thức trong DProgram
+
+- Khi một chức năng DCAD cần gọi ứng dụng portable độc lập, cho phép lưu **cả bộ portable chính thức trong thư mục con của `DProgram`** để giữ EXE, DLL riêng và dữ liệu đi kèm cạnh nhau, ví dụ `DProgram\SQLiteStudio\SQLiteStudio.exe`. Đây là **ứng dụng portable có EXE**, không đồng nghĩa thư viện SQLite chạy nền `DProgram\sqlite3.dll`.
+- Chỉ cần đăng ký **`DProgram` DIRECT** trong CAD. Không đăng ký từng thư mục con portable vào Support Path, không chuyển EXE/DLL đi nơi khác, không yêu cầu ổ đĩa cố định hoặc cài vào `Program Files`/`System32`.
+- Nếu tên thư mục portable thay đổi theo bộ phát hành, module được phép tra một cấp thư mục con theo **tên EXE chính xác**, chỉ khi DataManifest khai báo tính năng đó. Thứ tự, giới hạn, xử lý trùng và không quét đệ quy được quy định tại STD-05 mục 7.1; kiểm thử tại STD-16.
