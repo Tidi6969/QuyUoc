@@ -1,6 +1,6 @@
 # DCAD-STD-04 — Build CMD đa phiên bản CAD
 
-**Phiên bản:** 1.15  
+**Phiên bản:** 1.16  
 **Cập nhật:** 19/11/2026  
 **Mức áp dụng:** Bắt buộc theo target
 
@@ -15,6 +15,16 @@
 | AutoCAD 2022 | .NET Framework 4.8; x64 | 3 Autodesk Managed DLL đúng bản 2022 | Build Release, NETLOAD, smoke test |
 | AutoCAD 2025 | .NET 8 Windows; x64 | 3 Autodesk Managed DLL đúng bản 2025 | Build Release, NETLOAD, smoke test |
 | GstarCAD 2027 | .NET 8 Windows; x64  | Bộ thư viện GstarCAD 2027 riêng, không dùng DLL Autodesk | Build Release, NETLOAD, smoke test; SDK cụ thể cần đối chiếu với bộ thực tế |
+
+**Root Reference/SDK mặc định — áp dụng cả managed và native:**
+
+| CAD | Đường dẫn trên máy build |
+|---|---|
+| AutoCAD 2022 | `D:\\000\\Reference\\Autocad 2022` |
+| AutoCAD 2025 | `D:\\000\\Reference\\Autocad 2025` |
+| GstarCAD 2027 | `D:\\000\\Reference\\GstarCAD 2027` |
+
+- Managed phải resolve chính xác các DLL CAD của đúng host dưới root đó (được tìm sâu), kiểm đủ file trước compiler và tránh copy DLL CAD vào runtime; SDK native áp dụng preflight phía dưới. Không trộn host, không tự động fallback sang root khác. Override chỉ khi khai báo rõ và ghi log đường dẫn thực.
 
 - Một target = một cây source/project độc lập, một `.sln/.csproj`, framework và Reference đúng host, `Debug|x64` và `Release|x64`. Không trộn nhiều host/reference chung một project.
 - **Phạm vi target bắt buộc:** Chỉ hỗ trợ AutoCAD 2022, AutoCAD 2025 và GstarCAD 2027. Danh sách nhánh trong `Build_All.cmd` phải khớp các target thuộc phạm vi dự án đã được duyệt; không bổ sung nhánh `Build_Release.cmd`, mục `:TARGET`, SDK/Reference, DLL, log hoặc output portable của host ngoài phạm vi.
@@ -33,7 +43,10 @@
 ├─ <ProjectName>-GstarCAD2027-Vxxx/
 │  └─ Build_Release.cmd
 ├─ log/                                  # tạo khi build
-├─ Dprogram/                             # DLL portable dạng phẳng, chỉ publish nếu toàn bộ target đã duyệt PASS
+├─ Dprogram/                             # Portable theo từng host, publish nếu các target duyệt PASS
+│  ├─ AutoCAD2022/
+│  ├─ AutoCAD2025/
+│  └─ GstarCAD2027/
 └─ FactoryDefaults_<ProjectName>/        # nếu module có factory đã duyệt; không sửa để chữa build
 ```
 
@@ -51,7 +64,7 @@ call :TARGET S22 "AutoCAD 2022" "<ProjectName>-AutoCAD2022-Vxxx" "AutoCAD2022.lo
 
 - `%~1`: biến ghi kết quả (`S22`).
 - `%~2`: **nhãn hiển thị** (`AutoCAD 2022`), không phải tên thư mục.
-- `%~3`: **tên thư mục project thật** (`<ProjectName>-AutoCAD2022-Vxxx`), dùng resolve `Build_Release.cmd` và `bin\<AssemblyNameHost>.dll`.
+- `%~3`: **tên thư mục project thật** (`<ProjectName>-AutoCAD2022-Vxxx`), dùng resolve `Build_Release.cmd` và `bin\\<ProjectName>.<ext>` (managed `.dll`, native `.arx`/`.grx`).
 - `%~4`: tên log của nhánh (`AutoCAD2022.log`).
 
 **HARD RULE:** Không được đảo `%~2` với `%~3`; nếu đảo sẽ gây lỗi không tìm thấy script. Không lấy chuỗi nhãn hiển thị làm đường dẫn file.
@@ -60,8 +73,8 @@ call :TARGET S22 "AutoCAD 2022" "<ProjectName>-AutoCAD2022-Vxxx" "AutoCAD2022.lo
 
 1. Trước khi gọi script con, kiểm tra `Build_Release.cmd` tồn tại đúng đường dẫn; nếu thiếu, ghi `[FAIL]` và đường dẫn thiếu, **tiếp tục kiểm tra các target còn lại**.
 2. Gọi script con với `/nopause`; bắt **mã trả về ngay sau `CALL`** (`ERRORLEVEL`), không đánh giá theo câu `BUILD OK`.
-3. Xác nhận có `bin\<AssemblyNameHost>.dll` **mới từ lượt build này**; DLL cũ không chứng minh PASS. Dọn output portable cũ trước build, không công bố kết quả chưa đủ các nhánh.
-4. Gom DLL của các nhánh vào **staging**; chỉ publish sang `Dprogram/` khi **tất cả target thuộc phạm vi build** đều PASS và đủ DLL. Nếu copy/publish lỗi, xóa phần công bố dở, không để gói portable trạng thái nửa thành công.
+3. Xác nhận có `bin\\<ProjectName>.<ext>` **mới từ lượt build này**; kiểm đúng extension theo target, không dùng file cũ để báo PASS. Dọn staging/portable cũ trước lượt build, không công bố kết quả chưa đủ nhánh.
+4. Gom artifact theo **staging riêng từng host**; chỉ publish `Dprogram/<Host>/` khi **tất cả target thuộc phạm vi build** đều PASS. Không để hai output khác host cùng basename ghi đè. Copy/publish lỗi phải xóa công bố dở.
 5. `BUILD ALL: PASS` + `ERRORLEVEL=0` **chỉ khi toàn bộ nhánh đã PASS và publish hoàn tất**. Nếu một nhánh FAIL hoặc publish lỗi: `BUILD ALL: FAIL`, `ERRORLEVEL` khác 0.
 6. Không thay đổi business logic, tài nguyên người dùng hoặc dữ liệu Factory để sửa build.
 
@@ -148,9 +161,9 @@ endlocal & exit /b %BUILD_EXIT_CODE%
 
 **Nhóm tên artifact:**
 
-7. Lấy `AssemblyName` từ `.csproj`. Mọi chỗ tên DLL trong build, output, staging, portable và hướng dẫn NETLOAD phải khớp **chính xác**. Các hậu tố target bắt buộc: `C22` (AutoCAD 2022), `C25` (AutoCAD 2025), `G27` (GstarCAD 2027). Ví dụ DProject chỉ AutoCAD 2022: `bin\DProjectC22.dll` → `Dprogram\DProjectC22.dll`.
-8. `Dprogram` portable có cấu trúc **phẳng**, không thêm `AutoCAD2022/` hay thư mục target khác nếu không có quy ước module đặc biệt đã được duyệt; không giữ DLL cũ hoặc tên chung `<ProjectName>.dll` khi module dùng suffix host.
-9. Trước khi nén, và sau khi nén mở ZIP để đối chiếu: thư mục nhánh, `Build_Release.cmd`, `.csproj`, `BuildInfo`, tên DLL, tham số `:TARGET`, `log` và `Dprogram`. Sai bất kỳ mắt xích nào → **PACKAGING QA FAIL, không bàn giao**.
+7. Lấy `AssemblyName` từ `.csproj` hoặc `TargetName` từ project native; basename đầu ra **đúng `<ProjectName>`**, không kèm hậu tố `C22`, `C25`, `G27` hoặc mã CAD tương tự. Mọi nơi trong script, output, staging, portable, manifest và hướng dẫn NETLOAD/APPLOAD phải khớp. Ví dụ: `bin\\DProject.dll` → `Dprogram\\AutoCAD2022\\DProject.dll` (managed); `bin\\DProject.arx` → `Dprogram\\AutoCAD2022\\DProject.arx` (native).
+8. `Dprogram` portable **bắt buộc có thư mục host riêng**: `AutoCAD2022`, `AutoCAD2025`, `GstarCAD2027` theo phạm vi đã duyệt. File cùng tên ở các host khác nhau là hợp lệ; không được ghi đè trong gói. Khi cài, chép **đúng file của host hiện hành** vào `DProgram` runtime dạng phẳng; không bắt CAD đăng ký `Dprogram/<Host>/` như Support Path.
+9. Trước và sau khi nén ZIP, đối chiếu: thư mục nhánh, `Build_Release.cmd`, project, `BuildInfo`, tên artifact không suffix, thư mục portable host, tham số `:TARGET`, `log` và manifest. Sai bất kỳ mắt xích nào → **PACKAGING QA FAIL, không bàn giao**.
 10. Với module đang chỉ duyệt một target, chỉ test/publish target đó và ghi rõ **one approved target**; không xuất hiện tên project, output, Reference hay log của host chưa được duyệt.
 
 **Trạng thái riêng:** `CMD_BYTES_QA`, `CMD_WINDOWS_QA`, `ARTIFACT_NAME_QA`, `PACKAGE_TREE_QA`, `BUILD_RESULT`, `NETLOAD` và `SMOKE_TEST` phải báo riêng PASS/FAIL/NotVerified. `CMD_BYTES_QA=PASS` không suy ra `CMD_WINDOWS_QA=PASS` hoặc `BUILD_RESULT=PASS`.
@@ -164,7 +177,13 @@ endlocal & exit /b %BUILD_EXIT_CODE%
 3. **Kiểm tra trước compiler:** kiểm đủ các CAD target được giao trước khi biên dịch bất kỳ target nào. Kiểm file header được source dùng trực tiếp, file `.props` và `.lib` mà project và các props import cần; báo thiếu/không rỗng bằng `[MISSING]` kèm host, tên file, thư mục dự kiến. Có lỗi: `BUILD ALL: FAIL`, chưa gọi MSBuild, không thay đầu ra đã công bố.
 4. **Trùng tên không bảo đảm trùng nội dung:** khi có nhiều gốc SDK đầy đủ, so SHA-256 các file bắt buộc (ví dụ `rxapi.lib`); đồng nhất có thể chọn ổn định, khác nhau phải báo `[CONFLICT]` và dừng để người dùng xác nhận nguồn. Không chọn ngẫu nhiên hoặc trộn file.
 5. **ZIP nguồn nhẹ:** được phép không chép SDK vào gói nguồn nếu đã khai báo Reference dùng chung, có script preflight/hướng dẫn và ghi build `NotVerified` trước khi chạy Windows. Không dùng SDK từ CAD khác hay file giả để chữa lỗi.
-6. **Build các target:** sau preflight PASS, `Build_All.cmd` gọi đủ các nhánh ARX/GRX thuộc phạm vi, liên tục không `pause` ở script con. Log/exit-code từng host riêng; chỉ publish tất cả output native mới vào `DProgram` khi mọi host PASS. Không sửa Geometry/XData/UI hay mã C# đang chạy để xử lý đường dẫn.
+6. **Build các target:** sau preflight PASS, `Build_All.cmd` gọi đủ các nhánh ARX/GRX thuộc phạm vi, liên tục không `pause` ở script con. Log/exit code từng host độc lập; chỉ publish output native mới vào `Dprogram/<Host>/` khi mọi host PASS. Không gộp file cùng basename từ hai host vào `DProgram` runtime. Không đổi Geometry/XData/UI để sửa đường dẫn.
 7. **Phân biệt chứng cứ:** Reference preflight PASS ≠ build PASS ≠ APPLOAD/runtime PASS. QA theo STD-16/17/18.
 
-**QA:** REF-N01 (SDK nhiều tầng), REF-N02 (thiếu thư mục CAD), REF-N03 (thiếu header), REF-N04 (thiếu thư viện trong props), REF-N05 (hai SDK cùng SHA), REF-N06 (hai SDK khác SHA → FAIL), REF-N07 (build đủ C22/C25/G27), REF-N08 (preflight FAIL không gọi compiler/không ghi đè output), REF-N09 (gói nguồn không nhúng SDK và không tự gán Build PASS).
+**QA:** REF-N01 (SDK nhiều tầng), REF-N02 (thiếu thư mục CAD), REF-N03 (thiếu header), REF-N04 (thiếu thư viện trong props), REF-N05 (hai SDK cùng SHA), REF-N06 (hai SDK khác SHA → FAIL), REF-N07 (build đủ target đã duyệt với basename không suffix CAD), REF-N08 (preflight FAIL không gọi compiler/không ghi đè output), REF-N09 (gói nguồn không nhúng SDK và không tự gán Build PASS).
+
+## Cập nhật 19/11/2026 — Build output không gắn mã host
+
+- Cả `Build_All.cmd` và `Build_Release.cmd` phải giữ basename ứng dụng, không thêm `C22`, `C25`, `G27` hay biến thể host; phần mở rộng `.dll`, `.arx`, `.grx` theo công nghệ và CAD đích.
+- **QA bắt buộc:** `ARTIFACT-H01` không còn tên output có suffix trong project/script/manifest; `ARTIFACT-H02` hai binary khác host cùng tên không ghi đè; `ARTIFACT-H03` runtime nạp đúng host; `REF-M01` managed resolve đúng Reference root theo CAD và không fallback sai host.
+- Không thay đổi hợp đồng màu CMD, pause, log, mã lỗi, preflight hoặc cổng phát hành hiện có.
