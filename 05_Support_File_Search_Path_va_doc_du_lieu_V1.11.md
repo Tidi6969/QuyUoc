@@ -1,7 +1,7 @@
 # DCAD-STD-05 — Support File Search Path và phân giải dữ liệu
 
-**Phiên bản:** 1.14  
-**Cập nhật:** 15/11/2026  
+**Phiên bản:** 1.15  
+**Cập nhật:** 19/11/2026  
 **Mức áp dụng:** Bắt buộc theo tài nguyên mà module sử dụng; Setup/QA kiểm theo phạm vi chức năng được triển khai  
 **Hợp đồng:** `DCAD-DATA-DIR-001` — DIRECT-only và phân giải theo phạm vi DataManifest
 
@@ -147,3 +147,28 @@ Hướng dẫn: Kiểm tra tệp và thư mục tương ứng;
 - Ví dụ DNesting: đăng ký `D:\DCAD\DProgram`, rồi tìm đúng `Dnest\Dnest.exe`; không đăng ký `DProgram\Dnest` thay DProgram và không dò từ root. Đây là hợp đồng riêng DNesting, không cho phép mọi module quét các thư mục con tùy ý.
 - DNesting V49 quy định `DNest_settings.json`, `DNest_cad-command.json`, `DNest_window.json` nằm cạnh đúng `Dnest.exe` đã chọn. DUser vẫn dùng riêng cho `Shared_data.Set` khi chạy trong CAD. Không tự chuyển settings portable về DUser hay áp cách lưu này sang module khác.
 - Trường hợp có nguồn settings/log/job riêng đã công bố phải khai báo rõ trong manifest/hợp đồng module; đó là vị trí được chỉ định, không phải đích dự phòng khi DIRECT lỗi. Không mở rộng ngoại lệ ngầm từ mã legacy. Mã cũ còn nhận PARENT phải ghi không tuân thủ DIRECT-only và chỉ sửa khi có yêu cầu sửa phần mềm.
+
+## 8. SQLite Runtime dùng chung từ DProgram [THEO TÍNH NĂNG]
+
+**Hợp đồng:** `DCAD-SQLITE-RUNTIME-001`. Chỉ áp dụng cho module/chức năng **thực sự sử dụng SQLite**; không mở rộng thành phụ thuộc bắt buộc của toàn hệ thống.
+
+1. **Vị trí chuẩn duy nhất:** `<DProgram DIRECT>\sqlite3.dll`, Windows x64. Lấy đúng thư mục `DProgram` từ Support File Search Path CAD/profile đang dùng theo mục 4, không cố định tên ổ, không suy từ thư mục ARX, root DCAD hoặc thư mục cha. Không tìm DLL tại `System32`, `PATH`, current directory, `AppData`, các thư mục logic khác; **không fallback** khi `DProgram` thiếu/hỏng/xung đột. Không tự copy DLL vào thư mục hệ thống.
+2. **Nạp động có kiểm soát:** Module native sử dụng đường dẫn tuyệt đối đã phân giải để gọi `LoadLibraryExW` (hoặc API tương đương của host) và `GetProcAddress` đối với các hàm `sqlite3_*` cần dùng; kiểm tra module nạp được, đúng kiến trúc/phiên bản đã công bố và đầy đủ entry-point trước khi truy cập DB. Nếu Windows đã nạp module cùng tên, phải kiểm tra đường dẫn DLL thực tế, không mặc nhiên coi là đúng runtime DCAD.
+3. **Không tạo phụ thuộc nạp ARX ngoài ý muốn:** Với cơ chế runtime dùng chung này, project **không liên kết trực tiếp** `WinSQLite3.lib` hoặc `sqlite3.lib` theo cách làm Windows buộc nạp `WinSQLite3.dll`/`sqlite3.dll` ngay khi `ARX LOAD`; không dựa vào `winsqlite3.h` và DLL hệ thống làm SQLite runtime. ARX phải có thể đăng ký/nạp lệnh khi chưa có SQLite nếu phần không dùng DB vẫn hoạt động; chỉ khi chạy chức năng cần DB mới kiểm tra và nạp SQLite.
+4. **Lỗi và thông báo:** Khi thiếu DLL, sai kiến trúc/phiên bản, sai đường dẫn hoặc thiếu symbol, hiển thị rõ `DProgram\sqlite3.dll` và lý do, **dừng đúng chức năng cần SQLite**; không gây crash, không hiển thị lỗi ARX mơ hồ và không làm hỏng dữ liệu. Nếu module không có chức năng nào hoạt động độc lập với SQLite, phải công bố rõ giới hạn của module, nhưng vẫn không lách kiểm tra bằng tìm DLL ở vị trí khác.
+5. **Đọc/ghi DB:** `sqlite3.dll` chỉ là bộ máy xử lý; `*.db` vẫn đọc/ghi tại vị trí theo `DataManifest`, phân giải độc lập theo STD-05. Khi sửa dữ liệu dùng prepared statement/binding, transaction, kiểm tra kết quả, commit/rollback và xử lý khóa/bận; không tự ghi đè hoặc chuyển DB sang thư mục dự phòng. File DB/ảnh/style và schema riêng không tự thay đổi chỉ vì thay SQLite runtime.
+6. **Đóng gói và phiên bản:** Theo STD-03, dùng một DLL chính thức x64 được cấp trong bộ triển khai DCAD, ghi phiên bản/nguồn/SHA-256 và mức tương thích đã kiểm thử; không tự tải/cài ở lần chạy module. Thay DLL dùng chung cần kiểm thử các add-in phụ thuộc và không thay khi host CAD đang mở.
+7. **DataManifest:** Module có dùng SQLite khai báo `sqlite3.dll` là `RuntimeProgram`, `LogicalFolder=DProgram`, `RelativePath=sqlite3.dll`, owner runtime dùng chung, phiên bản/kiến trúc yêu cầu, `Required` và `DefaultBehavior` **theo chức năng**; các DB `*.db` liệt kê riêng theo folder và quyền `ReadWrite` hoặc `ReadOnly` thực tế. Setup chỉ kiểm runtime này khi triển khai module/chức năng có phụ thuộc SQLite.
+
+### 8.1. Ca kiểm thử SQLite bắt buộc cho module áp dụng
+
+| Mã | Điều kiện | Kết quả cần đạt |
+|---|---|---|
+| SQL01 | Chỉ đăng ký `DProgram` DIRECT, `sqlite3.dll` x64 hợp lệ | Nạp đúng DLL từ DProgram, đọc/ghi DB thử nghiệm được |
+| SQL02 | Không có `sqlite3.dll` hoặc thiếu DProgram DIRECT | ARX vẫn nạp/đăng ký lệnh độc lập; chức năng DB cảnh báo đúng và dừng an toàn |
+| SQL03 | Có DLL ở System32/PATH/thư mục ARX nhưng không có tại DProgram | Không dùng các bản DLL ngoài DProgram, không fallback |
+| SQL04 | `DProgram` đăng ký sai (root/entry con), xung đột hai DIRECT hoặc không truy cập được | Cảnh báo theo STD-05, không tìm đường khác |
+| SQL05 | DLL sai kiến trúc, phiên bản không đạt hoặc thiếu API | Báo chính xác thành phần lỗi; chức năng DB không chạy, ARX không crash |
+| SQL06 | Ghi SQLite có Unicode, lỗi quyền ghi, DB khóa/bận hoặc transaction lỗi | Đọc/ghi đúng khi hợp lệ; lỗi rollback, không mất bản ghi đang có |
+| SQL07 | Hai add-in cùng dùng SQLite; cập nhật runtime khi CAD đang mở | Cùng dùng runtime được quản lý; không thay DLL đang sử dụng; kiểm tương thích trước cập nhật |
+| SQL08 | Kiểm tra phụ thuộc file ARX và thử nạp trên đúng CAD host | Không nhập trực tiếp `WinSQLite3.dll`/`sqlite3.dll` trong import table; ARX LOAD và thao tác DB có kết quả riêng PASS/FAIL/NotVerified |
