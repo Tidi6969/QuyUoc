@@ -2,6 +2,8 @@
 
 ## Cập nhật trực tuyến 20/11/2026 — Quy tắc bảng dữ liệu dùng chung
 
+- Bổ sung `DCAD-UI-CONTRACT-001` (mục 13A): Form ID, Control ID, schema 2, dữ liệu delta và adapter C#/C++; chỉ áp dụng khi module tích hợp UI Studio. Không sửa các thuật toán CAD.
+
 - STD-05 v1.17: hợp đồng `DCAD-SQLITE-GRID-001`, bắt buộc SQLite map bản ghi/cột theo khóa, kiểm tra từng ô, không dùng chuỗi TAB/CSV làm bảng, ghi có transaction và không xóa-chèn hàng loạt để sửa một ô; không thay hợp đồng nạp `DProgram\\sqlite3.dll` dùng chung.
 - STD-13 v1.8: hợp đồng `DCAD-GRID-001` áp dụng cho **mọi module và mọi bảng có thể chỉnh sửa**, không phụ thuộc SQLite hay công nghệ control cụ thể.
 - STD-16 v1.20: bộ test GRID01–GRID10 và SQL09–SQL15, tách QA logic, UI/CAD runtime và Build.
@@ -29,6 +31,7 @@
 | 11 | [Gap, Dia, Depth và Offset](11_Gap_Dia_Depth_va_Offset.md) | Theo tính năng |
 | 12 | [XData/XRecord và khôi phục hình học dùng chung](12_Ghi_doc_XData_va_XRecord.md) | Bắt buộc khi module ghi/đọc XData hoặc tham gia Drestore |
 | 13 | [Giao diện, icon và Preview](13_Giao_dien_icon_va_Preview.md) | Theo tính năng |
+| 13A | [DCAD UI Contract — Đồng bộ bố cục C# / C++](13A_DCAD_UI_Contract_CSharp_CPP.md) | Bắt buộc khi dùng DCAD UI Studio |
 | 14 | [Transaction, Undo và hiệu năng](14_Transaction_Undo_va_hieu_nang.md) | Bắt buộc theo thao tác |
 | 15 | [Xử lý lỗi và HARD STOP](15_Xu_ly_loi_va_HARD_STOP.md) | Bắt buộc |
 | 16 | [DataManifest, BuildInfo và QA](16_DataManifest_BuildInfo_va_QA.md) | Bắt buộc |
