@@ -1,11 +1,13 @@
 # DCAD-STD-13 — Giao diện, icon và Preview
 
-**Phiên bản:** 1.8
+**Phiên bản:** 1.9
 **Cập nhật:** 20/11/2026  
 **Mức áp dụng:** Theo tính năng
 
 
 ## Giao diện
+
+**Bổ sung cho module tích hợp DCAD UI Studio:** áp dụng [DCAD-UI-CONTRACT-001](13A_DCAD_UI_Contract_CSharp_CPP.md) về định danh Form/Control, schema 2, runtime adapter và kiểm thử bố cục. Không áp đặt cho module chưa tích hợp, không thay quy tắc UI/Preview hiện hành.
 
 - Bố cục nhóm các trường theo nghiệp vụ; không nhồi nhiều chế độ không dùng. Label, tooltip, lỗi và thông báo phải theo quy chuẩn đa ngôn ngữ.
 - Tách UI handler khỏi business logic, validation, đọc/ghi dữ liệu và vẽ CAD.
