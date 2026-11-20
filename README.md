@@ -3,7 +3,7 @@
 - **Cập nhật trực tuyến 20/11/2026 — Bảng dữ liệu có cấu trúc:** STD-05 v1.17 bổ sung `DCAD-SQLITE-GRID-001` (đọc/ghi SQLite theo đúng bản ghi/cột, khóa ổn định, prepared statement, transaction); STD-13 v1.8 bổ sung `DCAD-GRID-001` dùng chung cho mọi module và mọi nguồn bảng, không tạo ô EDIT dạng TAB giả bảng; STD-16 v1.20 bổ sung GRID01–GRID10 và SQL09–SQL15. Vẫn áp dụng `DProgram\\sqlite3.dll` dùng chung theo STD-03/05. Chỉ sửa tài liệu trực tuyến, ZIP V1.17 chưa được cập nhật.
 
 
-Tài liệu trực tuyến cập nhật 19/11/2026 (Reference và tên output không suffix CAD); ZIP phát hành gần nhất vẫn là bản lưu V1.17. Xem [mục lục 00–18](00_MUC_LUC.md).
+Tài liệu trực tuyến cập nhật 19/11/2026 (Reference và tên output không suffix CAD); ZIP phát hành gần nhất vẫn là bản lưu V1.17. Xem [mục lục và phụ lục 13A](00_MUC_LUC.md).
 
 - Support Path: tên thư mục cuối phải khớp DData/DUser/DProgram/Dicon/Dhelp; không bắt đủ năm, cùng root hoặc vị trí cuối danh sách. Module/Setup chỉ kiểm phụ thuộc thực tế; đường dẫn con ứng dụng khai báo riêng (STD-05/06).
 - Phiên bản phần mềm: không chỉ định baseline thì lấy bản gần nhất đã lưu; không chỉ định version đích thì max đã lưu + 1. Giữ các ZIP/changelog cũ, thêm bản mới, đồng bộ README module và DCAD; tách mới nhất/đã nghiệm thu (STD-01/17).
@@ -11,6 +11,7 @@ Tài liệu trực tuyến cập nhật 19/11/2026 (Reference và tên output kh
 - Lần cập nhật này chỉ sửa tài liệu, không sửa hoặc build lại phần mềm CAD. Bản tài liệu trước có thể xem trong lịch sử Git; các ZIP tài liệu đã lưu được giữ nguyên.
 - **STD-12 v1.6:** chuẩn MASTER XData dựa trên Dtscr1 V84 cho Drestore; giữ DPunch V381 trong nhánh reader legacy. [Chi tiết quy ước 12](12_Ghi_doc_XData_va_XRecord.md).
 - **STD-19:** đã rút và xóa tài liệu hiện hành ngày 17/11/2026 theo yêu cầu chủ dự án. Nội dung cũ chỉ còn trong lịch sử Git, không còn là quy ước đang áp dụng.
+- **DCAD-UI-CONTRACT-001 (13A):** Chuẩn đồng bộ Form/Control ID, JSON schema 2 và adapter C#/C++ khi tích hợp DCAD UI Studio. [Quy ước 13A](13A_DCAD_UI_Contract_CSharp_CPP.md).
 - **STD-18:** AI suy nghĩ trước khi code, ưu tiên đơn giản, sửa tối thiểu và kiểm chứng theo mục tiêu. [Chi tiết quy ước 18](18_Karpathy_Guidelines_cho_AI_lap_trinh.md).
 - Bản V1.14 chỉ bổ sung/sửa tài liệu; giữ nguyên ZIP V1.13 và lịch sử trước đó. Không sửa hoặc build lại phần mềm CAD.
 - **STD-05/09/11:** DAT `(UP)` hiển thị `UP`, Hole Normal vẽ `UP_O`, Wire W/T vẽ `UP_W`; giữ nội dung DAT và mã có `_` như `PH_P`. Không tự đổi màu layer cũ.
