@@ -1,8 +1,8 @@
 # DCAD-STD-18 — Quy tắc AI lập trình theo 4 nguyên tắc Karpathy
 
 **Mã quy ước:** 18  
-**Phiên bản:** 1.1  
-**Ngày cập nhật:** 14/11/2026  
+**Phiên bản:** 1.2  
+**Ngày cập nhật:** 24/11/2026  
 **Mức áp dụng:** BẮT BUỘC với mọi yêu cầu AI phân tích, viết, sửa, gỡ lỗi hoặc rà soát mã nguồn của DCAD.  
 **Nguồn tham khảo:** https://github.com/multica-ai/andrej-karpathy-skills (MIT), dự án diễn giải các nhận xét của Andrej Karpathy về lỗi thường gặp của AI khi viết code. Nội dung dưới đây được điều chỉnh cho hệ thống DCAD, không sao chép toàn bộ tài liệu gốc.
 
@@ -73,6 +73,42 @@ Nếu phát hiện lỗi ngoài phạm vi, báo hiện tượng và rủi ro; kh
 
 **KIỂM CHỨNG:** thử tối thiểu luồng chưa có dữ liệu, đã thiết lập, dữ liệu thiếu và dữ liệu hợp lệ; kiểm tra thông báo đúng trạng thái. Với thay đổi giao diện, đối chiếu ảnh chụp hoặc kết quả UI thực tế khi có môi trường.
 
+## 5.2. CỔNG RÀ SOÁT VÀ KIỂM THỬ CUỐI CÙNG (BẮT BUỘC)
+
+Các cổng dưới đây bổ sung cho mục 2–5 và STD-01/15/16/17, áp dụng **trong phạm vi thay đổi và các phụ thuộc trực tiếp**, không yêu cầu tự ý mở rộng phạm vi sửa.
+
+**AI-14 — Khảo sát luồng và tình huống lỗi trước khi code**
+
+- Trước khi sửa, truy vết đường đi dữ liệu và điều khiển qua các hàm/module liên quan: đầu vào, đầu ra, caller/callee, file dùng chung, trạng thái, bước build/phát hành khi có liên quan.
+- Liệt kê các tình huống có thể thất bại trong phạm vi tác động: thiếu/sai dữ liệu, lỗi phụ thuộc, thao tác thực hiện dở, dữ liệu hoặc file không đồng bộ, lỗi quyền truy cập và lỗi phục hồi nếu áp dụng.
+- Xác định hành vi mong đợi và mức ảnh hưởng; không coi việc đọc riêng hàm đang sửa là đã khảo sát đủ toàn bộ luồng liên quan.
+
+**AI-15 — Rà soát riêng sau khi hoàn thành code**
+
+- Phải có **một lượt review riêng sau khi thực hiện xong thay đổi**, đọc lại code như một người kiểm tra: so luồng trước/sau, đối chiếu hợp đồng và từng dòng diff với mục tiêu, tìm lỗi logic, nhánh lỗi bị bỏ sót, thay đổi ngoài phạm vi và nguy cơ hồi quy.
+- “Rà soát riêng” nghĩa là lượt kiểm tra độc lập với thao tác viết/sửa, **không bắt buộc phải có AI hoặc người thứ hai**.
+- Ghi vấn đề phát hiện, cách xử lý và phần chưa xác minh; không mặc định PASS chỉ vì tác giả vừa viết mã thấy hợp lý.
+
+**AI-16 — Ma trận kiểm thử theo phạm vi ảnh hưởng**
+
+- Với mỗi thay đổi, lập và đối chiếu các ca **hợp lệ, không hợp lệ, giá trị biên, lỗi gián đoạn/thao tác dở và hồi quy chức năng giữ nguyên** khi có liên quan; ca không áp dụng phải ghi lý do.
+- Với xử lý nhiều file, phát hành hoặc cập nhật: thử/tư duy kiểm chứng trường hợp chỉ một phần thao tác thành công và kết quả phục hồi; với bảo mật: có ca sửa đổi dữ liệu, sai chữ ký/khóa hoặc thiếu tài nguyên tương ứng phạm vi.
+- Mỗi ca có **đầu vào/điều kiện → expected → actual → PASS/FAIL/NotVerified → bằng chứng/host**. Review mã nguồn hoặc test trên host khác không thay cho kiểm thử Windows/CAD thực tế.
+
+**AI-17 — Kiểm thử lại sau thay đổi cuối cùng**
+
+- Sau **mọi lần sửa tiếp theo** (kể cả sửa phát hiện trong review), phải kiểm tra lại diff và chạy lại các phép thử/cổng bị ảnh hưởng trên **chính bộ nguồn cuối cùng** trước khi đóng gói.
+- Kết quả PASS của nguồn trước khi sửa không tự động có hiệu lực cho nguồn mới; phải có bằng chứng tái sử dụng được hoặc kiểm thử lại phù hợp.
+- Không dùng việc “đã review ở vòng trước” để bỏ qua rà soát cuối cùng.
+
+**AI-18 — Cổng bàn giao có chứng cứ**
+
+- Trước khi bàn giao, phải có: baseline/version đích; phạm vi đã sửa và phần giữ nguyên; danh sách file thay đổi và lý do; ma trận AI-14–AI-17 cùng ca kiểm thử; Build/Load/Runtime riêng cho từng host áp dụng; KnownIssues/NotVerified và bằng chứng tương ứng.
+- **FAIL của cổng bắt buộc → không phát hành như bản đạt.** Nếu thiếu môi trường và có NotVerified, được bàn giao **bản nguồn để kiểm thử** khi rõ trạng thái; **không được gọi là bản production, nghiệm thu hoặc hoạt động PASS** khi cổng thực tế chưa được chứng minh.
+- Không tự ý tăng phạm vi sửa chỉ để biến một cổng ngoài yêu cầu thành PASS; xử lý theo STD-01/15/16/17.
+
+**Quy tắc chốt:** Rà soát và kiểm thử phải căn cứ vào **bản nguồn cuối cùng**, thực hiện **trước** khi kết luận và đóng gói. Nếu phát hiện lỗi phải sửa đúng nguyên nhân rồi lặp lại các cổng bị ảnh hưởng; yêu cầu “rà soát lại” vẫn có thể tạo phiên bản mới khi phát hiện và được phép sửa, theo STD-01/17.
+
 ## 6. Quy trình 6 bước áp dụng cho AI
 
 | Bước | Công việc | Cổng kiểm chứng |
@@ -81,7 +117,7 @@ Nếu phát hiện lỗi ngoài phạm vi, báo hiện tượng và rủi ro; kh
 | 2. Định mục tiêu | Viết tiêu chí đạt và bộ ca kiểm tra tối thiểu | Có expected/actual có thể so sánh |
 | 3. Chọn phương án | Đề xuất cách đơn giản, ít đụng chạm nhất | Không thêm chức năng ngoài phạm vi |
 | 4. Thực hiện | Chỉ sửa phần được giao sau khi được cho phép | Từng dòng diff có lý do |
-| 5. Kiểm tra | Test hồi quy, build/runtime theo đúng host và phạm vi | PASS/FAIL/NotVerified có bằng chứng |
+| 5. Kiểm tra | Rà soát riêng, kiểm thử ca lỗi/biên/hồi quy và chạy lại kiểm tra sau lần sửa cuối | PASS/FAIL/NotVerified có bằng chứng trên nguồn cuối cùng |
 | 6. Bàn giao | Mô tả phần đã đổi, đã giữ nguyên và chưa xác minh | Tuân thủ STD-01/16/17 |
 
 **HARD STOP:** không xác định được baseline thiết yếu; phát hiện nguy cơ ghi đè bản cũ; khác schema/host; bug lặp chưa truy được nguyên nhân; hoặc cổng kiểm thử bắt buộc FAIL. Xử lý theo STD-01/15/16/17.
@@ -103,6 +139,11 @@ Nếu phát hiện lỗi ngoài phạm vi, báo hiện tượng và rủi ro; kh
 | AI-11 | Bảo toàn schema, dữ liệu, UI và hợp đồng liên quan | Ma trận ảnh hưởng STD-01/16 |
 | AI-12 | Minh bạch lỗi, giới hạn, tình trạng chưa kiểm chứng | PASS/FAIL/NotVerified và ghi chú |
 | AI-13 | Chuỗi giao diện dùng ngôn ngữ nghiệp vụ, không sao chép ký hiệu trao đổi; thông báo đúng trạng thái | Rà chuỗi và kiểm thử UI các trạng thái |
+| AI-14 | Khảo sát đủ luồng liên quan và tình huống lỗi trước khi code | Sơ đồ/ghi chú luồng, rủi ro và expected của nhánh lỗi |
+| AI-15 | Review riêng sau khi code hoàn tất, rà diff và tác động | Kết quả review, danh sách lỗi tìm được và xử lý |
+| AI-16 | Ma trận ca hợp lệ, không hợp lệ, biên, gián đoạn và hồi quy theo phạm vi | Expected/actual/status/bằng chứng/host từng ca |
+| AI-17 | Test lại các cổng bị ảnh hưởng sau lần sửa cuối trên đúng nguồn bàn giao | Log/đối chiếu nguồn cuối cùng, không dùng PASS cũ |
+| AI-18 | Chốt bàn giao có chứng cứ và phân biệt bản nguồn với bản đạt nghiệm thu | Phiên bản, diff, QA, KnownIssues, Build/Load/Runtime, trạng thái phát hành |
 
 Kết quả sử dụng `PASS`, `FAIL`, `NotVerified` hoặc `N/A` theo điều kiện áp dụng, có lý do/bằng chứng. Việc đọc hoặc bổ sung quy ước này **không có nghĩa phần mềm đã đạt chuẩn**.
 
@@ -110,7 +151,7 @@ Kết quả sử dụng `PASS`, `FAIL`, `NotVerified` hoặc `N/A` theo điều 
 
 - **STD-01:** quy trình, quyền sửa mã, baseline và phiên bản.
 - **STD-02–15:** hợp đồng kiến trúc, nghiệp vụ CAD và an toàn theo tính năng.
-- **STD-16:** cập nhật ma trận QA áp dụng STD-18/AI-01–AI-12.
+- **STD-16:** DataManifest, BuildInfo, ma trận QA và bằng chứng nghiệm thu; áp dụng các cổng STD-18/AI-01–AI-18 theo phạm vi.
 - **STD-17:** tự chọn baseline, tăng version phần mềm, quản lý ZIP/GitHub và ghi nhận nghiệm thu OK.
 
 **Hiệu lực:** từ bản bộ quy ước **V1.13**. Chỉ bổ sung quy tắc làm việc với AI; không tự thay đổi code hoặc tăng version của add-in CAD.
