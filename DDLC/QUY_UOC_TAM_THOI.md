@@ -1,4 +1,4 @@
-# DDLC – Quy ước tạm thời V0.1
+# DDLC – Quy ước tạm thời V0.2
 
 - Ngày lập: 2026-11-24
 - Trạng thái: DRAFT – phương án đã thống nhất để nghiên cứu, triển khai từng bước; chưa phải tiêu chuẩn chính thức.
@@ -155,18 +155,18 @@ Chọn theo tác động thực tế, không chỉ theo tên công việc; có t
 
 ## 9. Bộ tiêu chuẩn triển khai lần lượt
 
-| Mã | Nội dung | Trạng thái |
-|---|---|---|
-| DDLC-01 | Nguyên tắc và kiến trúc tổng thể | Chờ thiết kế |
-| DDLC-02 | Quản lý quy ước | Chờ thiết kế |
-| DDLC-03 | Quản lý vòng đời phát triển | Chờ thiết kế |
-| DDLC-04 | Quy trình và thủ tục chi tiết | Chờ thiết kế |
-| DDLC-05 | Quản lý AI Agent và quyền hạn | Chờ thiết kế |
-| DDLC-06 | Quản lý dữ liệu và đặc tả | Chờ thiết kế |
-| DDLC-07 | Kiểm tra và kiểm soát chất lượng | Chờ thiết kế |
-| DDLC-08 | Quản lý mã nguồn và môi trường build | Chờ thiết kế |
-| DDLC-09 | Quản lý nghiệm thu và phát hành | Chờ thiết kế |
-| DDLC-10 | Quản lý lịch sử, bảo trì và cải tiến | Chờ thiết kế |
+| Mã | Nội dung | Phiên bản thiết kế | Trạng thái | Nghiệm thu | Chuyển giao |
+|---|---|---|---|---|---|
+| DDLC-01 | Nguyên tắc và kiến trúc tổng thể | Chưa có | READY | Chưa | Chưa |
+| DDLC-02 | Quản lý quy ước | Chưa có | NOT_STARTED | Chưa | Chưa |
+| DDLC-03 | Quản lý vòng đời phát triển | Chưa có | NOT_STARTED | Chưa | Chưa |
+| DDLC-04 | Quy trình và thủ tục chi tiết | Chưa có | NOT_STARTED | Chưa | Chưa |
+| DDLC-05 | Quản lý AI Agent và quyền hạn | Chưa có | NOT_STARTED | Chưa | Chưa |
+| DDLC-06 | Quản lý dữ liệu và đặc tả | Chưa có | NOT_STARTED | Chưa | Chưa |
+| DDLC-07 | Kiểm tra và kiểm soát chất lượng | Chưa có | NOT_STARTED | Chưa | Chưa |
+| DDLC-08 | Quản lý mã nguồn và môi trường build | Chưa có | NOT_STARTED | Chưa | Chưa |
+| DDLC-09 | Quản lý nghiệm thu và phát hành | Chưa có | NOT_STARTED | Chưa | Chưa |
+| DDLC-10 | Quản lý lịch sử, bảo trì và cải tiến | Chưa có | NOT_STARTED | Chưa | Chưa |
 
 Thứ tự: nghiên cứu, phân tích, đặc tả, thiết kế, review và phê duyệt từng bộ; lưu phiên bản và trạng thái; không làm đồng loạt hoặc tự coi dự thảo là đã phê duyệt. Nếu có phụ thuộc ngược, ghi nhận và cập nhật qua quy trình quản lý thay đổi.
 
@@ -174,7 +174,38 @@ Tài liệu nền dự kiến: Constitution.md, AGENTS.md, Rules.json, Workflow.
 
 Lộ trình hệ thống: (1) chuẩn hóa tiêu chuẩn DDLC; (2) database và Manager; (3) Engine/Quality Gates; (4) tích hợp AI, Git, Build, Test; (5) nghiệm thu, release, backup và bảo trì. Ưu tiên thử nghiệm end-to-end với một dự án nhỏ trước khi mở rộng.
 
-## 10. Trạng thái hiện tại
+## 10. Quản lý tiến độ thiết kế thực tế (Design Progress Control)
 
-- V0.1: lưu phương án tổng thể từ thảo luận, chưa triển khai phần mềm, chưa xác minh tính khả thi của từng cơ chế.
-- Bước tiếp theo: DDLC-01 – nguyên tắc và kiến trúc tổng thể. Chỉ chuyển bước sau khi người quản lý thống nhất kết quả.
+Áp dụng ngay cho chính dự án xây dựng DDLC, trước khi có DDLCManager. GitHub là nguồn trạng thái chính thức; đọc lại trước mỗi phiên làm việc, cập nhật ngay sau mỗi mốc thực sự và kiểm tra lại sau khi ghi. Không suy diễn trạng thái từ lịch sử chat, không tự đặt phần trăm theo cảm tính. Bảng tại mục 9 là bảng tiến độ chuẩn duy nhất; tổng tiến độ nghiệm thu = số bộ có nghiệm thu còn hiệu lực / 10. Tách rõ thiết kế, nghiệm thu và chuyển giao. Không tính bản nháp là hoàn thành.
+
+### 10.1. Trạng thái
+
+- NOT_STARTED: chưa bắt đầu; READY: đủ điều kiện để bắt đầu nhưng chưa thực hiện; IN_PROGRESS: đang thực hiện; REVIEW: đang rà soát; REVISION_REQUIRED: cần sửa/cải tiến; WAITING_APPROVAL: chờ nghiệm thu; APPROVED: đã được chủ sở hữu nghiệm thu đúng phiên bản; HANDED_OVER: đã được chủ sở hữu cho phép chuyển giao đúng phiên bản sang bước kế tiếp; BLOCKED: vướng điều kiện chưa giải quyết; REOPENED: mở lại hạng mục đã nghiệm thu.
+- Mỗi hạng mục ghi mã, phiên bản tài liệu, trạng thái, các công việc con (nếu đã xác định), kết quả kiểm tra/bằng chứng, vấn đề tồn tại, nghiệm thu, người duyệt, thời điểm duyệt, phạm vi/phiên bản được duyệt, quyền chuyển giao, đích chuyển giao và hành động tiếp theo. Chưa có thì ghi rõ chưa có, không tạo bằng chứng giả.
+- Chỉ một bộ tiêu chuẩn được triển khai chính theo thứ tự DDLC-01 đến DDLC-10, trừ khi người quản lý phê duyệt ngoại lệ. READY không đồng nghĩa IN_PROGRESS.
+
+### 10.2. Cổng nghiệm thu và chuyển giao bắt buộc
+
+1. Trước mỗi bước/cải tiến, đọc tiến độ và baseline; trình mục tiêu, phạm vi, kết quả hiện tại, vấn đề và phương án tiếp theo. Không triển khai bước/cải tiến tiếp theo nếu chưa được anh (Product Owner/Admin) xác nhận.
+2. Khi hoàn thành bản thiết kế, rà soát so với yêu cầu/quy ước, ghi phiên bản, bằng chứng và vấn đề chưa xử lý; chuyển WAITING_APPROVAL, không tự nghiệm thu.
+3. Trình báo cáo nghiệm thu: đã thực hiện, chưa thực hiện, nội dung thay đổi, phạm vi ảnh hưởng, kiểm tra thực tế và hạn chế; đề nghị xác nhận nghiệm thu phiên bản cụ thể.
+4. Nghiệm thu và cho phép chuyển giao là hai quyết định riêng. Có thể ghi trong cùng một xác nhận của người quản lý nếu nêu rõ cả hai; không suy diễn việc đồng ý nội dung là đồng ý chuyển bước. APPROVED chưa có quyền chuyển giao thì dừng tại đó.
+5. Chỉ sau xác nhận chuyển giao rõ ràng mới ghi HANDED_OVER, cập nhật mục 9, ghi nhật ký, và mở bước kế tiếp ở READY/IN_PROGRESS theo phạm vi được duyệt. Không tự chọn, tự duyệt hoặc tự triển khai bước sau. Không lấy sự im lặng làm phê duyệt.
+6. Nếu từ chối/nghiệm thu không đạt: ghi lý do, REVISION_REQUIRED/BLOCKED; trình phương án cải tiến để xác nhận trước khi thực hiện, rà soát lại và trình nghiệm thu lại. Không sửa chắp vá.
+7. Nếu sửa một hạng mục đã duyệt: lập yêu cầu cải tiến, ghi phiên bản gốc và phạm vi ảnh hưởng, xin phép trước khi mở lại/triển khai; khi thay đổi thực tế ảnh hưởng nội dung đã duyệt thì vô hiệu hóa nghiệm thu/chuyển giao cũ đối với phần bị ảnh hưởng, đánh dấu các bước phụ thuộc cần rà soát lại và nghiệm thu lại phiên bản mới. Không xóa lịch sử cũ.
+8. Mỗi lần cập nhật ghi nhật ký: ngày giờ, hạng mục, phiên bản trước/sau, trạng thái trước/sau, lý do, bằng chứng/commit liên quan, người xác nhận và nội dung xác nhận thực tế (nếu có), bước tiếp theo được phép. Không ghi đã duyệt nếu chưa có xác nhận. Git history bảo tồn các lần cập nhật; không sửa lịch sử để làm sai lệch tiến độ.
+9. Đây là quy trình kiểm soát thủ công qua GitHub và AI ở giai đoạn hiện tại, chưa có phần mềm cưỡng chế tự động. Khi xây DDLC Engine, các cổng này phải được kiểm tra bằng quyền hạn, phiên bản và bằng chứng.
+
+### 10.3. Trạng thái hiện tại
+
+- Bản quy ước tạm thời V0.2: phương án tổng thể và cơ chế theo dõi tiến độ; chưa phải tiêu chuẩn DDLC đã nghiệm thu.
+- Số bộ đã nghiệm thu: 0/10 (0% theo số lượng bộ); số bộ đã chuyển giao: 0/10.
+- Bước kế tiếp: DDLC-01 – Nguyên tắc và kiến trúc tổng thể; READY, chưa có bản thiết kế chi tiết, chưa nghiệm thu, chưa được phép chuyển giao. Chưa bắt đầu lập trình DDLCManager.
+- Hành động tiếp theo: xin xác nhận bắt đầu DDLC-01; sau khi được phép, nghiên cứu và thiết kế trong phạm vi đã duyệt.
+
+### 10.4. Nhật ký tiến độ và quyết định
+
+| Ngày | Hạng mục | Phiên bản | Sự kiện | Nghiệm thu | Chuyển giao |
+|---|---|---|---|---|---|
+| 2026-11-24 | DDLC tổng thể | V0.1 | Lưu bản dự thảo tổng thể; 10 bộ chưa thiết kế | Chưa | Chưa |
+| 2026-11-24 | DDLC tổng thể | V0.2 | Bổ sung theo dõi tiến độ thực tế, cổng xác nhận trước mỗi bước/cải tiến và chuyển giao theo yêu cầu người quản lý; DDLC-01 READY | Chưa | Chưa |
