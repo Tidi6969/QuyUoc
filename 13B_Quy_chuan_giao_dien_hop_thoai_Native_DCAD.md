@@ -1,8 +1,9 @@
 # DCAD-STD-13B — Quy chuẩn kiến trúc và trình bày hộp thoại Native
 
 **Mã chuẩn:** DCAD-NATIVE-UI-001  
-**Phiên bản tài liệu:** 1.0  
+**Phiên bản tài liệu:** 1.1  
 **Ngày ban hành:** 24/11/2026  
+**Cập nhật:** 24/11/2026 — bổ sung resize/redraw chống lưu ảnh.  
 **Cơ sở tham chiếu:** Dtscr V118, `Dtscr-AutoCAD2022-V118/src/Dtscr.rc`, `src/PaletteWorkspace.h`, `src/ThemeStoreV118.h`.  
 **Phạm vi:** Các hộp thoại, form cài đặt và workspace do DCAD tự xây dựng. Bắt buộc đối với **hộp thoại native mới hoặc phần giao diện native được giao thiết kế lại**. Không bắt buộc hồi tố những module đã nghiệm thu, không tự cấp quyền sửa mã ngoài yêu cầu.  
 **Mức áp dụng:** (A) Bắt buộc; (B) Bắt buộc khi có tính năng; (C) Linh động theo nghiệp vụ.
@@ -62,6 +63,16 @@ Hộp thoại native phải phân định rõ **trách nhiệm**, dù lớp/hàm
 5. Không được dùng co giãn để làm cột/nút nhỏ đến mức mất nhãn, mất dữ liệu hoặc không thể click; ưu tiên min-size, cuộn đúng cách hoặc thu gọn bố cục có quy tắc.
 6. Bảng, preview và vùng phụ phải lấp khoảng trống có chủ đích; không để diện tích trống khổng lồ chỉ vì kích thước hộp thoại bị phóng lớn.
 7. Cửa sổ kích thước khác hoặc bản dịch dài hơn không được khiến nhãn chồng lên giá trị. Đo chữ bằng font thực; có tooltip hoặc cuộn khi nội dung không thể hiển thị hết.
+
+### 5.1. Resize và chống lưu ảnh (A — bắt buộc với cửa sổ co giãn)
+
+1. **Tính → bố trí → vẽ:** tính toàn bộ vùng và vị trí control theo client area/DPI trước khi áp dụng; chỉ cập nhật vị trí/kích thước thực sự đổi. Không để paint xen giữa các bước bố trí từng control. Không nạp lại dữ liệu, thay lựa chọn, reset editor hoặc ghi DB do resize.
+2. Với Win32 nhiều HWND con cùng parent, ưu tiên `BeginDeferWindowPos / DeferWindowPos / EndDeferWindowPos` để áp dụng theo lô; dùng cờ không kích hoạt/đổi Z-order và hạn chế redraw trung gian khi phù hợp. Kiểm tra kết quả API; nếu không áp dụng được theo lô, bố trí lại đầy đủ từ cùng layout rồi redraw, không để UI ở trạng thái nửa cũ nửa mới. Công nghệ native khác được dùng cơ chế tương đương.
+3. Bảo đảm clipping giữa parent và child/sibling ở nơi phù hợp (`WS_CLIPCHILDREN`, `WS_CLIPSIBLINGS` với Win32); không vẽ nền lên control con. Không giữ pixel cũ khi kích thước/vị trí thay đổi; làm mới cả vùng vừa lộ và vùng control mới. Không dùng `MoveWindow(..., TRUE)` tuần tự cho toàn bộ control trong mỗi lượt resize nếu làm phát sinh redraw riêng lẻ.
+4. Vùng tự vẽ phải phủ kín nền trong vùng invalid, dùng double buffering/dirty region khi cần; tôn trọng clipping, vòng đời DC/bitmap/brush, không giữ ảnh chụp cũ như nguồn dữ liệu. Control native dùng double buffering do control hỗ trợ (ví dụ ListView); không bật chế độ compositing toàn host CAD một cách mặc định.
+5. Sau khi bố trí xong, yêu cầu redraw đồng bộ parent và child, gồm phần non-client nếu bị thay đổi (ví dụ `RedrawWindow` với `RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_FRAME` theo nhu cầu). Trong lúc kéo, ưu tiên gộp invalidation và để message loop xử lý; khi kết thúc kéo (`WM_EXITSIZEMOVE`), maximize/restore hoặc đổi DPI, bảo đảm có lượt vẽ hoàn chỉnh, không gọi redraw đệ quy.
+6. Giữ focus, caret, giá trị chưa lưu, lựa chọn hàng, scroll và định danh dữ liệu khi thay đổi hình học; không ép cập nhật lại nội dung hay chiều rộng cột không cần thiết. Không dùng tắt/bật redraw, ẩn/hiện cả form hoặc timer để che lỗi; nếu cần tạm ngăn redraw trong phạm vi hẹp phải khôi phục chắc chắn kể cả khi lỗi.
+7. **Điều kiện đạt:** kéo rộng/hẹp liên tục, đổi chiều kéo, maximize/restore nhiều lần, đổi DPI (nếu host hỗ trợ), kéo cột và thao tác khi editor đang có dữ liệu chưa lưu: không lưu ảnh cũ, nhân bản nút/chữ, nhòe viền, chồng control, mất focus hoặc nhấp nháy bất thường. Kiểm thử trực tiếp trong CAD, có ảnh/video hoặc log thao tác; kiểm thử layout mô phỏng không chứng minh chất lượng repaint.
 
 ## 6. Bộ thiết kế giao diện dùng chung (A)
 
@@ -143,7 +154,7 @@ Khi chỉ thay đổi thông số giao diện đã được layout engine hỗ t
 | **NUI-02** | Mở/đóng form trên CAD host | Không crash, không thay cửa sổ CAD chính |
 | **NUI-03** | Logo/title/resource | Icon DCAD đúng, nhúng, không phụ thuộc file ngoài |
 | **NUI-04** | Kích thước khởi đầu / min / max | Nội dung vừa màn hình, không quá cỡ hoặc mất nút |
-| **NUI-05** | Resize, maximize, restore | Không chồng/mất control; không vùng trắng vô lý |
+| **NUI-05** | Resize, maximize, restore | Không chồng/mất control; không vùng trắng vô lý; không lưu ảnh/nhân bản/nhòe viền |
 | **NUI-06** | DPI 100/125/150%, đa màn hình | Chữ và control đọc/chọn được; nêu giới hạn DPI động nếu có |
 | **NUI-07** | Theme và trạng thái tương tác | Normal/hover/focus/disabled/selected/error rõ |
 | **NUI-08** | Unicode và đa ngôn ngữ | Chữ không lỗi font; label dài không bị cắt làm sai nghĩa |
@@ -155,6 +166,7 @@ Khi chỉ thay đổi thông số giao diện đã được layout engine hỗ t
 | **NUI-14** | Modal/modeless/palette (nếu có) | Đúng command context và vòng đời CAD |
 | **NUI-15** | So sánh mẫu được duyệt | Các khác biệt có lý do, không tự đổi layout/style |
 | **NUI-16** | Build/APPLOAD/runtime từng host | Báo trạng thái và bằng chứng riêng; không suy diễn PASS |
+| **NUI-17** | Kéo giãn liên tục, đảo chiều, maximize/restore lặp lại, kéo cột, DPI khi có hỗ trợ; editor đang dirty | Không ghosting, nhấp nháy bất thường, mất focus/caret, đổi dữ liệu hoặc khóa hàng; có bằng chứng UI thực tế trong CAD. |
 
 Với ca không áp dụng: ghi `N/A` và lý do. Với môi trường chưa thử: ghi **NotVerified**, không ghi PASS. Mọi thay đổi phải tuân thủ STD-18.
 
