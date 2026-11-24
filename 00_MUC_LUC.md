@@ -1,4 +1,9 @@
-# BỘ TIÊU CHUẨN DCAD — V1.17
+# BỘ TIÊU CHUẨN DCAD — V1.18
+
+## Cập nhật trực tuyến 24/11/2026 — Bổ sung quy chuẩn hộp thoại native
+
+- Thêm **DCAD-STD-13B / DCAD-NATIVE-UI-001 v1.0**, dựa trên Dtscr V118: kiến trúc bắt buộc, tính năng có điều kiện và bố cục linh động; không thay STD-13/13A và không áp dụng hồi tố hàng loạt.
+- Phiên bản mục lục trực tuyến V1.18; trạng thái phát hành ZIP tổng được quản lý riêng theo STD-17.
 
 ## Cập nhật trực tuyến 20/11/2026 — Quy tắc bảng dữ liệu dùng chung
 
@@ -32,6 +37,7 @@
 | 12 | [XData/XRecord và khôi phục hình học dùng chung](12_Ghi_doc_XData_va_XRecord.md) | Bắt buộc khi module ghi/đọc XData hoặc tham gia Drestore |
 | 13 | [Giao diện, icon và Preview](13_Giao_dien_icon_va_Preview.md) | Theo tính năng |
 | 13A | [DCAD UI Contract — Đồng bộ bố cục C# / C++](13A_DCAD_UI_Contract_CSharp_CPP.md) | Bắt buộc khi dùng DCAD UI Studio |
+| 13B | [DCAD Native Dialog — Kiến trúc và trình bày hộp thoại](13B_Quy_chuan_giao_dien_hop_thoai_Native_DCAD.md) | Bắt buộc khi tạo mới/thiết kế lại hộp thoại native; thành phần theo tính năng |
 | 14 | [Transaction, Undo và hiệu năng](14_Transaction_Undo_va_hieu_nang.md) | Bắt buộc theo thao tác |
 | 15 | [Xử lý lỗi và HARD STOP](15_Xu_ly_loi_va_HARD_STOP.md) | Bắt buộc |
 | 16 | [DataManifest, BuildInfo và QA](16_DataManifest_BuildInfo_va_QA.md) | Bắt buộc |
