@@ -1,4 +1,9 @@
-# BỘ TIÊU CHUẨN DCAD — V1.18
+# BỘ TIÊU CHUẨN DCAD — V1.19
+
+## Cập nhật trực tuyến 25/11/2026 — Bàn giao Key Add-in
+
+- Bổ sung **DCAD-STD-20 v1.0**: cấu trúc ZIP đúng sáu file, hợp đồng tích hợp Gate, hướng dẫn project/Build_All/Build_Release/README và ma trận nghiệm thu. Phạm vi đã khảo sát: native C++ x64, AutoCAD 2022; các target khác cần hợp đồng và nghiệm thu tương ứng.
+- STD-19 vẫn đã rút. Chỉ cập nhật tài liệu trực tuyến, ZIP tổng V1.17 giữ nguyên; không sửa hoặc nghiệm thu phần mềm.
 
 ## Cập nhật trực tuyến 24/11/2026 — Bổ sung quy chuẩn hộp thoại native
 
@@ -43,6 +48,7 @@
 | 16 | [DataManifest, BuildInfo và QA](16_DataManifest_BuildInfo_va_QA.md) | Bắt buộc |
 | 17 | [Autoupdate — Tự động build, đồng bộ GitHub và ghi nhận xác nhận OK](17_Autoupdate.md) | Bắt buộc khi cập nhật GitHub hoặc người dùng xác nhận phiên bản OK |
 | 18 | [Nguyên tắc AI lập trình theo Karpathy](18_Karpathy_Guidelines_cho_AI_lap_trinh.md) | Bắt buộc khi AI phân tích/viết/sửa/rà soát code |
+| 20 | [Bàn giao Key và tích hợp bản quyền Add-in DCAD](20_Quy_uoc_ban_giao_key_Addin.md) | Bắt buộc khi bàn giao bộ tích hợp và tích hợp Add-in theo hợp đồng đã xác nhận |
 
 ## Nguyên tắc sử dụng
 
