@@ -1,4 +1,6 @@
-# QuyUoc — Bộ tiêu chuẩn DCAD V1.17
+# QuyUoc — Bộ tiêu chuẩn DCAD V1.19 (trực tuyến)
+
+- **Cập nhật trực tuyến 25/11/2026 — STD-20 v1.0:** [Quy ước bàn giao Key và tích hợp bản quyền Add-in DCAD](20_Quy_uoc_ban_giao_key_Addin.md). Bộ ZIP tích hợp đúng sáu file; hướng dẫn cấu hình project, Build_All, Build_Release, README và nghiệm thu theo STD-18. Phạm vi đã khảo sát: native C++ x64, AutoCAD 2022. STD-19 vẫn đã rút. Xem [mục lục V1.19](00_MUC_LUC.md). ZIP tổng đã lưu V1.17 không đổi; không sửa mã hoặc xác nhận nghiệm thu Add-in.
 
 - **Cập nhật trực tuyến 20/11/2026 — Bảng dữ liệu có cấu trúc:** STD-05 v1.17 bổ sung `DCAD-SQLITE-GRID-001` (đọc/ghi SQLite theo đúng bản ghi/cột, khóa ổn định, prepared statement, transaction); STD-13 v1.8 bổ sung `DCAD-GRID-001` dùng chung cho mọi module và mọi nguồn bảng, không tạo ô EDIT dạng TAB giả bảng; STD-16 v1.20 bổ sung GRID01–GRID10 và SQL09–SQL15. Vẫn áp dụng `DProgram\\sqlite3.dll` dùng chung theo STD-03/05. Chỉ sửa tài liệu trực tuyến, ZIP V1.17 chưa được cập nhật.
 
