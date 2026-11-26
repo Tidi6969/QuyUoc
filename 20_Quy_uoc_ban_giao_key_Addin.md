@@ -21,7 +21,7 @@
 
 Plan là một phần của STD-20, được quản lý trực tiếp tại đây; không tạo quy ước, file kế hoạch hoặc dự án riêng. Đây là nơi ghi yêu cầu và tiến độ phát triển chính thức của TidiDcad; README DCAD chỉ là thông tin tổng hợp, không thay thế Plan. Plan không thay đổi hợp đồng tích hợp đang hiệu lực khi chưa có thiết kế và nghiệm thu được duyệt.
 
-**Baseline: V55** — chủ dự án xác nhận chạy OK ngày 26/11/2026 (UserReportedWorking=YES). Giữ nguyên năm hạng mục hiện có; chỉ phát triển thêm hai hạng mục tiếp theo.
+**Baseline ban đầu: V55. Baseline hiện tại: V59** — chủ dự án xác nhận build OK và kiểm nghiệm chống sửa Add-in với Dtscr V121 trên AutoCAD 2022 ngày 26/11/2026. Giữ nguyên 01–05; 06 đã triển khai và kiểm nghiệm các ca chính; 07 tạm dừng phát triển.
 
 | STT | Hạng mục | Yêu cầu | Tiến độ |
 |---|---|---|---|
@@ -30,31 +30,29 @@ Plan là một phần của STD-20, được quản lý trực tiếp tại đâ
 | 03 | Phân quyền Feature (LIC-03) | Giữ định danh, quyền và thời hạn Feature | V55 — giữ nguyên |
 | 04 | Chống thay thế Gate (SEC-02) | Giữ xác minh chữ ký/hash Gate DLL theo SEC06 | V55 — giữ nguyên |
 | 05 | Ký số bộ bàn giao (SEC-03) | Giữ RSA-PSS Integration sáu file và xác thực khi tiếp nhận theo STD-20 | V55 — giữ nguyên |
-| 06 | Chống sửa Add-in (SEC-AT) | Ký số nhúng Authenticode cho thành phẩm; xác minh tính toàn vẹn và danh tính phát hành DCAD; từ chối nghiệp vụ trong ranh giới bảo vệ đã duyệt | Đã chọn Authenticode; chuẩn bị thiết kế tích hợp |
-| 07 | Chống lùi đồng hồ (SEC-07) | Bảo vệ thời hạn License offline, phát hiện lùi thời gian và xử lý hợp lệ | Chưa bắt đầu; sau 06 |
+| 06 | Chống sửa Add-in (SEC-AT) | Ký số nhúng Authenticode cho thành phẩm; xác minh tính toàn vẹn và danh tính phát hành DCAD; từ chối nghiệp vụ trong ranh giới bảo vệ đã duyệt | V59 — đã triển khai; chủ dự án xác nhận các ca chính trên Dtscr V121 / AutoCAD 2022 |
+| 07 | Chống lùi đồng hồ (SEC-07) | Bảo vệ thời hạn License offline, phát hiện lùi thời gian và xử lý hợp lệ | **Tạm dừng phát triển** theo quyết định chủ dự án 26/11/2026; chưa triển khai code |
 
 ```text
 V55 — giữ nguyên 01–05
   ↓
-06 — Chống sửa Add-in (hiện tại)
+V59 — 06 đã triển khai, kiểm nghiệm các ca chính
   ↓
-07 — Chống lùi đồng hồ (tiếp theo)
-  ↓
-Nghiệm thu toàn bộ 7 hạng mục
+Duy trì 01–06; 07 tạm dừng phát triển
 ```
 
 **Yêu cầu và tiến độ từng bước của hạng mục hiện tại:**
 
 | Bước | Yêu cầu / điều kiện hoàn thành | Tiến độ |
 |---|---|---|
-| 06.1 | Xác định baseline V55, đọc nguồn thực tế và cơ chế SEC06; xác định phạm vi ảnh hưởng, phần giữ nguyên | Đã rà soát tĩnh luồng bảo mật V55 và đối chiếu client; chờ chủ dự án xác nhận kết quả; runtime NotVerified |
+| 06.1 | Xác định baseline V55, đọc nguồn thực tế và cơ chế SEC06; xác định phạm vi ảnh hưởng, phần giữ nguyên | Đã rà soát nguồn V55, chủ dự án cho phép triển khai 06 |
 | 06.2 | Lựa chọn công nghệ ký số thành phẩm Add-in | Chủ dự án đã chọn Authenticode (26/11/2026); không tiếp tục so sánh công nghệ ký số |
-| 06.3 | Thiết kế Authenticode độc lập theo quy trình build → ký → phát hành → xác minh; không ràng buộc máy build/ký, không phụ thuộc Windows trust; xác định danh tính ký, nhận diện Add-in và ranh giới cưỡng chế | Đã chốt yêu cầu độc lập máy; đang thiết kế tích hợp, chưa duyệt toàn bộ |
-| 06.4 | Lập trình đúng phạm vi, rà soát và kiểm thử theo STD-18; giữ nguyên năm hạng mục V55 và nghiệp vụ CAD | Chưa thực hiện |
-| 06.5 | Tích hợp thử DJoin native AutoCAD 2022 x64; kiểm tra Build/APPLOAD/Runtime, phát hiện sửa đổi và hồi quy | Chưa thực hiện |
-| 06.6 | Chủ dự án nghiệm thu theo đúng ranh giới bảo vệ đã kiểm chứng; cập nhật Plan, xác nhận trước khi chuyển 07 | Chưa thực hiện |
+| 06.3 | Thiết kế Authenticode độc lập theo quy trình build → ký → phát hành → xác minh; không ràng buộc máy build/ký, không phụ thuộc Windows trust; xác định danh tính ký, nhận diện Add-in và ranh giới cưỡng chế | Đã triển khai trong V56–V59; phạm vi kiểm tra tại Gate, không bảo đảm cưỡng chế độc lập trước nạp |
+| 06.4 | Lập trình đúng phạm vi, rà soát và kiểm thử theo STD-18; giữ nguyên năm hạng mục V55 và nghiệp vụ CAD | V59: đã sửa, QA nguồn; chủ dự án báo build OK |
+| 06.5 | Tích hợp thử Add-in native AutoCAD 2022 x64; kiểm tra Build/APPLOAD/Runtime, phát hiện sửa đổi và hồi quy | Dtscr V121 được dùng kiểm nghiệm thực tế theo yêu cầu chủ dự án; DJoin V42 chưa xác minh Runtime |
+| 06.6 | Chủ dự án nghiệm thu theo đúng ranh giới bảo vệ đã kiểm chứng; cập nhật Plan | Chủ dự án xác nhận các ca chính Dtscr V121 OK; ca build/ký mới giữ Gate/License được phản hồi OK khi chuyển chủ đề nhưng chưa có log riêng; không tuyên bố nghiệm thu mọi host hoặc production |
 
-Hạng mục 07 hiện chưa bắt đầu. Khi được phép chuyển sang 07, bổ sung yêu cầu cụ thể, các bước và tiêu chí nghiệm thu của chính hạng mục đó vào Plan trước khi code; không tự chọn công nghệ hoặc mở rộng phạm vi trước khi được duyệt.
+Hạng mục 07 **tạm dừng phát triển**, không bị xóa khỏi Plan. Giữ nguyên kiểm tra thời hạn License hiện hành; không bổ sung TPM, đồng hồ ảo, trạng thái thời gian, dịch vụ nền hoặc thay đổi code. Chỉ tiếp tục khi chủ dự án yêu cầu lại, xác định yêu cầu và tiêu chí nghiệm thu trước khi code.
 
 **Quản lý và cập nhật Plan (bắt buộc):**
 
@@ -118,6 +116,8 @@ Luồng ký: build thành phẩm cuối → tính hash Authenticode → ký dữ
 **Tiến độ V58 — 26/11/2026:** Hai log Windows V57 xác nhận TidiDcad/DCAD_ID build và publish PASS, root dừng ADDIN_PUBLIC_TRUST_MISSING; Gate/License group chưa chạy. Rà nguồn phát hiện New-SecPfx -Addin có ba X509ExtensionCollection.Add trả Int32 vào pipeline; sửa bỏ output thừa, kiểm tra kiểu byte[], đồng bộ mã nhúng. Thêm QA danh tính biệt lập trước live trust preflight (tạo, kiểm tra, sai mật khẩu, lặp setup, sao lưu, khôi phục cùng pin). Chưa có log GUI nên chưa xác nhận lỗi thực tế chính là lỗi nguồn này. Diff đảo ngược, đồng bộ nguồn nhúng, 602/602 hash dependency, ZIP PASS trên Linux; Windows V58 QA/Build/GUI/Authenticode/CAD NotVerified. Giữ nguyên Gate, Licensecc, SEC06, Integration và dependency. ZIP V58 SHA256: 40020ec0664ef096137ba00a74430bc1049d2798700a49bbb64e8c7c4a757c5d. Chưa nghiệm thu.
 
 **Tiến độ V59 — 26/11/2026:** Log V58 đã vượt live Add-in trust preflight đến SEC06 QA; dừng do fixture bundle thiếu osslsigncode.exe. Đối chiếu publisher xác nhận còn thiếu hai notice và DcadAddinVerify.exe ở hai QA root; recovery allowlist chưa có ba signer outputs. V59 sửa fixture bằng dependency thực đã pin hash, bổ sung verifier giả lập, ca sai hash/rollback/recovery/final verification; đồng bộ embedded, không sửa publisher/thuật toán ký/xác minh/Gate/Licensecc/Integration. Linux đối chiếu đường dẫn, 602/602 hash, phạm vi diff, embedded và ZIP PASS; AddinContract 27/27 (50.000 mẫu), Integration model 60/60 PASS. Windows SEC06 QA mới, full Build/Authenticode/CAD NotVerified. ZIP SHA256 26281931c5facde26b03fff5119182063eded6c029c68cce1c1063003233b8c3. Chưa nghiệm thu production.
+
+**Quyết định và trạng thái hiện hành — 26/11/2026:** Chủ dự án xác nhận V59 build OK; Dtscr V121 (Tool 019, Feature 019-01, Gate V7, Integration 1.1, AutoCAD 2022 x64) build, ký và chạy OK theo phản hồi; ARX chưa ký bị Gate từ chối `Gate status=9: ADDIN_PE_INVALID`; ARX đã ký bị sửa một byte trong vùng bảo vệ bị AutoCAD cảnh báo Invalid Signature và Gate từ chối `Gate status=9: ADDIN_SIGNATURE_INVALID`; khôi phục bản nguyên gốc được chủ dự án xác nhận OK. Phản hồi cuối “oke” khi chuyển sang 07 không kèm log riêng cho ca build/ký lại giữ nguyên Gate/License. Ghi nhận kết quả trong phạm vi thực tế, không khẳng định chống sửa tuyệt đối hoặc nghiệm thu mọi host. Chọn V59 làm baseline duy trì; 07 đã khảo sát nhưng **tạm dừng phát triển** theo yêu cầu chủ dự án vì chi phí/phức tạp và giới hạn bảo vệ offline; chưa code, giữ kiểm tra hết hạn hiện có. Không thay hợp đồng kỹ thuật STD-20, không tạo phiên bản phần mềm mới; ZIP V59/V121 trên GitHub chưa xác minh. Các ghi nhận trước đây là lịch sử, trạng thái này thay thế trạng thái cũ.
 
 ## 2. Cấu trúc bàn giao bắt buộc
 
