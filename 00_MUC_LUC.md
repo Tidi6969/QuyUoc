@@ -1,4 +1,9 @@
-# BỘ TIÊU CHUẨN DCAD — V1.19
+# BỘ TIÊU CHUẨN DCAD — V1.20
+
+## Cập nhật trực tuyến 26/11/2026 — STD-20 V1.1
+
+- [STD-20 v1.1](20_Quy_uoc_ban_giao_key_Addin.md): phê duyệt KeyId một lần qua file công khai độc lập, preflight thống nhất và kiểm soát log/artifact từng build. Giữ ZIP Integration sáu file, hợp đồng Gate hiện tại và schema ToolInfo 1.0. Không tự coi mã nguồn V54 hay các Add-in là đã nghiệm thu Windows/CAD.
+- ZIP tổng V1.17 giữ nguyên; phiên bản trực tuyến V1.20.
 
 ## Cập nhật trực tuyến 25/11/2026 — Bàn giao Key Add-in
 
