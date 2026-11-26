@@ -1,8 +1,8 @@
 # DCAD-STD-20 — Quy ước bàn giao Key và tích hợp bản quyền Add-in DCAD
 
 **Mã quy ước:** 20  
-**Phiên bản:** 1.0  
-**Ngày:** 25/11/2026  
+**Phiên bản:** 1.1  
+**Ngày cập nhật:** 26/11/2026  
 **Trạng thái:** Quy ước được phê duyệt ngày 25/11/2026; bắt buộc khi bàn giao bộ tích hợp bản quyền và tích hợp Add-in trong phạm vi hợp đồng đã xác nhận.  
 **Nguồn chuẩn:** TidiDcad-System V49 (Gate V6), DJoin V38 (tham chiếu tích hợp native), ToolCatalog.db.  
 **Phạm vi đã khảo sát:** Add-in native C++ x64, AutoCAD 2022; không mặc định áp dụng cho .NET, AutoCAD 2025 hoặc GstarCAD 2027 khi chưa có hợp đồng và nghiệm thu tương ứng.  
@@ -295,11 +295,21 @@ Thư viện V38 để tham khảo: rxapi.lib, acad.lib, acdb24.lib, accore.lib, 
 
 Kiểm tra đúng sáu file/phiên bản/schema; ID, ánh xạ command/Feature; public header thực tế không chứa #error, modulus/exponent đúng, KeyId đủ 64 hex và tính lại khớp; đối chiếu ToolInfo và KeyId được duyệt độc lập như mục 4. Có thể chuyển logic `Buildtime/Check-ReleaseTrust.ps1` V38 vào project, bổ sung giới hạn và đối chiếu danh tính đã duyệt mà mẫu cũ chưa có. Không tự nhập key khác, không đọc key riêng, không yêu cầu Gate DLL/License để compile. Preflight sai → lỗi nonzero, dừng trước publish. Kiểm tra không cho build trực tiếp target bỏ qua preflight cần thiết (project/Build_Release có thể được gọi độc lập).
 
+
+### INT-06A. Chuẩn phê duyệt máy build độc lập — V1.1
+
+- Quản trị viên phát hành xác nhận danh tính SEC06 một lần tại TidiDcad (chức năng **Phê duyệt máy build**). TidiDcad kiểm lại Header, pin và trạng thái giao dịch dưới SEC06.lock; chỉ ghi dữ liệu công khai vào `D:\000\TidiDcad\DData\ReleaseTrust\ApprovedGateKeyId.txt`, không tạo/đổi khóa hoặc License. File có đúng 65 byte: 64 ký tự hex thường của KeyId + LF, ASCII, không BOM. Kiểm tra lại file staging trước khi công bố; không ghi đè danh tính khác khi chưa xác nhận.
+- Máy build khác không cần cài TidiDcad; quản trị viên chuyển file phê duyệt riêng qua kênh quản trị tin cậy và đặt ở đúng đường dẫn. Quản trị viên phải bảo vệ file **và thư mục** bằng quyền truy cập phù hợp: chỉ người quản trị tin cậy ghi, tài khoản build chỉ đọc. Không coi file văn bản này là chứng thư có chữ ký; không tự thay ACL, không cấp quyền quản trị cho tài khoản build chỉ để chạy preflight. Nếu môi trường không bảo đảm nguồn và quyền ghi độc lập, chưa đạt điều kiện phê duyệt.
+- Không đưa file phê duyệt vào Integration.zip, source Add-in hoặc artifact khách hàng; không tự sinh từ ToolInfo.json/Header của ZIP đang xác minh. Không dùng biến môi trường `DCAD_APPROVED_GATE_KEYID` hoặc `DCAD_APPROVED_GATE_KEY_ID` làm nguồn thay thế. Không tự đọc pin/khóa riêng của issuer từ máy build. Không cần thiết lập lại mỗi lần build.
+- Mỗi Add-in dùng một mẫu `Buildtime/Check-ReleaseTrust.ps1` từ phần BEGIN/END DCAD PREFLIGHT V1.1 trong Integration.txt, Windows PowerShell 5.1. Tham số đường dẫn ToolInfo, Header và Tool/Feature đã xác nhận; giá trị Tool/Feature cố định trong project, không lấy từ ZIP để tự duyệt. Kiểm định dạng file phê duyệt, cú pháp canonical Header, RSA public bytes, SHA-256, KeyId, Tool/Feature, Gate ABI/Policy/Host; thiếu/sai/không đọc được phải trả nonzero. Kiểm bốn file bảo mật trùng byte bộ bàn giao và rà mọi điểm chặn nghiệp vụ. Chỉ áp dụng target đã có hợp đồng; không tuyên bố C# hoặc CAD khác đã hỗ trợ.
+- Build_All/Build_Release và MSBuild trực tiếp gọi cùng logic kiểm tra; target project chạy trước PrepareForBuild, lỗi dừng compiler/publish. Giữ cơ chế gọi PowerShell đã được quản trị viên phê duyệt của baseline; khi chính sách đòi ký/duyệt script thì thực hiện theo chính sách đó. Không tắt chính sách toàn máy, không bỏ tiền kiểm để ép build. CMD ASCII; PowerShell 5.1 có Unicode dùng UTF-8 BOM.
+- Không thay schema ToolInfo: IntegrationVersion vẫn là "1.0"; V1.1 là phiên bản quy ước/hướng dẫn. ZIP vẫn đúng sáu file. Gate/Licensecc và Runtime giữ nguyên.
+
 ### INT-07. Build_All.cmd — luồng bắt buộc
 
-1. Xác định root từ script, target, đường dẫn SDK và output; tạo log và staging đúng quy ước. Không thao tác vào dữ liệu vận hành.
+1. Xác định root từ script, target, đường dẫn SDK và output; tạo BuildRunId, log/binlog và staging riêng từng lần; không lấy log cũ. Nếu preflight FAIL, ghi SEC06=FAIL, MSBUILD=NotStarted, PUBLISH=NotStarted. Không thao tác vào dữ liệu vận hành.
 2. Kiểm tra nguồn và project, sáu file tích hợp; kiểm tra ID/Feature, khóa tin cậy đã duyệt; kiểm tra toolchain/SDK.
-3. Gọi Build_Release.cmd cho từng target đã duyệt, truyền thông số chính xác, nhận exit code. Không lấy output cũ để bù khi lỗi; xác minh output tạo mới, không rỗng.
+3. Gọi Build_Release.cmd cho từng target đã duyệt, truyền thông số chính xác, nhận exit code. Không lấy output cũ để bù khi lỗi; MSBuild nonzero phải dừng. Xác minh output tạo mới, không rỗng; không dùng verification build để hợp thức hóa artifact cũ.
 4. Publish đúng tên thành phẩm theo quy ước, tạo thư mục nếu thiếu; kiểm tra nội dung file đích bằng SHA-256 hoặc so sánh byte. Không phá hủy bản đã phát hành chỉ vì build mới thất bại; dùng staging riêng, chỉ công bố kết quả đủ điều kiện.
 5. Log chính ghi baseline, target, ToolId, Feature, KeyId, SDK root, toolset, bước build, output, kết quả và lỗi; log target tách riêng. Exit 0 chỉ khi build/publish đúng phạm vi; lỗi nonzero. Không coi exit 0 là APPLOAD/Runtime PASS.
 
@@ -317,7 +327,7 @@ Lệnh mẫu V38:
 "%MSBUILD%" "%BASE%DJoin.vcxproj" /t:Rebuild /p:Configuration=Release /p:Platform=x64 "/p:PlatformToolset=%TOOLSET%" "/p:ARX2022_SDK=%SDKROOT%" /m:1 /nologo "/flp:LogFile=%LOG%;Verbosity=normal;Append"
 ```
 
-Output V38: `bin\DJoin.arx`; intermediate `Buildtime\obj\`; staging root `Dprogram\AutoCAD2022\DJoin.arx`; log chính `log\Build_All.log`, log target `log\Build_AutoCAD2022.log` trong thư mục target. Giữ bố trí theo quy ước hiện hành khi thực hiện. Không liên kết nhầm SDK/host. Build_Release cũng phải bảo đảm có public key hợp lệ và xác minh bắt buộc, không dựa vào Build_All một cách có thể bỏ qua.
+Không đóng gói SDK dùng chung vào ZIP nguồn. Output V38: `bin\DJoin.arx`; intermediate `Buildtime\obj\`; staging root `Dprogram\AutoCAD2022\DJoin.arx`; log chính `log\Build_All.log`, log target `log\Build_AutoCAD2022.log` trong thư mục target. Giữ bố trí theo quy ước hiện hành khi thực hiện. Không liên kết nhầm SDK/host. Build_Release cũng phải bảo đảm có public key hợp lệ và xác minh bắt buộc, không dựa vào Build_All một cách có thể bỏ qua.
 
 ### INT-09. Cập nhật README, BuildInfo và dữ liệu QA
 
@@ -328,6 +338,8 @@ README của Add-in phải có: tên/phiên bản/baseline; ToolId và Feature �
 Xem mục 10. Mỗi ca có đầu vào/điều kiện, Expected, Actual, PASS/FAIL/NotVerified hoặc N/A có lý do, host và bằng chứng. DJoin V38 có `Buildtime/QA/VerifySEC06.cpp` và `MockGate.cpp` làm mẫu kiểm thử verifier; phải kiểm thử lại client chuẩn trên nguồn cuối cùng. Mock Gate chỉ trong môi trường QA cô lập, không phát hành hoặc tích hợp vào runtime thực tế.
 
 ### INT-11. Phát hành và quản lý thay đổi
+
+SEC06 ký Gate không thay cho ký chính ARX. Nếu hợp đồng production yêu cầu ký ARX, phải ký/verify bằng chứng thư đã duyệt trước publish; chưa có hợp đồng hoặc chứng thư thì ghi NotVerified và không tuyên bố production. Đồng bộ version trong README, BuildInfo và chuỗi log/command. Không tự xây cơ chế ký mới.
 
 Một Tool xuất một ZIP; một build chỉ dùng danh tính đã được phê duyệt. Khi Gate DLL được cập nhật với cùng KeyId và hợp đồng tương thích, bộ runtime mới vẫn cần nghiệm thu tương thích, không mặc định phải build lại mọi Add-in. Khi public key, ABI, Policy, manifest format hoặc target contract đổi, phải đánh giá ảnh hưởng, xuất bộ phù hợp, build và nghiệm thu lại các Tool liên quan; không tự đổi hợp đồng. Không tự đổi ID đã cấp. Không ghi đè dữ liệu người dùng. Ghi chứng cứ trên bản nguồn cuối cùng, không thay đổi ngoài phạm vi.
 
@@ -391,6 +403,21 @@ Các ca trên là **tiêu chí thiết kế**, chưa phải kết quả thực t
 | Tích hợp client, project, Build_All, README | Cung cấp chuẩn | Chịu trách nhiệm |
 | Kiểm thử build và CAD, hồi quy | Phối hợp cung cấp runtime/license QA | Chịu trách nhiệm và báo cáo |
 | Nghiệm thu/phát hành chính thức | Phê duyệt | Bàn giao bằng chứng |
+
+## 11A. Nghiệm thu bổ sung V1.1
+
+| Mã | Điều kiện | Expected |
+|---|---|---|
+| APP01 | Quản trị viên xác nhận khóa hiện hành | File phê duyệt đúng 65 byte, không nằm trong ZIP |
+| APP02 | File thiếu, sai KeyId, sai định dạng, đọc lỗi | FAIL trước compiler |
+| APP03 | Header và JSON tự khớp nhưng khác danh tính phê duyệt | FAIL |
+| APP04 | File phê duyệt đang khóa, thay thế thất bại | Bản cũ còn nguyên |
+| APP05 | Một hoặc nhiều Feature, sai Tool/Feature, trùng ID | Đúng mới PASS; sai FAIL |
+| APP06 | Build trực tiếp MSBuild hoặc script bị chính sách chặn | Không bỏ qua preflight |
+| APP07 | Preflight FAIL sau lần build cũ đã PASS | Log mới không sử dụng log/artifact cũ; không publish |
+| APP08 | Máy build độc lập đã được cấp file tin cậy | Không cần nhập KeyId mỗi lần, không cần TidiDcad/khóa riêng |
+
+Đây là tiêu chí nghiệm thu, không phải kết quả Windows đã kiểm chứng. V1.1 căn cứ báo cáo DJoin V38–V41 và Dtscr V120 ngày 26/11/2026; triển khai TidiDcad V54 phải nghiệm thu riêng. Không thay đổi các thuật toán bảo mật đã có.
 
 ## 12. Căn cứ nguồn và giới hạn hiện tại
 
