@@ -111,6 +111,8 @@ Luồng ký: build thành phẩm cuối → tính hash Authenticode → ký dữ
 **Trạng thái:** 26/11/2026 — đã lập lưu trình chi tiết theo yêu cầu đã thống nhất; PFX, osslsigncode, LIEF và hợp đồng nhận diện/cưỡng chế vẫn là thiết kế đề xuất, chưa duyệt hoàn toàn. Chưa sửa source V55, chưa nghiệm thu; không tự chuyển 06.4 trước khi chủ dự án duyệt.
 
 
+**Tiến độ V56 — 26/11/2026:** Chủ dự án đã cho phép code. Đã tạo bản nguồn TidiDcad V56 và DJoin V42 (C22), Gate V7, Integration 1.1. 06.3.1–06.3.4 và 06.4/06.5: nguồn ứng viên đã triển khai, không phải nghiệm thu. Danh tính Code Signing riêng RSA3072/PFX portable, pin SHA-256 chứng thư; giữ nguyên SEC06/Licensecc. Ký Authenticode bằng osslsigncode, xác minh LIEF tĩnh, GateClient không fallback, xuất thành phẩm cùng tên vào DProgram khác không ghi đè. QA Linux: 27/27 ca cấu trúc Add-in trên GCC/Clang, 50.000 mẫu biến đổi với ASan/UBSan; Integration 60/60 trên GCC/Clang; Gate mock/ABI, Catalog/layout, JoinMath PASS; rà soát byte nguồn ngoài phạm vi và source nhúng PASS. Windows/MSVC, ký/xác minh Authenticode thực, Gate module caller, DJoin Build/APPLOAD/Runtime đều NotVerified do môi trường thiếu Windows/CAD/dependency. Không có công cụ bên ngoài hay khóa riêng kèm ZIP; DJoin yêu cầu Integration thực do issuer xuất. API legacy còn cho tương thích; Gate không cưỡng chế mã bị sửa bỏ qua Gate, không chứng minh RAM/pre-load; chưa chốt chấp nhận giới hạn này. 06.6 chưa nghiệm thu, không production. SHA256 nguồn V56: 8c8ccb1ff64b74c4bc56679ac2fe5afb8a999c92fbc35af31e138c62c3dbeddf; DJoin V42: cf20efefbbccb7398cc262d8a00ae422a29db518f55ee8a6ac2614f076667ba5. Hướng dẫn và QA nằm trong ZIP.
+
 ## 2. Cấu trúc bàn giao bắt buộc
 
 ```text
