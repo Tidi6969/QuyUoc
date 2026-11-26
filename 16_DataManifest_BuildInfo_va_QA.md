@@ -1,8 +1,72 @@
-# DCAD-STD-16 — DataManifest, BuildInfo và QA
+# DCAD-STD-16 — Quy trình QA mã nguồn, Build, kiểm thử và nghiệm thu
 
-**Phiên bản:** 1.20  
-**Cập nhật:** 20/11/2026  
+**Phiên bản:** 1.21  
+**Cập nhật:** 26/11/2026  
 **Mức áp dụng:** Bắt buộc
+
+## 1. Bộ QA bắt buộc khi AI sửa mã nguồn [CORE]
+
+**DCAD-CODE-QA-001.** Áp dụng mọi lần tạo, sửa, tối ưu, tích hợp hoặc sửa lỗi code bằng AI, kể cả thay đổi một dòng; bao gồm C++, C#, AutoLISP, script, project/build, schema và cấu hình liên quan. STD-18 quy định cách làm; STD-16 kiểm chứng kết quả. Không tạo STD-19 riêng. Các yêu cầu DataManifest, BuildInfo, ma trận nghiệm thu và bộ test chuyên ngành bên dưới tiếp tục có hiệu lực, không bị thay thế bởi checklist chung.
+
+### 1.1. Quy trình bắt buộc
+
+1. **Trước khi sửa:** đọc quy ước hiện hành, xác định baseline và version đích theo STD-01/17; đọc yêu cầu, xác định mục tiêu, tiêu chí nghiệm thu, phạm vi được phép thay đổi và phần phải giữ nguyên. Với lỗi: tái hiện nếu môi trường cho phép, truy nguyên từ source/log/data; nếu chưa chứng minh nguyên nhân thì ghi giả thuyết và cách kiểm chứng, không coi giả thuyết là kết luận. Lập danh sách ca thử và expected trước khi sửa.
+2. **Khi sửa:** tuân thủ STD-18 và AI-01–AI-12; sửa tối thiểu từ baseline đúng, không sửa chắp vá từ bản lỗi khi baseline khác được chỉ định. Không thêm chức năng, dependency, đổi thuật toán, schema, UI, tên lệnh, file, build target hoặc hành vi ngoài phạm vi đã duyệt.
+3. **Sau khi sửa:** so sánh toàn bộ cây source/cấu hình/script/tài nguyên trước và sau, kể cả file mới/xóa/đổi tên; giải thích từng thay đổi và rà soát call site, reader/writer, luồng thực thi/dữ liệu, lỗi, tương thích và rủi ro hồi quy. Kiểm tra tất cả QA01–QA26 và các quy ước/bộ ca thử liên quan. Với file nhị phân/tài nguyên dùng danh sách và checksum phù hợp. Không chỉ kiểm các file dự kiến sửa.
+4. **Kiểm thử thực tế:** chạy các công cụ phân tích, unit test, build và runtime phù hợp trong môi trường có sẵn. Đối chiếu expected/actual; kiểm thử lỗi đã sửa, trường hợp biên/lỗi và chức năng cũ có khả năng bị ảnh hưởng. Không chỉ đề xuất lệnh test nếu có thể thực thi. Không thay tiêu chí/test để che lỗi. Dùng dữ liệu thử hoặc bản sao, không phá dữ liệu gốc.
+5. **Vòng lặp QA:** nếu phát hiện lỗi trong phạm vi, sửa nguyên nhân rồi kiểm lại diff và chạy lại ca lỗi, ca liên quan, build/runtime bị ảnh hưởng. Lỗi ngoài phạm vi phải ghi nhận, không tự sửa. Nếu thiếu SDK/Windows/CAD, quyền hoặc dữ liệu, ghi blocker cụ thể và phần còn cần kiểm trên máy người dùng; không tự gán PASS. Không lặp vô hạn hoặc che lỗi.
+6. **Rà soát cuối:** thực hiện lượt review riêng đối chiếu yêu cầu/baseline/diff/bằng chứng, không dựa riêng vào lời giải thích của lượt viết code. Ưu tiên reviewer độc lập khi có; tự review của cùng AI phải ghi rõ là self-review, không tuyên bố độc lập. Xác minh đúng bản source/package cuối; khi sửa tiếp phải kiểm lại phần bị ảnh hưởng. Chỉ bàn giao sau khi đã thực hiện mọi kiểm tra khả thi và công bố phần chưa kiểm chứng.
+
+### 1.2. Checklist QA chung
+
+Mọi hàng phải có Applies, Result và Evidence hoặc lý do chưa kiểm chứng/không áp dụng. Phạm vi kiểm sâu và công cụ tỷ lệ với rủi ro; không bắt chạy test của tính năng không có. Một hàng có nhiều tiêu chí phải tách kết quả khi cần, không dùng PASS cục bộ để che tiêu chí chưa kiểm.
+
+| Mã | Hạng mục | Kiểm tra và bằng chứng tối thiểu |
+|---|---|---|
+| QA01 | Baseline | Module/version nguồn, commit hoặc hash khi có, version đích, lý do chọn |
+| QA02 | Requirement | Yêu cầu, phạm vi, phần không sửa, acceptance/expected rõ ràng |
+| QA03 | Root Cause | Với sửa lỗi: source/log/tái hiện hoặc giả thuyết có giới hạn; không vá triệu chứng vô căn cứ |
+| QA04 | Impact Analysis | File/hàm/call site, dependency, dữ liệu, host, lệnh, UI và hành vi bị ảnh hưởng |
+| QA05 | STD-18 | Đối chiếu AI-01–AI-12 và bằng chứng; đơn giản, đúng phạm vi, kiểm chứng theo mục tiêu |
+| QA06 | Source Diff | Danh sách file thêm/sửa/xóa/đổi tên và lý do; diff so baseline, xác minh phần ngoài scope không bị thay đổi |
+| QA07 | Logic | Công thức, thuật toán, đơn vị, dấu, sai số, kết quả nghiệp vụ đúng expected |
+| QA08 | Control Flow | Nhánh điều kiện, vòng lặp, return, Cancel/ESC, trạng thái và đường lỗi |
+| QA09 | Data Flow | Input → xử lý → output; mapping, validation, reader/writer, schema và default |
+| QA10 | Dead Code | Mã không dùng, debug, nhánh cũ trong phạm vi; kiểm reference/callback/registration trước khi xóa |
+| QA11 | Complexity | Không thêm abstraction/dependency hoặc logic trùng lặp không cần thiết; không refactor ngoài scope |
+| QA12 | Memory | Ownership, lifetime, null/dangling pointer, bounds, leak, double free; kiểm theo ngôn ngữ |
+| QA13 | Resources | RAII/dispose, file/handle/DB, transaction, event, lock, cleanup trên mọi nhánh |
+| QA14 | Exception | Xử lý lỗi có nghĩa, rollback/cleanup, không nuốt lỗi hay làm hỏng trạng thái |
+| QA15 | Boundary | Rỗng/null, 0, âm, giới hạn, số lớn, Unicode, input sai, thiếu dữ liệu theo nghiệp vụ |
+| QA16 | Security | Input/path, quyền, bí mật, integrity, dependency và hợp đồng STD-20 khi áp dụng; không làm suy yếu Gate |
+| QA17 | Dependency | SDK/reference/runtime đúng host, kiến trúc, phiên bản và hợp đồng thư mục |
+| QA18 | Compatibility | Host/OS/framework, dữ liệu cũ/mới, schema, command, settings theo phạm vi duyệt |
+| QA19 | Performance | Vòng lặp, I/O, cấp phát, UI/CAD responsiveness; đo trước/sau nếu thay đổi hiệu năng |
+| QA20 | Data Integrity | Không mất dữ liệu, ghi nhầm record/layer/XData, transaction/Undo/rollback/backup theo hợp đồng |
+| QA21 | Static Analysis | Đọc source/diff và chạy analyzer phù hợp khi có; ghi tên công cụ, kết quả/cảnh báo, phần chưa chạy |
+| QA22 | Build | Chạy build từng target; log, exit code, artifact mới, reference, không dùng binary cũ để gán PASS |
+| QA23 | Functional Test | Ca đúng/sai/biên theo yêu cầu, expected/actual, host và bằng chứng thực thi |
+| QA24 | Regression Test | Chạy các ca chức năng cũ chịu ảnh hưởng; xác minh không đổi hành vi ngoài scope |
+| QA25 | Final Review | Review sau sửa lỗi QA, rà soát toàn bộ diff, trạng thái và bằng chứng đúng bản cuối |
+| QA26 | Packaging | Đối chiếu ZIP, version, BuildInfo, DataManifest, log, file thừa/thiếu và output từng host |
+
+### 1.3. Công cụ và mức độ lỗi
+
+- Tùy dự án: Git diff/checksum, MSVC Code Analysis, clang-tidy, Cppcheck, AddressSanitizer, Roslyn Analyzers, CodeQL, unit test C++/.NET hoặc script kiểm thử độc lập. Không bắt cài thêm công cụ nếu không cần; phải ghi đúng công cụ đã chạy và giới hạn. Review thủ công không đồng nghĩa analyzer PASS; compile PASS không đồng nghĩa runtime PASS.
+- P0 Critical: mất/hỏng dữ liệu, lỗ hổng nghiêm trọng; P1 High: crash, sai kết quả, lỗi chức năng chính; P2 Medium: lỗi phụ, hiệu năng hoặc tương thích; P3 Low: lỗi nhỏ/bảo trì; P4 Info: ghi nhận/đề xuất.
+- P0/P1 chưa xử lý chặn phát hành. Mọi lỗi vi phạm yêu cầu bắt buộc cũng chặn phát hành bất kể mức độ. P2/P3 ngoài phạm vi hoặc khuyến nghị chưa đạt phải ghi rõ, chỉ chấp nhận ngoại lệ với phê duyệt của chủ dự án và không được tự chuyển FAIL thành PASS.
+
+### 1.4. Báo cáo QA bắt buộc trước khi gửi code
+
+Mỗi lần gửi source/ZIP sửa code phải kèm báo cáo ngắn trong nội dung bàn giao hoặc log/biên bản phù hợp, không thêm bản sao quy ước hay file test rác vào ZIP. Báo cáo phải có:
+
+- Module, baseline, version đích, mục tiêu và phạm vi; danh sách file thay đổi, nguyên nhân và ảnh hưởng.
+- Ma trận: `QA_ID | Applies | Expected | Actual | Result | Evidence | Host/Tool | Notes`. Dùng `PASS / FAIL / NotVerified / N/A`; `N/A` có lý do; `NotVerified` chỉ rõ blocker và bước kiểm tiếp. Evidence là diff/file:hàm hoặc log/test/ảnh/hash phù hợp, không chỉ là tuyên bố.
+- Danh sách lỗi phát hiện: ID, P0–P4, vị trí, nguyên nhân, cách sửa hoặc lý do chưa sửa, kết quả retest. Nêu riêng phát hiện ngoài phạm vi.
+- Tách `SOURCE_QA_RESULT` (review và QA mã nguồn), `BUILD_RESULT`, `STANDARD_RESULT`, `RUNTIME_RESULT`, `RELEASE_APPROVED`. SOURCE_QA_RESULT = FAIL nếu có mục bắt buộc thuộc QA nguồn FAIL; nếu không FAIL nhưng còn mục bắt buộc chưa kiểm thì NotVerified; PASS khi tất cả mục bắt buộc thuộc QA nguồn đã PASS và N/A có lý do. Build và runtime đánh giá độc lập, không suy từ SOURCE_QA_RESULT.
+- Xác nhận cụ thể: đã sửa đúng hạng mục chưa; có thay đổi ngoài phạm vi không; đã chạy test nào/chưa chạy test nào; STD-18 và các quy ước liên quan đã được kiểm ở mức nào; hạn chế còn lại và các quyết định cần chủ dự án xác nhận.
+
+**Cổng bàn giao:** không được gọi bản source đang chờ build/CAD là bản đã nghiệm thu. Nếu môi trường không cho phép kiểm tiếp, được gửi source để chủ dự án thử với trạng thái chưa nghiệm thu và hướng dẫn test cụ thể; lỗi đã biết phải công bố. Chỉ `RELEASE_APPROVED=YES` khi SOURCE_QA_RESULT, BUILD_RESULT, STANDARD_RESULT và RUNTIME_RESULT cần áp dụng đều PASS theo điều kiện phát hành bên dưới, không còn lỗi chặn. Không giả lập log, kết quả, ảnh hoặc tuyên bố đã kiểm thử khi chưa thực hiện.
 
 ## DataManifest, BuildInfo, checklist và nghiệm thu [CORE]
 
@@ -68,6 +132,8 @@
 | STD-15 | Lỗi hiển thị đúng, log/diagnostic đủ, HARD STOP khi lặp | Ca lỗi giả lập hoặc tái hiện; log lỗi và hành vi khôi phục |
 | STD-16 | Manifest, BuildInfo, release gating, trạng thái đúng | Bảng nghiệm thu cuối và đối chiếu thực tế từng file/host |
 | STD-18 | Hiểu yêu cầu, tối giản giải pháp, thay đổi đúng phạm vi, kiểm chứng theo mục tiêu | Scope, diff, ca kiểm thử, log và AI-01–AI-12 |
+| STD-17 | Khi cập nhật GitHub hoặc xác nhận OK: baseline/version, lưu bản mới, metadata và kiểm tra sau commit | AUTO-01–AUTO-13 theo STD-17, commit, ZIP/metadata và trạng thái nghiệm thu riêng |
+| STD-20 | Khi tích hợp bản quyền/bộ bàn giao Key: tuân thủ hợp đồng hiện hành, không làm suy yếu Gate | Ma trận và bằng chứng nghiệm thu theo STD-20 đúng target, build/runtime tách riêng |
 
 ### Trạng thái và điều kiện bàn giao
 
