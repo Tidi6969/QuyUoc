@@ -2,7 +2,7 @@
 
 ## Cập nhật trực tuyến 26/11/2026 — [STD-20 V1.2](20_Quy_uoc_ban_giao_key_Addin.md)
 
-- Chữ ký RSA-PSS của bộ bàn giao, xác thực một lần khi tiếp nhận; thay thế cơ chế phê duyệt máy build V1.1. Giữ sáu file, Gate và Licensecc. Nguồn TidiDcad V55 chờ nghiệm thu Windows/CAD. ZIP tổng V1.17 giữ nguyên.
+- Chữ ký RSA-PSS của bộ bàn giao, xác thực một lần khi tiếp nhận; thay thế cơ chế phê duyệt máy build V1.1. Giữ sáu file, Gate và Licensecc. Ngày 26/11/2026 chủ dự án xác nhận TidiDcad V55 chạy OK ngay lần đầu (`UserReportedWorking=YES`); log build và kiểm thử ký/xác minh Windows, nghiệm thu tích hợp Add-in/CAD riêng vẫn `NotVerified` theo chứng cứ độc lập. [Tiến độ DCAD](https://github.com/Tidi6969/DCAD/blob/main/README.md). ZIP tổng V1.17 giữ nguyên.
 
 ## Cập nhật trực tuyến 26/11/2026 — STD-20 V1.1
 
