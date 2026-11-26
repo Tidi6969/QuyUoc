@@ -21,7 +21,7 @@
 
 Plan là một phần của STD-20, được quản lý trực tiếp tại đây; không tạo quy ước, file kế hoạch hoặc dự án riêng. Đây là nơi ghi yêu cầu và tiến độ phát triển chính thức của TidiDcad; README DCAD chỉ là thông tin tổng hợp, không thay thế Plan. Plan không thay đổi hợp đồng tích hợp đang hiệu lực khi chưa có thiết kế và nghiệm thu được duyệt.
 
-**Baseline ban đầu: V55. Baseline hiện tại: V59** — chủ dự án xác nhận build OK và kiểm nghiệm chống sửa Add-in với Dtscr V121 trên AutoCAD 2022 ngày 26/11/2026. Giữ nguyên 01–05; 06 đã triển khai và kiểm nghiệm các ca chính; 07 tạm dừng phát triển.
+**Baseline ban đầu: V55. Baseline hiện tại: V59** — chủ dự án xác nhận build OK và kiểm nghiệm chống sửa Add-in với Dtscr V121 trên AutoCAD 2022 ngày 26/11/2026. Giữ nguyên 01–05 trên V59; 06 đã triển khai và kiểm nghiệm các ca chính; 07 tạm dừng phát triển; 08 đã thống nhất nguyên tắc nhận diện máy SMBIOS 2/3, chưa triển khai.
 
 | STT | Hạng mục | Yêu cầu | Tiến độ |
 |---|---|---|---|
@@ -32,6 +32,7 @@ Plan là một phần của STD-20, được quản lý trực tiếp tại đâ
 | 05 | Ký số bộ bàn giao (SEC-03) | Giữ RSA-PSS Integration sáu file và xác thực khi tiếp nhận theo STD-20 | V55 — giữ nguyên |
 | 06 | Chống sửa Add-in (SEC-AT) | Ký số nhúng Authenticode cho thành phẩm; xác minh tính toàn vẹn và danh tính phát hành DCAD; từ chối nghiệp vụ trong ranh giới bảo vệ đã duyệt | V59 — đã triển khai; chủ dự án xác nhận các ca chính trên Dtscr V121 / AutoCAD 2022 |
 | 07 | Chống lùi đồng hồ (SEC-07) | Bảo vệ thời hạn License offline, phát hiện lùi thời gian và xử lý hợp lệ | **Tạm dừng phát triển** theo quyết định chủ dự án 26/11/2026; chưa triển khai code |
+| 08 | Cải tiến xác thực máy — Machine Identity V2 (LIC-02) | SMBIOS UUID + System Serial Number + Mainboard Serial Number; tối thiểu 2 giá trị hợp lệ khớp với License đã ký | Đã chốt nguyên tắc 2/3; baseline V59; tiếp theo 08.2 rà soát nguồn, chưa code |
 
 ```text
 V55 — giữ nguyên 01–05
@@ -39,6 +40,8 @@ V55 — giữ nguyên 01–05
 V59 — 06 đã triển khai, kiểm nghiệm các ca chính
   ↓
 Duy trì 01–06; 07 tạm dừng phát triển
+  ↓
+08 — Machine Identity V2 (LIC-02): SMBIOS 2/3; chưa triển khai
 ```
 
 **Yêu cầu và tiến độ từng bước của hạng mục hiện tại:**
@@ -53,6 +56,34 @@ Duy trì 01–06; 07 tạm dừng phát triển
 | 06.6 | Chủ dự án nghiệm thu theo đúng ranh giới bảo vệ đã kiểm chứng; cập nhật Plan | Chủ dự án xác nhận các ca chính Dtscr V121 OK; ca build/ký mới giữ Gate/License được phản hồi OK khi chuyển chủ đề nhưng chưa có log riêng; không tuyên bố nghiệm thu mọi host hoặc production |
 
 Hạng mục 07 **tạm dừng phát triển**, không bị xóa khỏi Plan. Giữ nguyên kiểm tra thời hạn License hiện hành; không bổ sung TPM, đồng hồ ảo, trạng thái thời gian, dịch vụ nền hoặc thay đổi code. Chỉ tiếp tục khi chủ dự án yêu cầu lại, xác định yêu cầu và tiêu chí nghiệm thu trước khi code.
+
+**Hạng mục 08 — DCAD Machine Identity V2 (LIC-02), 26/11/2026**
+
+Chủ dự án thống nhất tối thiểu 2 trong 3 thông số: ID01 SMBIOS UUID (Type 1), ID02 System Serial Number (Type 1), ID03 Mainboard Serial Number (Type 2). Đây là cải tiến của LIC-02, không thay thế 01–06 và không tiếp tục 07. Baseline V59; phát triển native C++ x64, offline; không bổ sung TPM, CPU, MAC, disk, MachineGuid, WMI runtime, driver, Internet hoặc SDK thương mại cho V2. Không thay khóa/chữ ký hiện tại, Feature, Edition, thời hạn, SEC06/SEC-AT hoặc nghiệp vụ CAD. Ưu tiên giữ API Gate/Client, Integration sáu file và Add-in đã phát hành; phải xác minh khả thi trên nguồn, không mặc định tương thích.
+
+**Nguyên tắc thiết kế:** Thu thập một bảng SMBIOS bằng API Win32; chuẩn hóa và băm SHA-256 từng thành phần riêng, có ID/phiên bản miền băm xác định; không gộp ba giá trị vào một hash dùng để so khớp tuyệt đối. Dreq → issuer kiểm tra → License ký chứa phiên bản/chính sách/ngưỡng cố định và các giá trị hợp lệ → Gate đọc lại và đối chiếu từng trường đúng loại. Chỉ đạt kiểm tra máy khi có ít nhất 2 thành phần hợp lệ khớp với dữ liệu gốc đã ký; các điều kiện cấp phép khác vẫn bắt buộc. Nếu cấp với 3 giá trị hợp lệ, chấp nhận 2/3; nếu chỉ 2 hợp lệ, bắt buộc 2/2; dưới 2 không cấp V2. Không tính giá trị thiếu/lỗi/default là điểm; không hạ ngưỡng, không tự ghi đè fingerprint gốc khi chạy, không fallback V1 khi V2 lỗi. Duy trì License V1 đã cấp theo đúng thuật toán V1; định tuyến dựa trên phiên bản được xác thực, không cấp V1 mới như cách né V2 nếu chưa được chủ dự án duyệt. Chính sách cấp lại/migration/rollback Gate cần chốt tại 08.5–08.6.
+
+| Bước | Nội dung / điều kiện hoàn thành | Tiến độ |
+|---|---|---|
+| 08.1 | Chốt ba thông số và ngưỡng tối thiểu 2/3, xác định phạm vi giữ nguyên | Chủ dự án đã thống nhất; chưa duyệt đặc tả byte-level |
+| 08.2 | Rà toàn bộ nguồn V59: luồng đọc máy, MachineProtocol, DCAD_ID, dreq, issuer, Licensecc, DB, Gate, Inspector, build/phát hành/QA; xác định chính xác phạm vi tác động và tương thích | Bước tiếp theo; chưa rà nguồn trong đợt này |
+| 08.3 | Bộ thu thập native độc lập, đọc 3 trường, kiểm tra biên dữ liệu, chuẩn hóa ứng viên, trạng thái valid/missing/invalid/ambiguous, không sửa License/Gate | Chưa triển khai |
+| 08.4 | Kiểm nghiệm trên máy đồng bộ, laptop, máy tự lắp, máy ảo; đối chiếu PowerShell/WMI chỉ để QA; thống kê tỷ lệ đủ 2/3, placeholder, trùng, hai serial giống nhau, độ ổn định khi khởi động/cập nhật/nâng cấp | Chưa triển khai |
+| 08.5 | Duyệt đặc tả byte-level: parser, UUID byte order, encoding/case/trim, danh sách invalid, Type 2 nhiều board, phân biệt lỗi đọc; vector hash; chính sách trùng, reissue, V1/V2 và không hạ ngưỡng | Chưa duyệt |
+| 08.6 | Thiết kế dreq/lic/DB có phiên bản, ràng buộc trong chữ ký, schema migration/backup/rollback; kiểm tra giới hạn Licensecc và ABI; chốt kế hoạch phát hành tương thích | Chưa duyệt |
+| 08.7 | Tích hợp DCAD_ID, issuer/LicenseccManager và Inspector; dùng chung logic định danh, kiểm tra input và cảnh báo trùng, phát hành thử | Chưa triển khai |
+| 08.8 | Tích hợp Gate 2/3, kiểm tra phiên bản/chính sách đã ký, từ chối sai định dạng/thiếu điểm, không fallback, không tự đổi fingerprint | Chưa triển khai |
+| 08.9 | QA nguồn cuối, fixture/parser lỗi, ma trận xác thực, V1/V2, DB migration, hồi quy 01–06; Windows build, APPLOAD/Runtime theo host và đo hiệu năng | Chưa triển khai |
+| 08.10 | Chủ dự án nghiệm thu thực tế, phát hành theo STD-17, cập nhật Plan/chứng cứ; chỉ sửa hợp đồng tích hợp nếu thực sự cần và được duyệt | Chưa triển khai |
+
+**Cơ sở tham khảo và dependency dự kiến:** [DMTF DSP0134 3.8.0, 05/08/2024, mục 6.1.2–6.1.3, 7.2–7.3](https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.8.0.pdf) là đặc tả bố cục trường (Type 1 serial offset 07h, UUID offset 08h dài 16 byte; Type 2 serial offset 07h là chỉ số chuỗi); [Microsoft GetSystemFirmwareTable](https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemfirmwaretable) đọc RSMB, Windows SDK Kernel32.lib/Kernel32.dll; [Microsoft BCrypt](https://learn.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcrypthashdata) SHA-256, Bcrypt.lib/Bcrypt.dll; C++ standard library/MSVC. [DeviceId](https://github.com/MatthewKing/DeviceId) tham khảo cách tổ chức thành phần/phiên bản và tương thích; [Thales Sentinel LDK](https://docs.sentinel.thalesgroup.com/softwareandservices/ldk/LDKdocs/ldk-ems/SPNL/LDK_SLnP_Guide/A-CloneDetection/CloneDetection_Phy.htm) tham khảo nguyên lý fingerprint/dung sai, không sao chép chính sách hay khẳng định 2/3 được hãng chứng nhận. [Microsoft ComputerSystemProduct](https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-computersystemproduct) và [BaseBoard](https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-baseboard) dùng đối chiếu QA. Dự kiến không thêm dependency bên thứ ba; xác nhận ở 08.2.
+
+**Rủi ro và đề xuất cần đánh giá trước code tích hợp:** (a) Ba trường cùng firmware, không độc lập; nếu hai serial có cùng nội dung thì có thể chỉ là một bằng chứng thực chất, đề xuất cảnh báo/đánh giá chính sách khi cấp trước khi chốt, không tự đổi quy tắc 2/3; (b) loại UUID toàn 00/FF, serial rỗng/mặc định/placeholder; tránh chuẩn hóa quá mức làm trùng serial khác nhau; (c) parser phải giới hạn kích thước, kiểm tra header/length, chỉ số chuỗi, double-NUL, UUID byte order, Type 1 trùng và Type 2 nhiều board; không tùy tiện chọn bản ghi đầu tiên khi mơ hồ; (d) đối chiếu theo từng trường, phát hiện trùng cặp giữa các máy trong DB issuer; không tuyên bố phát hiện toàn bộ máy offline, không tự chặn mọi VM; (e) dữ liệu có thể giả mạo đồng thời, máy clone có thể giữ 2/3; thay mainboard/cập nhật firmware có thể đổi nhiều trường; chính sách cấp lại cần được duyệt, không tự chuyển License; (f) một lỗi đọc SMBIOS có thể làm cả ba trường mất; từ chối nếu không đủ hai, thông báo chẩn đoán không lộ dữ liệu raw; (g) giữ nguyên V1 byte-for-byte, chống downgrade, xác minh giới hạn Licensecc khi mang nhiều hash đã ký, không thêm dữ liệu ngoài chữ ký; (h) DB backup/migration có transaction, tránh trùng thiết bị do dùng hash tổng hợp làm khóa bản ghi, không ghi đè fingerprint cũ; ưu tiên không lưu serial raw thường trực; (i) đọc một lần mỗi phiên kiểm tra phù hợp với Gate, không tạo tiến trình/WMI cho từng lệnh, đo thời gian thực tế, không cache kết quả cấp quyền vượt chính sách hiện hành.
+
+**QA tối thiểu:** đủ 3/3 và mọi tổ hợp 2/3 → đạt kiểm tra máy; mọi tổ hợp 1/3 và 0/3 → từ chối; cấp 2 giá trị chỉ chấp nhận đủ 2/2; thiếu/rỗng/default/ambiguous không tính điểm; dữ liệu bảng cắt cụt, độ dài sai, index sai, nhiều Type 2, khác byte order/encoding, lỗi API → xử lý an toàn; sửa version/ngưỡng/hash trong License, trường trùng loại, V2 lỗi không fallback, License sao chép khi không đủ 2 khớp → từ chối; V1 hợp lệ vẫn theo đúng V1, Gate cũ không được cấp quyền V2 nếu không hiểu chính sách; cài Windows/thay CPU/RAM/GPU/disk/NIC không mất quyền nếu đủ 2 khớp; thay mainboard tùy kết quả; QA cảnh báo trùng, migration/rollback và hồi quy chữ ký License, Feature, Edition, hết hạn, SEC06, Integration, Authenticode; kiểm thử CAD thực tế và hiệu năng. Không đánh dấu PASS khi chưa có log/chứng cứ.
+
+**Trạng thái 08:** Chủ dự án đã chốt nguyên tắc 2/3 và yêu cầu cập nhật Plan ngay sau 07. Các chi tiết triển khai, dependency và xử lý hai serial giống nhau là đề xuất cần xác nhận theo từng bước. Chưa đọc lại ZIP V59 trong đợt này, chưa code, chưa build/test, không tăng phiên bản phần mềm, không thay hợp đồng đang hiệu lực. Tiếp theo 08.2 sau xác nhận chuyển bước.
+
 
 **Quản lý và cập nhật Plan (bắt buộc):**
 
