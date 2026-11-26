@@ -1,4 +1,6 @@
-# BỘ TIÊU CHUẨN DCAD — V1.23
+# BỘ TIÊU CHUẨN DCAD — V1.24
+
+Cập nhật trực tuyến 26/11/2026 — [STD-16 V1.22](16_DataManifest_BuildInfo_va_QA.md): loại bỏ quy trình/checklist trùng STD-18 V1.2 (AI-01–AI-18); giữ 15 tiêu chí QA kỹ thuật có ID cũ, phương pháp kiểm chứng, phân loại lỗi, hồ sơ và cổng nghiệm thu. Dùng chung bằng chứng, không lập báo cáo trùng; giữ nguyên các bộ test chuyên ngành, DataManifest/BuildInfo và STD-18. STD-19 vẫn đã rút. ZIP tổng V1.17 giữ nguyên, không sửa/build phần mềm.
 
 Cập nhật trực tuyến 26/11/2026 — [STD-16 V1.21](16_DataManifest_BuildInfo_va_QA.md): hợp nhất QA bắt buộc khi AI sửa code (QA01–QA26), kiểm tra trước/sau, diff toàn bộ, kiểm thử thực tế, hồi quy, vòng lặp sửa lỗi và báo cáo bằng chứng; tách SOURCE_QA_RESULT, Build, Standard và Runtime. Giữ các yêu cầu DataManifest/BuildInfo, ma trận và bộ test chuyên ngành; STD-18 giữ nguyên, STD-19 vẫn đã rút. Chỉ cập nhật tài liệu trực tuyến, ZIP tổng V1.17 giữ nguyên, không sửa/build phần mềm.
 
