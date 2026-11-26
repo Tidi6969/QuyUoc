@@ -1,7 +1,7 @@
 # DCAD-STD-20 — Quy ước bàn giao Key và tích hợp bản quyền Add-in DCAD
 
 **Mã quy ước:** 20  
-**Phiên bản:** 1.2  
+**Phiên bản:** 1.3  
 **Ngày cập nhật:** 26/11/2026  
 **Trạng thái:** Quy ước được phê duyệt ngày 25/11/2026; bắt buộc khi bàn giao bộ tích hợp bản quyền và tích hợp Add-in trong phạm vi hợp đồng đã xác nhận.  
 **Nguồn chuẩn:** TidiDcad-System V49 (Gate V6), DJoin V38 (tham chiếu tích hợp native), ToolCatalog.db.  
@@ -16,6 +16,57 @@
 4. Khi chạy, Add-in phải xác minh Gate được ký bởi danh tính đã duyệt, kiểm tra ABI, machine policy, License và Feature trước nghiệp vụ được bảo vệ. Chỉ ALLOW mới được thực hiện. Không dùng fallback không ký, bỏ qua Gate, quyền QA mặc định hoặc cấu hình tắt xác minh.
 5. Không đổi thuật toán hình học, UI, settings, XData, tên lệnh, cấu trúc nguồn và target ngoài phạm vi cần thiết. Không thay đổi giao thức Gate, chữ ký, mã máy hoặc License trong công việc tích hợp.
 6. Kiểm tra tĩnh không thay thế Build, APPLOAD và Runtime. Mỗi kết luận phải có chứng cứ trên nguồn cuối cùng theo STD-18.
+
+**Plan — Tổng thể hướng phát triển thực tế TidiDcad (cập nhật 26/11/2026)**
+
+Plan là một phần của STD-20, được quản lý trực tiếp tại đây; không tạo quy ước, file kế hoạch hoặc dự án riêng. Đây là nơi ghi yêu cầu và tiến độ phát triển chính thức của TidiDcad; README DCAD chỉ là thông tin tổng hợp, không thay thế Plan. Plan không thay đổi hợp đồng tích hợp đang hiệu lực khi chưa có thiết kế và nghiệm thu được duyệt.
+
+**Baseline: V55** — chủ dự án xác nhận chạy OK ngày 26/11/2026 (UserReportedWorking=YES). Giữ nguyên năm hạng mục hiện có; chỉ phát triển thêm hai hạng mục tiếp theo.
+
+| STT | Hạng mục | Yêu cầu | Tiến độ |
+|---|---|---|---|
+| 01 | Chữ ký số License (LIC-04) | Giữ xác minh chữ ký và từ chối License không hợp lệ | V55 — giữ nguyên |
+| 02 | Khóa bản quyền theo máy (LIC-02) | Giữ DeviceID và đối chiếu máy tại Gate | V55 — giữ nguyên |
+| 03 | Phân quyền Feature (LIC-03) | Giữ định danh, quyền và thời hạn Feature | V55 — giữ nguyên |
+| 04 | Chống thay thế Gate (SEC-02) | Giữ xác minh chữ ký/hash Gate DLL theo SEC06 | V55 — giữ nguyên |
+| 05 | Ký số bộ bàn giao (SEC-03) | Giữ RSA-PSS Integration sáu file và xác thực khi tiếp nhận theo STD-20 | V55 — giữ nguyên |
+| 06 | Chống sửa Add-in (SEC-AT) | Phát hiện thành phẩm bị sửa/thay thế; từ chối nghiệp vụ trong ranh giới bảo vệ đã duyệt | Đang nghiên cứu |
+| 07 | Chống lùi đồng hồ (SEC-07) | Bảo vệ thời hạn License offline, phát hiện lùi thời gian và xử lý hợp lệ | Chưa bắt đầu; sau 06 |
+
+```text
+V55 — giữ nguyên 01–05
+  ↓
+06 — Chống sửa Add-in (hiện tại)
+  ↓
+07 — Chống lùi đồng hồ (tiếp theo)
+  ↓
+Nghiệm thu toàn bộ 7 hạng mục
+```
+
+**Yêu cầu và tiến độ từng bước của hạng mục hiện tại:**
+
+| Bước | Yêu cầu / điều kiện hoàn thành | Tiến độ |
+|---|---|---|
+| 06.1 | Xác định baseline V55, đọc nguồn thực tế và cơ chế SEC06; xác định phạm vi ảnh hưởng, phần giữ nguyên | Chưa xác minh trực tiếp nguồn V55; bước tiếp theo |
+| 06.2 | Nghiên cứu ký số thành phẩm, ưu tiên tận dụng hệ thống hiện có; đối chiếu các phương án RSA-PSS, Authenticode và khả năng xác minh offline | Đã thảo luận sơ bộ; chưa chốt |
+| 06.3 | Chốt phương án và yêu cầu kỹ thuật, ranh giới cưỡng chế, hợp đồng, tương thích và tiêu chí nghiệm thu với chủ dự án | Chưa thực hiện |
+| 06.4 | Lập trình đúng phạm vi, rà soát và kiểm thử theo STD-18; giữ nguyên năm hạng mục V55 và nghiệp vụ CAD | Chưa thực hiện |
+| 06.5 | Tích hợp thử DJoin native AutoCAD 2022 x64; kiểm tra Build/APPLOAD/Runtime, phát hiện sửa đổi và hồi quy | Chưa thực hiện |
+| 06.6 | Chủ dự án nghiệm thu theo đúng ranh giới bảo vệ đã kiểm chứng; cập nhật Plan, xác nhận trước khi chuyển 07 | Chưa thực hiện |
+
+Hạng mục 07 hiện chưa bắt đầu. Khi được phép chuyển sang 07, bổ sung yêu cầu cụ thể, các bước và tiêu chí nghiệm thu của chính hạng mục đó vào Plan trước khi code; không tự chọn công nghệ hoặc mở rộng phạm vi trước khi được duyệt.
+
+**Quản lý và cập nhật Plan (bắt buộc):**
+
+- Trước mỗi phiên phát triển TidiDcad, đọc lại STD-20/Plan và STD-18; xác định đúng baseline, bước hiện tại, yêu cầu đã thống nhất, phần phải giữ nguyên và điều kiện chuyển bước.
+- Khi chủ dự án giao yêu cầu mới hoặc xác nhận thay đổi, cập nhật trực tiếp yêu cầu, phạm vi và tiêu chí nghiệm thu của bước liên quan trong Plan. Không tự coi phương án đang nghiên cứu là đã chốt.
+- Sau mỗi bước thực tế, cập nhật ngay trạng thái, phiên bản nguồn, kết quả thực hiện, bằng chứng (commit/log/test nếu có), hạn chế hoặc blocker và hành động tiếp theo. Nếu chưa có bằng chứng thì ghi rõ Chưa xác minh/NotVerified; không tự đánh dấu PASS.
+- Chỉ triển khai bước tiếp theo khi bước trước đủ điều kiện và chủ dự án đã xác nhận chuyển bước. Khi có lỗi, xác định nguyên nhân và cập nhật bước cần sửa lại; không bỏ qua bước chưa đạt hoặc tự thay đổi các hạng mục đã chốt.
+- Mỗi lần cập nhật ghi ngày, bước, nội dung yêu cầu/thay đổi, trạng thái trước/sau, bằng chứng/xác nhận và việc tiếp theo; lưu lịch sử qua Git. Chỉ thay đổi hợp đồng kỹ thuật STD-20 khi phương án mới đã được duyệt theo phạm vi tương ứng.
+- Không mở rộng sang chống dịch ngược chuyên sâu, mã hóa code, obfuscation, bảo vệ RAM chuyên sâu, USB dongle, cloud hay hạng mục khác nếu chưa được giao. Không tăng version phần mềm chỉ vì cập nhật Plan.
+
+**Ghi nhận tiến độ:** 26/11/2026 — V55 được chủ dự án xác nhận OK; chốt giữ 01–05, thực hiện 06 trước 07. Đã nghiên cứu sơ bộ phương án ký Add-in; chưa đọc trực tiếp nguồn V55 trong đợt nghiên cứu này, chưa chốt thiết kế, chưa code hoặc nghiệm thu 06. Chưa xác minh độc lập ZIP nguồn trên GitHub, log MSVC, kiểm thử PFX và Build/APPLOAD/Runtime DJoin/Dtscr của V55. Chữ ký số và kiểm tra trong cùng tiến trình không tự chứng minh khả năng chặn mọi Add-in bị sửa; phải đánh giá ranh giới cưỡng chế trước khi nghiệm thu. Bước tiếp theo: 06.1.
+
 
 ## 2. Cấu trúc bàn giao bắt buộc
 

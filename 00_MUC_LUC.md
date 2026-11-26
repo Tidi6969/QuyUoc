@@ -1,4 +1,6 @@
-# BỘ TIÊU CHUẨN DCAD — V1.21
+# BỘ TIÊU CHUẨN DCAD — V1.22
+
+Bổ sung Plan phát triển TidiDcad trực tiếp trong mục 1 của [STD-20 V1.3](20_Quy_uoc_ban_giao_key_Addin.md): baseline V55, bảy hạng mục bảo mật, yêu cầu/tiến độ từng bước và quy tắc cập nhật. Không tạo file Plan riêng, không thay hợp đồng kỹ thuật V1.2, không sửa mã nguồn; ZIP tổng V1.17 giữ nguyên.
 
 ## Cập nhật trực tuyến 26/11/2026 — [STD-20 V1.2](20_Quy_uoc_ban_giao_key_Addin.md)
 
