@@ -1,4 +1,6 @@
-# QuyUoc — Bộ tiêu chuẩn DCAD V1.22 (trực tuyến)
+# QuyUoc — Bộ tiêu chuẩn DCAD V1.23 (trực tuyến)
+
+Cập nhật trực tuyến 26/11/2026 — [STD-16 V1.21](16_DataManifest_BuildInfo_va_QA.md): hợp nhất QA bắt buộc khi AI sửa code (QA01–QA26), kiểm tra trước/sau, diff toàn bộ, kiểm thử thực tế, hồi quy, vòng lặp sửa lỗi và báo cáo bằng chứng; tách SOURCE_QA_RESULT, Build, Standard và Runtime. Giữ các yêu cầu DataManifest/BuildInfo, ma trận và bộ test chuyên ngành; STD-18 giữ nguyên, STD-19 vẫn đã rút. Chỉ cập nhật tài liệu trực tuyến, ZIP tổng V1.17 giữ nguyên, không sửa/build phần mềm.
 
 Bổ sung Plan phát triển TidiDcad trực tiếp trong mục 1 của [STD-20 V1.3](20_Quy_uoc_ban_giao_key_Addin.md): baseline V55, bảy hạng mục bảo mật, yêu cầu/tiến độ từng bước và quy tắc cập nhật. Không tạo file Plan riêng, không thay hợp đồng kỹ thuật V1.2, không sửa mã nguồn; ZIP tổng V1.17 giữ nguyên.
 
