@@ -117,6 +117,8 @@ Luồng ký: build thành phẩm cuối → tính hash Authenticode → ký dữ
 
 **Tiến độ V58 — 26/11/2026:** Hai log Windows V57 xác nhận TidiDcad/DCAD_ID build và publish PASS, root dừng ADDIN_PUBLIC_TRUST_MISSING; Gate/License group chưa chạy. Rà nguồn phát hiện New-SecPfx -Addin có ba X509ExtensionCollection.Add trả Int32 vào pipeline; sửa bỏ output thừa, kiểm tra kiểu byte[], đồng bộ mã nhúng. Thêm QA danh tính biệt lập trước live trust preflight (tạo, kiểm tra, sai mật khẩu, lặp setup, sao lưu, khôi phục cùng pin). Chưa có log GUI nên chưa xác nhận lỗi thực tế chính là lỗi nguồn này. Diff đảo ngược, đồng bộ nguồn nhúng, 602/602 hash dependency, ZIP PASS trên Linux; Windows V58 QA/Build/GUI/Authenticode/CAD NotVerified. Giữ nguyên Gate, Licensecc, SEC06, Integration và dependency. ZIP V58 SHA256: 40020ec0664ef096137ba00a74430bc1049d2798700a49bbb64e8c7c4a757c5d. Chưa nghiệm thu.
 
+**Tiến độ V59 — 26/11/2026:** Log V58 đã vượt live Add-in trust preflight đến SEC06 QA; dừng do fixture bundle thiếu osslsigncode.exe. Đối chiếu publisher xác nhận còn thiếu hai notice và DcadAddinVerify.exe ở hai QA root; recovery allowlist chưa có ba signer outputs. V59 sửa fixture bằng dependency thực đã pin hash, bổ sung verifier giả lập, ca sai hash/rollback/recovery/final verification; đồng bộ embedded, không sửa publisher/thuật toán ký/xác minh/Gate/Licensecc/Integration. Linux đối chiếu đường dẫn, 602/602 hash, phạm vi diff, embedded và ZIP PASS; AddinContract 27/27 (50.000 mẫu), Integration model 60/60 PASS. Windows SEC06 QA mới, full Build/Authenticode/CAD NotVerified. ZIP SHA256 26281931c5facde26b03fff5119182063eded6c029c68cce1c1063003233b8c3. Chưa nghiệm thu production.
+
 ## 2. Cấu trúc bàn giao bắt buộc
 
 ```text
