@@ -1,4 +1,6 @@
-# BỘ TIÊU CHUẨN DCAD — V1.22
+# BỘ TIÊU CHUẨN DCAD — V1.23
+
+Cập nhật trực tuyến 26/11/2026 — [STD-16 V1.21](16_DataManifest_BuildInfo_va_QA.md): hợp nhất QA bắt buộc khi AI sửa code (QA01–QA26), kiểm tra trước/sau, diff toàn bộ, kiểm thử thực tế, hồi quy, vòng lặp sửa lỗi và báo cáo bằng chứng; tách SOURCE_QA_RESULT, Build, Standard và Runtime. Giữ các yêu cầu DataManifest/BuildInfo, ma trận và bộ test chuyên ngành; STD-18 giữ nguyên, STD-19 vẫn đã rút. Chỉ cập nhật tài liệu trực tuyến, ZIP tổng V1.17 giữ nguyên, không sửa/build phần mềm.
 
 Bổ sung Plan phát triển TidiDcad trực tiếp trong mục 1 của [STD-20 V1.3](20_Quy_uoc_ban_giao_key_Addin.md): baseline V55, bảy hạng mục bảo mật, yêu cầu/tiến độ từng bước và quy tắc cập nhật. Không tạo file Plan riêng, không thay hợp đồng kỹ thuật V1.2, không sửa mã nguồn; ZIP tổng V1.17 giữ nguyên.
 
@@ -56,7 +58,7 @@ Bổ sung Plan phát triển TidiDcad trực tiếp trong mục 1 của [STD-20 
 | 13B | [DCAD Native Dialog — Kiến trúc và trình bày hộp thoại](13B_Quy_chuan_giao_dien_hop_thoai_Native_DCAD.md) | Bắt buộc khi tạo mới/thiết kế lại hộp thoại native; thành phần theo tính năng |
 | 14 | [Transaction, Undo và hiệu năng](14_Transaction_Undo_va_hieu_nang.md) | Bắt buộc theo thao tác |
 | 15 | [Xử lý lỗi và HARD STOP](15_Xu_ly_loi_va_HARD_STOP.md) | Bắt buộc |
-| 16 | [DataManifest, BuildInfo và QA](16_DataManifest_BuildInfo_va_QA.md) | Bắt buộc |
+| 16 | [QA mã nguồn, Build, kiểm thử và nghiệm thu](16_DataManifest_BuildInfo_va_QA.md) | Bắt buộc |
 | 17 | [Autoupdate — Tự động build, đồng bộ GitHub và ghi nhận xác nhận OK](17_Autoupdate.md) | Bắt buộc khi cập nhật GitHub hoặc người dùng xác nhận phiên bản OK |
 | 18 | [Nguyên tắc AI lập trình theo Karpathy](18_Karpathy_Guidelines_cho_AI_lap_trinh.md) | Bắt buộc khi AI phân tích/viết/sửa/rà soát code |
 | 20 | [Bàn giao Key và tích hợp bản quyền Add-in DCAD](20_Quy_uoc_ban_giao_key_Addin.md) | Bắt buộc khi bàn giao bộ tích hợp và tích hợp Add-in theo hợp đồng đã xác nhận |
