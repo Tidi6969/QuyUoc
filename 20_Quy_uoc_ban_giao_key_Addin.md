@@ -17,11 +17,11 @@
 5. Không đổi thuật toán hình học, UI, settings, XData, tên lệnh, cấu trúc nguồn và target ngoài phạm vi cần thiết. Không thay đổi giao thức Gate, chữ ký, mã máy hoặc License trong công việc tích hợp.
 6. Kiểm tra tĩnh không thay thế Build, APPLOAD và Runtime. Mỗi kết luận phải có chứng cứ trên nguồn cuối cùng theo STD-18.
 
-**Plan — Tổng thể hướng phát triển thực tế TidiDcad (cập nhật 26/11/2026)**
+**Plan — Tổng thể hướng phát triển thực tế TidiDcad (cập nhật 27/11/2026)**
 
 Plan là một phần của STD-20, được quản lý trực tiếp tại đây; không tạo quy ước, file kế hoạch hoặc dự án riêng. Đây là nơi ghi yêu cầu và tiến độ phát triển chính thức của TidiDcad; README DCAD chỉ là thông tin tổng hợp, không thay thế Plan. Plan không thay đổi hợp đồng tích hợp đang hiệu lực khi chưa có thiết kế và nghiệm thu được duyệt.
 
-**Baseline ban đầu: V55. Baseline hiện tại: V59** — chủ dự án xác nhận build OK và kiểm nghiệm chống sửa Add-in với Dtscr V121 trên AutoCAD 2022 ngày 26/11/2026. Giữ nguyên 01–05 trên V59; 06 đã triển khai và kiểm nghiệm các ca chính; 07 tạm dừng phát triển; 08 đã thống nhất nguyên tắc nhận diện máy SMBIOS 2/3, chưa triển khai.
+**Baseline ban đầu: V55. Baseline hiện tại: V59** — chủ dự án xác nhận build OK và kiểm nghiệm chống sửa Add-in với Dtscr V121 trên AutoCAD 2022 ngày 26/11/2026. Giữ nguyên 01–05 trên V59; 06 đã triển khai và kiểm nghiệm các ca chính; 07 tạm dừng phát triển; 08 đã có ứng viên V61, chưa nghiệm thu Windows/CAD; 09 nghiên cứu Feature-Bound Execution (FBE) độc lập, chưa code hoặc tích hợp.
 
 | STT | Hạng mục | Yêu cầu | Tiến độ |
 |---|---|---|---|
@@ -33,6 +33,7 @@ Plan là một phần của STD-20, được quản lý trực tiếp tại đâ
 | 06 | Chống sửa Add-in (SEC-AT) | Ký số nhúng Authenticode cho thành phẩm; xác minh tính toàn vẹn và danh tính phát hành DCAD; từ chối nghiệp vụ trong ranh giới bảo vệ đã duyệt | V59 — đã triển khai; chủ dự án xác nhận các ca chính trên Dtscr V121 / AutoCAD 2022 |
 | 07 | Chống lùi đồng hồ (SEC-07) | Bảo vệ thời hạn License offline, phát hiện lùi thời gian và xử lý hợp lệ | **Tạm dừng phát triển** theo quyết định chủ dự án 26/11/2026; chưa triển khai code |
 | 08 | Cải tiến xác thực máy — Machine Identity V2 (LIC-02) | SMBIOS UUID + System Serial Number + Mainboard Serial Number; tối thiểu 2 giá trị hợp lệ khớp với License đã ký | Baseline duy trì V59; ứng viên V61 sửa build/phát hành đồng bộ; Linux QA PASS; Windows/CAD NotVerified, chưa nghiệm thu |
+| 09 | Feature-Bound Execution (DCAD-FBE) — chống bỏ qua Gate | Ràng buộc Feature với thành phần thiết yếu của nghiệp vụ, không chỉ ALLOW/DENY; nghiên cứu độc lập, kiểm soát tác động, duyệt từng bước | Chủ dự án chọn hướng nghiên cứu 27/11/2026; 09.1 phạm vi và tác động sơ bộ; chưa chọn thiết kế, chưa code, chưa tích hợp |
 
 ```text
 V55 — giữ nguyên 01–05
@@ -41,7 +42,9 @@ V59 — 06 đã triển khai, kiểm nghiệm các ca chính
   ↓
 Duy trì 01–06; 07 tạm dừng phát triển
   ↓
-08 — Machine Identity V2 (LIC-02): SMBIOS 2/3; chưa triển khai
+08 — Machine Identity V2 (LIC-02): V61 ứng viên; chờ nghiệm thu Windows/CAD
+  ↓ (chỉ tích hợp hạng mục mới sau khi 08 được nghiệm thu)
+09 — DCAD-FBE: nghiên cứu/prototype độc lập, duyệt từng bước
 ```
 
 **Yêu cầu và tiến độ từng bước của hạng mục hiện tại:**
@@ -102,6 +105,62 @@ Chủ dự án thống nhất tối thiểu 2 trong 3 thông số: ID01 SMBIOS U
 **Rà soát tổng thể V61 — 26/11/2026:** Chủ dự án yêu cầu xác nhận lại toàn bộ Build, liên kết và logic phần mềm, sửa điểm lỗi. Baseline nguồn V60 đã xác minh CRC/SHA256; last working baseline V59 giữ nguyên. V60 có lỗi thiếu dấu đóng namespace dcad tại Machine.cpp (tái hiện GCC với khai báo Win32 giả lập: expected '}' at end of input); sửa đúng một dấu đóng, không đổi thuật toán nhận diện. V60 còn công bố TidiDcad/DCAD_ID trước nhóm License nên lỗi ở bước sau có thể trộn giao thức V1/V2. V61 stage cả 5 module, chỉ publish All sau toàn bộ QA và xác minh Gate đã ký, dùng chung SEC06 lock/journal/rollback engine hiện có, 16 đích + alias tùy điều kiện nằm trong allowlist phục hồi. Ngoại lệ bootstrap chỉ riêng TidiDcad trên root thực sự chưa có Add-in identity state và License suite, không publish DCAD_ID/License; root hiện hữu thiếu trust dừng an toàn. Đây là thay đổi workflow do ràng buộc giao thức V2, không đổi cơ chế mật mã SEC06. Sửa tài liệu/hướng dẫn active, tên CMake V8, nhãn V61, tái tạo đúng mảng instructions embedded. Dreq 6, envelope 4/5, MachinePolicy 2, Gate V8 ABI 2, Add-in Policy 1, Integration 1.2, nguyên tắc 2/3, License gốc, không fallback, khóa và dependency/schema/Feature/time không đổi. Manifest SEC06 Policy=1 giữ nguyên, khác MachinePolicyVersion. Không sửa CAD nghiệp vụ, không tiếp tục 07/obfuscation.
 
 QA nguồn V61: GCC/Clang ASan/UBSan 38/38 parser + 50.000 biến đổi mỗi compiler; 529/529 policy/format mỗi compiler; mới 13/13 ca trên chính Machine.cpp với Win32/CryptoAPI API double mỗi compiler, đối chiếu hash, lỗi đọc/băm, giải phóng tài nguyên; Request/Import/IssueCommand PASS, AddinContract 27/27 và 50.000 biến đổi mỗi compiler; Integration model 60/60 GCC; Gate contract/mock Policy 2, Inspector validation, Layout 12.000 stress mỗi compiler, FeatureWindows regression PASS. RunLinux-V61.sh exit 0. Static link graph, 4 Integration embedded exact bytes + SEC06 GUI script equality, 602/602 dependency hashes/membership, publisher order và allowlist, diff PASS; 827 file không đổi, 32 file sửa/thêm trước manifest diff, không xóa file. Bổ sung QA Windows bad Gate, locked later destination rollback và publish All/final hash. PowerShell/MSVC thực tế, native RSA-PSS/CryptoAPI/Authenticode, transaction/rollback/bootstrap Windows, GUI, APPLOAD/Runtime/latency CAD vẫn NotVerified. Build root dùng QA identity hiện hữu, không production; first build thiếu cache Licensecc/Boost có thể cần tải nguồn. ZIP V61 90.731.721 byte SHA-256 `f9527b09b522a61b17e044fcd823b1366c79ee6afb825886ff8efa9868c7f882`; CRC và byte hashes PASS. Bàn giao nguồn qua ChatGPT; ZIP chưa upload GitHub. Không thay STD-20 hợp đồng kỹ thuật mục 2 trở đi. V61 thay V60 làm ứng viên kiểm thử, chưa nghiệm thu 08.10. Tiếp theo backup, Windows Build_All V61, mới dreq/lic, Integration 1.2, build/ký lại Add-in và test AutoCAD 2022. Không dùng V60 để build.
+
+**Hạng mục 09 — DCAD Feature-Bound Execution (FBE), 27/11/2026**
+
+**Quyết định của chủ dự án:** chọn hướng nghiên cứu Feature-Bound Execution nhằm tăng khả năng chống bỏ qua Gate; làm từng bước, kiểm tra đạt và chủ dự án xác nhận mới chuyển bước/tích hợp. Trước triển khai phải làm rõ lưu trình, phạm vi sửa, phần giữ nguyên, phụ thuộc và tác động tới ba vai trò. Bổ sung vào Plan hiện có; không tạo quy ước hay repo mới. System Check được tạm hoãn, không thuộc 09. Không tiếp tục 07 hoặc làm rối từ khóa.
+
+**Baseline và ranh giới:** V59 vẫn là baseline đã có xác nhận sử dụng; V61 là ứng viên 08 (Gate V8, ABI 2, MachinePolicyVersion 2, Dreq 6, License envelope V4/V5, Integration 1.2, Add-in Policy 1, SEC06 manifest Policy 1). Chưa có xác nhận nghiệm thu Windows/CAD V61. Nghiên cứu/prototype 09 được cách ly hoàn toàn; không sửa hay phát hành V61, không tăng version chỉ vì Plan. Trước tích hợp phải nghiệm thu 08, xác minh đúng baseline nguồn và hợp đồng áp dụng. Không lấy mô tả giao thức lịch sử ở mục 2 trở đi thay cho nguồn V61 thực tế.
+
+**Mục tiêu và mô hình nguy cơ:** FBE tạo sự phụ thuộc thực sự giữa Feature được cấp quyền và dữ liệu/hàm/module thiết yếu của nghiệp vụ. Giữ Gate làm cơ chế xác thực chính, không thay bằng Session/Token. Mục tiêu kiểm chứng là bỏ qua kiểm tra ALLOW/DENY đơn thuần không đủ để hoàn thành nghiệp vụ được chọn; tài nguyên không cấp quyền, sai Feature, sai phiên bản, bị sửa hoặc thiếu phải bị từ chối an toàn. Không tạo điều kiện giả hoặc cố tình làm sai kết quả hình học. Giới hạn: toàn bộ hệ thống offline chạy trên máy khách do khách hàng kiểm soát, mã/khóa/dữ liệu đã giải mã có thể bị phân tích hoặc trích xuất; không tuyên bố chống mọi bypass, chống trích xuất tuyệt đối, hoặc tương đương hệ thống thương mại có ranh giới giữ khóa độc lập. Không ước lượng tỷ lệ tăng bảo mật khi chưa có bằng chứng.
+
+**Phạm vi nghiên cứu:** native C++ x64, offline, ưu tiên không thêm DLL/EXE runtime, không USB dongle/TPM/server/driver/obfuscation. Ưu tiên khảo sát Feature-Bound Data (dữ liệu thực sự thiết yếu, không công khai hay có bản plaintext dự phòng), sau đó Feature-Bound Function/Module nếu dữ liệu không phù hợp. Không đưa toàn bộ thuật toán CAD vào Gate trung tâm. Không mã hóa tùy tiện database được người dùng chỉnh sửa. Session chỉ là cơ chế quản lý quyền/vòng đời, không tự tạo ranh giới bảo mật; DeviceID, hash công khai và chữ ký License không phải bí mật để dùng trực tiếp làm khóa giải mã. DPAPI nếu khảo sát phải phân biệt phạm vi bảo vệ khi lưu trữ và khi chạy; không phụ thuộc tài khoản Windows hoặc thay chính sách mã máy hiện tại nếu chưa duyệt. Phương án khóa, thuật toán/định dạng, API và cách lưu tài nguyên chưa được chọn. Chỉ dùng primitive mật mã chuẩn và thư viện đã thẩm định; ưu tiên dùng lại dependency nếu phù hợp. Tách khóa ký và khóa giải mã; đánh giá phạm vi thiệt hại khi một khóa bị lộ, phân tách theo Feature/resource nếu khả thi; không đưa khóa riêng issuer sang máy build/khách hàng. Cần quyết định việc đóng gói, cấp phát/khôi phục/luân chuyển khóa, cấp lại License, tương thích cũ và quyền truy cập trước khi code tích hợp.
+
+**Lưu trình hiện tại phải bảo toàn (tham chiếu ứng viên V61):**
+- Quản trị: đăng ký Tool/Feature → xuất và ký Integration → tiếp nhận thành phẩm build → ký Authenticode và xác minh → phát hành; DCAD_ID tạo Dreq từ máy sử dụng → issuer cấp License đã ký theo Feature/Edition/thời hạn. Giữ nguyên quyền sở hữu khóa và thẩm quyền cấp phép.
+- Phát triển: nhận Integration đã xác thực → ánh xạ Feature vào entry point nghiệp vụ → code/build đúng SDK → QA → bàn giao thành phẩm và bằng chứng. Không cần khóa riêng, tài khoản issuer hoặc License thật để biên dịch.
+- Sử dụng: nhận Add-in đã ký, Gate + release manifest, License và tài nguyên được duyệt → APPLOAD → mỗi chức năng được bảo vệ gọi GateClient/Gate để kiểm tra đầy đủ → chỉ thực hiện khi hợp lệ.
+- Hướng FBE dự kiến bổ sung bước bảo vệ tài nguyên cần thiết tại giai đoạn phát hành, trước ký Authenticode nếu tài nguyên được nhúng hoặc làm thay đổi PE; nếu tài nguyên rời phải xác thực và ràng buộc với Feature/version phù hợp. Runtime phải xác minh theo luồng hiện có trước khi cấp quyền sử dụng tài nguyên, sau đó nghiệp vụ mới được thực hiện. Không phát hành lại hay ký lại sau khi thay đổi nội dung đã ký mà chưa qua các cổng xác minh. Không tạo nhánh fallback plaintext hoặc quyền ALLOW cũ để vượt FBE đối với Feature đã áp dụng FBE.
+
+**Ma trận ảnh hưởng sơ bộ — không phải danh sách file đã duyệt:**
+
+| Thành phần | Định hướng | Điều kiện trước khi thay đổi |
+|---|---|---|
+| LIC-04, RSA-PSS, issuer/SEC06/Authenti­code signing identity | Giữ nguyên thuật toán, khóa và quy trình xác minh | Không dùng khóa ký làm khóa giải mã; kiểm thử hồi quy 01–06, 08 |
+| LIC-02, SMBIOS 2/3, DCAD_ID/Dreq 6 | Giữ nhận diện, ngưỡng và đối chiếu License gốc; ưu tiên không sửa DCAD_ID/Dreq | Nếu cần enrollment khóa mới, phải trình tác động thiết bị, cấp phép và khả năng thay phần cứng trước |
+| Tool/Feature/Edition/time | Giữ ID, mapping, phân quyền và thời hạn | Không mở rộng hoặc cấp chéo quyền; không khởi động lại 07 |
+| License envelope V4/V5, Licensecc, LicenseccManager, DB, Inspector | Ưu tiên giữ định dạng, schema, thư viện; có thể bổ sung dữ liệu FBE nếu thật sự cần | Chốt tính tương thích, dữ liệu phải được xác thực/ràng buộc Feature, backup/rollback, cấp lại nếu cần; không tự đổi version |
+| Gate V8, GateClient, ABI 2, MachinePolicy 2 | Gate/Client có khả năng tác động trực tiếp ở API FBE; giữ toàn bộ kiểm tra hiện hữu | Chốt API/lifetime/ownership, versioning, old/new compatibility, fail-closed, đo hiệu năng; không giả giữ ABI nếu không tương thích |
+| Integration sáu file 1.2 | Ưu tiên giữ cấu trúc, quy trình ký và độc lập máy build; hợp đồng có thể phải mở rộng | Đánh giá tất cả file, chữ ký, pin, QA và nhu cầu build/ký lại; chỉ đổi hợp đồng sau khi được duyệt |
+| TidiDcad và phát hành | Có thể thêm bảo vệ tài nguyên và quản lý khóa FBE | Duyệt quyền quản trị/phát triển/sử dụng, lưu trữ bí mật, lifecycle, xử lý khi phát hành dở |
+| Build_All/Build_Release, ký số, packaging | Có thể thêm bước bảo vệ tài nguyên | Không làm mất khả năng build chuẩn; bảo vệ tài nguyên trước ký PE; kiểm tra đồng bộ, backup, rollback, không ghi đè bản đang dùng nếu FAIL |
+| Add-in CAD | Chỉ thay điểm truy cập thành phần nghiệp vụ thiết yếu, không đổi thuật toán, UI, command, XData, settings hay target ngoài phạm vi | Chọn một Tool/Feature pilot có tài nguyên thực sự cần thiết; rà tất cả đường thực thi và chứng minh hình học trước/sau tương đương |
+| Runtime/files | Ưu tiên giữ cấu trúc thư mục, số lượng module và offline | Chỉ thêm tài nguyên nếu cần và được duyệt, không private key, dữ liệu plaintext dự phòng, debug/QA hoặc dữ liệu quản trị ở khách hàng |
+| Add-in/License hiện hữu | Chưa xác định khả năng tương thích | Lập ma trận phiên bản và kế hoạch triển khai, có cần cấp lại License/xuất Integration/build/ký lại không; không trộn phiên bản hoặc fallback cho Feature FBE |
+| 07, System Check, mã hóa riêng Gate, obfuscation | Ngoài phạm vi 09 | Không triển khai khi chưa được giao riêng |
+
+**Phân quyền và bàn giao dự kiến:** Quản trị giữ khóa ký riêng và quản lý khóa FBE/đóng gói nếu thiết kế cần; duyệt Tool/Feature, phát hành tài nguyên đã bảo vệ, ký thành phẩm và cấp License. Phát triển có mã nguồn và tài nguyên nghiệp vụ trong phạm vi được giao, Integration công khai đã xác thực, dữ liệu test/khóa QA cô lập và API để build/QA; không khóa riêng phát hành, không tự cấp License thật, không yêu cầu bí mật production lúc compile. Sử dụng chỉ nhận artifact đã ký, Gate/manifest, License của mình và tài nguyên bảo vệ đã duyệt; không issuer private key, source hoặc DB quản trị. Chốt cách bàn giao khóa/tài nguyên cụ thể ở 09.3–09.4, không mở rộng quyền mặc định.
+
+**Lộ trình từng bước, xác nhận bắt buộc:**
+
+| Bước | Công việc / đầu ra bắt buộc | Điều kiện đạt | Trạng thái |
+|---|---|---|---|
+| 09.1 | Mục tiêu, mô hình nguy cơ, sơ đồ luồng hiện tại và ma trận ảnh hưởng sơ bộ | Chủ dự án duyệt phạm vi, giới hạn, phần không được thay đổi | Đã lập Plan sơ bộ theo yêu cầu; chờ xác nhận hoàn tất |
+| 09.2 | Nghiên cứu tài liệu chính thức và mã nguồn tham khảo; rà nguồn baseline ở phạm vi liên quan, so sánh Data/Function/Module và giữ Gate hiện tại | Bảng phương án có căn cứ, phân biệt nguyên lý thương mại với khả năng offline DCAD; chọn ứng viên hoặc dừng | Chưa thực hiện nghiên cứu chuyên sâu |
+| 09.3 | Thiết kế quản lý khóa: vị trí, phạm vi, cấp phát, lưu trữ, sử dụng, luân chuyển, khôi phục, rủi ro lộ khóa, phân quyền | Có phương án khả thi, không nhầm chữ ký/hash/DeviceID với bí mật; đánh giá rõ giới hạn runtime; nếu không đạt thì dừng | Chưa duyệt |
+| 09.4 | Đặc tả Feature–Session–Resource, định dạng/API/version, vòng đời, trình tự build/sign/publish/runtime, quyền ba vai trò, danh sách file/module dự kiến sửa/giữ, ma trận tương thích và QA | Chủ dự án duyệt thiết kế, danh sách thay đổi và kế hoạch backup/rollback trước khi code | Chưa duyệt |
+| 09.5 | Prototype C++ độc lập trong môi trường QA, không dùng khóa thật hoặc sửa sản phẩm | Build, test hợp lệ/không hợp lệ, bằng chứng trên nguồn cuối | Chưa code |
+| 09.6 | So sánh prototype với Gate baseline: kiểm thử quyền, tính toàn vẹn, phụ thuộc thực sự, giới hạn lưu khóa/runtime, hiệu năng | Chứng minh lợi ích bổ sung trong mô hình nguy cơ đã duyệt; không chỉ thêm một kiểm tra boolean; nếu không đủ lợi ích thì dừng | Chưa thử |
+| 09.7 | Chọn một Add-in pilot, rà source, xác định đúng Feature/resource thực sự thiết yếu; tích hợp trong bản thử riêng | Diff đúng phạm vi, không ảnh hưởng Add-in khác, bảo toàn nghiệp vụ và dữ liệu | Chưa chọn Tool |
+| 09.8 | Build/APPLOAD/Runtime trên AutoCAD 2022 x64, đối chiếu hình học, đo thời gian, QA bảo mật, các trường hợp gián đoạn | Kết quả thực tế PASS theo tiêu chí được duyệt, chủ dự án nghiệm thu pilot; không suy rộng host khác | Chưa thử |
+| 09.9 | Sau nghiệm thu 08 và pilot: chốt lại impact/diff/version/compatibility; tích hợp TidiDcad, Gate/Integration/issuer/build theo thiết kế đã duyệt | Các cổng 01–06 và 08 hồi quy; ký, phát hành đồng bộ, upgrade/rollback; không phát hành khi FAIL | Chưa triển khai |
+| 09.10 | QA nguồn cuối, tài liệu, nghiệm thu và cập nhật Plan/hợp đồng đúng phạm vi đã duyệt | Chủ dự án xác nhận thực tế; version theo STD-17; bằng chứng Build/Load/Runtime riêng | Chưa nghiệm thu |
+
+**QA tối thiểu phải thiết kế trước prototype/tích hợp:** hợp lệ và thiếu License, sai Feature/Edition, hết hạn, sai máy, Gate/Add-in bị sửa, quyền/Session không hợp lệ hoặc hết vòng đời, tài nguyên thiếu/sai Feature/sai version/bị sửa, lỗi giải mã/I/O, không có bản plaintext dự phòng, không tạo kết quả nghiệp vụ sai khi từ chối, không cho phép bỏ qua một kiểm tra đơn thuần mà vẫn đủ tài nguyên thiết yếu trong kịch bản kiểm thử đã duyệt. Đánh giá rủi ro trích xuất và phạm vi ảnh hưởng khi lộ khóa, không coi việc dữ liệu không đọc được lúc lưu là chống mọi can thiệp runtime. Kiểm thử tương thích cũ/mới, lỗi build/ký/publish dở, backup/rollback, hồi quy đầy đủ bảo mật và kết quả CAD. Chốt ngưỡng hiệu năng dựa trên baseline đo được trước khi thử. Mỗi ca ghi expected/actual/host/bằng chứng/PASS/FAIL/NotVerified theo STD-18 AI-14–AI-18; không lấy mock/Linux thay Windows/CAD. FAIL bắt buộc hoặc NotVerified trọng yếu thì không nghiệm thu, không tích hợp sản xuất. Không được giảm các lớp bảo vệ hiện hữu để đạt FBE.
+
+**Nguồn tham khảo khởi điểm (cần đối chiếu sâu ở 09.2):** [Thales Sentinel Licensing API workflow](https://docs.sentinel.thalesgroup.com/softwareandservices/LDK/LDKdocs/SPNL/LDK_SLnP_Guide/Protection/Licensing_API_protection/Workflow.htm), [Sentinel decrypt](https://docs.sentinel.thalesgroup.com/ldk/LDKdocs/API-licensing/Licensing_API/hasp_decrypt.htm), [Wibu AxProtector](https://www.wibu.systems/protection/axprotector/), [Microsoft DPAPI](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata), [Saltzer & Schroeder](https://web.mit.edu/Saltzer/www/publications/protection/) — nguyên tắc complete mediation, fail-safe defaults và economy of mechanism. Các liên kết là tài liệu để khảo sát, không chọn SDK hay khẳng định tương đương mức bảo mật. 09.2 cần ghi rõ nguồn thực sự đọc, license mã nguồn tham khảo nếu có và đánh đổi kỹ thuật.
+
+**Trạng thái 27/11/2026:** Chủ dự án yêu cầu kiểm soát tác động và bổ sung FBE vào Plan GitHub, thực hiện từng bước và chỉ tích hợp sau xác nhận. Đã tổng hợp phạm vi và ma trận ảnh hưởng cấp kiến trúc; chưa đọc lại ZIP V61 trong lượt này, chưa chọn khóa/API/định dạng/resource/pilot, chưa quyết định tương thích, chưa code/build/test 09, chưa tăng version, chưa thay hợp đồng kỹ thuật STD-20. Bước tiếp theo: chốt 09.1, sau đó 09.2; có thể nghiên cứu độc lập trong khi 08 chờ nghiệm thu, không thay đổi sản phẩm đang dùng.
 
 **Quản lý và cập nhật Plan (bắt buộc):**
 
