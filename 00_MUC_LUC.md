@@ -1,4 +1,6 @@
-# BỘ TIÊU CHUẨN DCAD — V1.24
+# BỘ TIÊU CHUẨN DCAD — V1.25
+
+Cập nhật trực tuyến 28/11/2026 — [STD-20.1 V1.0 (Tạm thời)](20.1_Ma_hoa_chong_dich_nguoc_Tam_thoi.md): bổ sung quy trình nghiên cứu mã hóa chống dịch ngược (Binary Encryption + Code Virtualization), tích hợp dự kiến vào công đoạn ký và bảo vệ Add-in của TidiDcad. Chỉ nghiên cứu/phát triển theo từng cổng nghiệm thu, chưa áp dụng production. STD-20, Plan hiện hành, các quy ước khác, mã nguồn và ZIP tổng V1.17 giữ nguyên.
 
 Cập nhật trực tuyến 26/11/2026 — [STD-16 V1.22](16_DataManifest_BuildInfo_va_QA.md): loại bỏ quy trình/checklist trùng STD-18 V1.2 (AI-01–AI-18); giữ 15 tiêu chí QA kỹ thuật có ID cũ, phương pháp kiểm chứng, phân loại lỗi, hồ sơ và cổng nghiệm thu. Dùng chung bằng chứng, không lập báo cáo trùng; giữ nguyên các bộ test chuyên ngành, DataManifest/BuildInfo và STD-18. STD-19 vẫn đã rút. ZIP tổng V1.17 giữ nguyên, không sửa/build phần mềm.
 
@@ -64,6 +66,7 @@ Bổ sung Plan phát triển TidiDcad trực tiếp trong mục 1 của [STD-20 
 | 17 | [Autoupdate — Tự động build, đồng bộ GitHub và ghi nhận xác nhận OK](17_Autoupdate.md) | Bắt buộc khi cập nhật GitHub hoặc người dùng xác nhận phiên bản OK |
 | 18 | [Nguyên tắc AI lập trình theo Karpathy](18_Karpathy_Guidelines_cho_AI_lap_trinh.md) | Bắt buộc khi AI phân tích/viết/sửa/rà soát code |
 | 20 | [Bàn giao Key và tích hợp bản quyền Add-in DCAD](20_Quy_uoc_ban_giao_key_Addin.md) | Bắt buộc khi bàn giao bộ tích hợp và tích hợp Add-in theo hợp đồng đã xác nhận |
+| 20.1 | [Mã hóa chống dịch ngược (Tạm thời)](20.1_Ma_hoa_chong_dich_nguoc_Tam_thoi.md) | Nghiên cứu/phát triển; chưa áp dụng production |
 
 ## Nguyên tắc sử dụng
 
