@@ -1,7 +1,7 @@
 # DCAD-STD-20 — Quy ước bàn giao Key và tích hợp bản quyền Add-in DCAD
 
 **Mã quy ước:** 20  
-**Phiên bản:** 1.8  
+**Phiên bản:** 1.9  
 **Ngày cập nhật:** 28/11/2026  
 **Trạng thái:** Quy ước được phê duyệt ngày 25/11/2026; bắt buộc khi bàn giao bộ tích hợp bản quyền và tích hợp Add-in trong phạm vi hợp đồng đã xác nhận.  
 **Nguồn chuẩn:** TidiDcad-System V49 (Gate V6), DJoin V38 (tham chiếu tích hợp native), ToolCatalog.db.  
@@ -359,6 +359,12 @@ Bước 10.1–10.7 là các mốc quản lý tổng hợp, không thay lộ tr�
 - V6 ZIP SHA-256 `7e9b69169a9e1912fa2525cf5f276bdaafa6cb72d1bc1119cb8dd4e676ee84c3`, CRC và manifest 44/44 PASS. Hai log Windows do chủ dự án cung cấp đã đối chiếu: Build_All(20261128-170227).log SHA-256 `712f5f43bb85bcaff6751dbc8e2ffd51ae97d3f7f037fef3b15f6a266b7f670d`; Test_All(3).log SHA-256 `d3a2cefa176a1ee88ced6087d2bb93741b1711e26354f0793858d30ba0529f23`. Cùng Run-066b668636c148429de8f8ece6742989; LIEF SDK 593/593, Build và Test mỗi lần 11/11 CTest, exit 0; PE_DATA_QA=PASS, ORIGINAL_FILES_UNCHANGED=YES; .rsrc 512 byte của EXE/DLL mẫu được mã hóa và giải mã trong RAM, 100 vòng. Không chứng minh bảo vệ mã máy hoặc CAD.
 - V7 là bản nguồn thử nghiệm phân tích chỉ đọc, SHA-256 ZIP `2cb22c62d5d296058a36137aeab83100c7528258a4ceb94bcbc0ce34da4fbb7b`, CRC và manifest 56/56 PASS. Thẩm định Zydis 4.1.1 và Zycore 1.5.2, giấy phép MIT, commit pin trong STD-20.1 và hồ sơ. Chỉ bổ sung ca QA decoder trên fixture cố định và hàm C++ mẫu nội bộ, không chuyển đổi mã, không sửa PE, không nhận file tùy ý. Full checkout upstream chưa có trong môi trường; V7 yêu cầu chuẩn bị recursive checkout chính thức riêng, không tự tải trong Build_All. Linux GCC và Clang sanitizer mỗi bộ 7/7 hồi quy V6; configure từ chối thiếu Zydis, thiếu Zycore, sai commit. Full Zydis build và Windows V7 12/12 NotVerified, chưa nghiệm thu 10.3.
 - Bước hiện tại tiếp tục 10.3.3/10.3.4 (thẩm định và thử nghiệm phân tích x64); chưa qua cổng 10.3.5, 10.4/10.5. Không sửa V76, Gate, Add-in, cơ chế ký hoặc hợp đồng INT-06; V7 chưa được chọn làm baseline nghiệm thu. Chờ chứng cứ upstream/full Lab QA trước khi đánh giá bước kế tiếp.
+
+**Cập nhật tiến độ V1.9 — 29/11/2026:** Chủ dự án duyệt tiếp tục nghiên cứu 10.3. Baseline hệ thống TidiDcad V76 giữ nguyên; baseline Lab đã thử Windows là V8. Giữ tồn đọng LicenseFormats V4/V5; không mở lại 07/09/System Check.
+
+- V8 ZIP SHA-256 `74aabd002c4d2400269a0d77e2dd7e22d2e2417c81fc9ba9e3b554fd2c554efb`; manifest 61/61 đối chiếu. Hai log Windows đã đọc: Build_All(20261128-172758).log SHA-256 `b0f7a9e969106a80920486dfc9ceb2d5e9522beeb145397dd0c9fb31a0376531`; Test_All(4).log SHA-256 `a6f8fcc1488ba354448831b3b55720b95c613c0e2f15a9a093eeee8565943096`. Cùng Run-8d05d5f53dd241a88de6c5a9379dc5e4, 12/12 CTest mỗi lần, exit 0. Kho chung D:/000/Dependencies/Libraries/Zydis-4.1.1 được chọn đúng; kiểm tra HEAD và trạng thái checkout PASS, Zydis/Zycore static build PASS, LIEF 593/593. Native decode chỉ đọc hàm mẫu MSVC 66 byte, 18 instruction, 128 đối chiếu PASS; không chứng minh bảo vệ native.
+- V9 là bản nguồn thử nghiệm ABI/metadata, SHA-256 ZIP `6c14473b042d605ef33550c0f54f6924a6ae254ec8e1955de2c469a0a4569777`; CRC và manifest 69/69 PASS. Chỉ mở rộng QA hợp đồng C ABI mẫu (108 cặp giá trị biên/guard), báo cáo cấu trúc PE trên fixture và ba mẫu tự build Windows; không đổi mã lõi, decoder, thư viện hoặc PE gốc. Sửa nhãn V86 thành V76; giữ stderr PowerShell vì chưa xác minh RemoteException. GCC và Clang sanitizer Linux mỗi bộ 7/7, resolver 8/8, ba negative control PASS; Windows V9, full Zydis build V9, CAD và native protection chưa xác minh. Ma trận phạm vi và tiêu chí đánh giá trong Design-V9.md; chưa đặt ngưỡng hiệu năng hoặc kết luận hiệu quả chống dịch ngược.
+- Tiếp tục 10.3.3/10.3.4 trong phạm vi kiểm tra tương thích độc lập. Chưa đạt 10.3.5, chưa chuyển 10.4/10.5, không sửa Gate, Add-in, khóa, cơ chế ký hay V76. V9 chỉ dùng để kiểm thử, không phát hành production.
 
 ## 2. Cấu trúc bàn giao bắt buộc
 
