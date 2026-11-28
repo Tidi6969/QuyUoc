@@ -1,7 +1,7 @@
 # DCAD-STD-20 — Quy ước bàn giao Key và tích hợp bản quyền Add-in DCAD
 
 **Mã quy ước:** 20  
-**Phiên bản:** 1.5  
+**Phiên bản:** 1.6  
 **Ngày cập nhật:** 28/11/2026  
 **Trạng thái:** Quy ước được phê duyệt ngày 25/11/2026; bắt buộc khi bàn giao bộ tích hợp bản quyền và tích hợp Add-in trong phạm vi hợp đồng đã xác nhận.  
 **Nguồn chuẩn:** TidiDcad-System V49 (Gate V6), DJoin V38 (tham chiếu tích hợp native), ToolCatalog.db.  
@@ -21,7 +21,7 @@
 
 Plan là một phần của STD-20, được quản lý trực tiếp tại đây; không tạo quy ước, file kế hoạch hoặc dự án riêng. Đây là nơi ghi yêu cầu và tiến độ phát triển chính thức của TidiDcad; README DCAD chỉ là thông tin tổng hợp, không thay thế Plan. Plan không thay đổi hợp đồng tích hợp đang hiệu lực khi chưa có thiết kế và nghiệm thu được duyệt.
 
-**Baseline ban đầu: V55. Baseline duy trì hiện tại: V74 (kế thừa V68/V70; chủ dự án xác nhận OK ngày 28/11/2026)** — V59 là bản đã được chủ dự án xác nhận build OK và kiểm nghiệm các ca chính chống sửa Add-in với Dtscr V121 / AutoCAD 2022 ngày 26/11/2026. V68 Setup được chủ dự án xác nhận OK; ngày 28/11/2026 chủ dự án xác nhận hạng mục 08 SMBIOS 2/3 OK. Duy trì 01–06 và 08; 07 và 09 tạm dừng phát triển, System Check tạm hoãn. Xác nhận của chủ dự án không thay thế log kiểm thử riêng từng ca/host; các ca thiếu chứng cứ vẫn NotVerified. ZIP V68 trên GitHub và phát hành production chưa xác minh. V70 là mốc khảo sát của bộ nghiên cứu bảo vệ binary, không phải baseline tích hợp hiện tại. V74 hợp nhất năm tab và điều chỉnh khởi tạo dữ liệu; xác nhận OK của chủ dự án không thay thế log nghiệm thu chi tiết. Phát triển tiếp hạng mục 10 trên V74 sau khi đủ điều kiện và được duyệt; không mở lại 07, 09 hoặc System Check.
+**Baseline ban đầu: V55. Baseline duy trì hiện tại: V76 (kế thừa V74/V75; chủ dự án chọn bản OK mới nhất ngày 28/11/2026)** — V59 là bản đã được chủ dự án xác nhận build OK và kiểm nghiệm các ca chính chống sửa Add-in với Dtscr V121 / AutoCAD 2022 ngày 26/11/2026. V68 Setup được chủ dự án xác nhận OK; ngày 28/11/2026 chủ dự án xác nhận hạng mục 08 SMBIOS 2/3 OK. Duy trì 01–06 và 08; 07 và 09 tạm dừng phát triển, System Check tạm hoãn. Xác nhận của chủ dự án không thay thế log kiểm thử riêng từng ca/host; các ca thiếu chứng cứ vẫn NotVerified. ZIP V68 trên GitHub và phát hành production chưa xác minh. V70 là mốc khảo sát của bộ nghiên cứu bảo vệ binary, không phải baseline tích hợp hiện tại. V74 hợp nhất năm tab và điều chỉnh khởi tạo dữ liệu; xác nhận OK của chủ dự án không thay thế log nghiệm thu chi tiết. Phát triển tiếp hạng mục 10 trên V76 sau khi đủ điều kiện và được duyệt; không mở lại 07, 09 hoặc System Check.
 
 | STT | Hạng mục | Yêu cầu | Tiến độ |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Plan là một phần của STD-20, được quản lý trực tiếp tại đâ
 | 07 | Chống lùi đồng hồ (SEC-07) | Bảo vệ thời hạn License offline, phát hiện lùi thời gian và xử lý hợp lệ | **Tạm dừng phát triển** theo quyết định chủ dự án 26/11/2026; chưa triển khai code |
 | 08 | Cải tiến xác thực máy — Machine Identity V2 (LIC-02) | SMBIOS UUID + System Serial Number + Mainboard Serial Number; tối thiểu 2 giá trị hợp lệ khớp với License đã ký | Đã triển khai từ V60/V61, kế thừa V68; chủ dự án xác nhận OK ngày 28/11/2026 (UserReportedWorking=YES). Log từng ca Windows/CAD còn thiếu: NotVerified |
 | 09 | Feature-Bound Execution (DCAD-FBE) — chống bỏ qua Gate | Ràng buộc Feature với thành phần thiết yếu của nghiệp vụ, không chỉ ALLOW/DENY; nghiên cứu độc lập, kiểm soát tác động, duyệt từng bước | **Tạm dừng tại 09.3** theo chủ dự án 28/11/2026; 09.1–09.2 đã duyệt hướng nghiên cứu, chưa duyệt thiết kế 09.3, chưa code/tích hợp |
-| 10 | Mã hóa chống dịch ngược (Binary Encryption + Code Virtualization) | Nghiên cứu một công cụ bảo vệ dùng chung cho Gate và Add-in, nghiệm thu độc lập trước tích hợp hai luồng ký V74; chi tiết tại [STD-20.1](20.1_Ma_hoa_chong_dich_nguoc_Tam_thoi.md) | Lab V3/Handover V1: demo nguyên lý đã được chủ dự án xác nhận; chưa có bảo vệ binary native thực tế, chưa tích hợp V74, production NotVerified |
+| 10 | Mã hóa chống dịch ngược (Binary Encryption + Code Virtualization) | Nghiên cứu một công cụ bảo vệ dùng chung cho Gate và Add-in, nghiệm thu độc lập trước tích hợp hai luồng ký V76; chi tiết tại [STD-20.1](20.1_Ma_hoa_chong_dich_nguoc_Tam_thoi.md) | Lab V3/Handover V1; chủ dự án báo PE-QA-V1 thử thành công (10.3.2); tiếp theo 10.3.3; native post-build, tích hợp và production NotVerified |
 
 ```text
 V55 — giữ nguyên 01–05
@@ -328,17 +328,25 @@ Chủ dự án yêu cầu bổ sung tiến trình vào Plan chính thức và l�
 |---|---|---|
 | 10.1 | Tiếp nhận Handover, xác định baseline và đối chiếu V70/V74 | Đã kiểm tra CRC, manifest, đối chiếu payload; chủ dự án xác nhận V74 OK; khảo sát tĩnh, chưa nghiệm thu runtime |
 | 10.2 | Hoàn thiện hồ sơ kiểm thử Lab, thẩm định thiết kế và phạm vi độc lập theo STD-20.1 | Demo mẫu đã xác nhận; Windows QA đầy đủ, thẩm định dependency và đặc tả còn thiếu |
-| 10.3 | Đánh giá khả năng đáp ứng mục tiêu bảo vệ sở hữu trí tuệ và tương thích trên mẫu được phép; nghiệm thu độc lập công cụ trước tích hợp | Chưa đạt cổng, chưa có công cụ native post-build hoàn chỉnh |
+| 10.3 | Đánh giá khả năng đáp ứng mục tiêu bảo vệ sở hữu trí tuệ và tương thích trên mẫu được phép; nghiệm thu độc lập công cụ trước tích hợp | 10.3.2: chủ dự án báo DCAD-10.3-PE-QA-V1 thử thành công; log chi tiết chưa đối chiếu. Tiếp theo 10.3.3: thẩm định công nghệ/dependency. Chưa đạt toàn bộ cổng |
 | 10.4 | Khi đủ điều kiện và được duyệt, tích hợp chức năng bảo vệ/ ký Gate vào tab Quản lý tài khoản và khóa phát hành; rà cả luồng Build tự động | Chưa triển khai; giữ cơ chế SEC06 hiện hành |
 | 10.5 | Khi đủ điều kiện và được duyệt, tích hợp chức năng bảo vệ/ ký Add-in vào tab Ký duyệt công cụ | Chưa triển khai; giữ Authenticode và Feature |
-| 10.6 | Nghiệm thu riêng và kết hợp Gate/Add-in, hồi quy V74, tính toàn vẹn, tương thích và hiệu năng; đánh giá độc lập | NotVerified; kiểm thử đúng thành phẩm và đúng host đã duyệt, không thay điều kiện PASS/DENY |
+| 10.6 | Nghiệm thu riêng và kết hợp Gate/Add-in, hồi quy baseline V76, tính toàn vẹn, tương thích và hiệu năng; đánh giá độc lập | NotVerified; kiểm thử đúng thành phẩm và đúng host đã duyệt, không thay điều kiện PASS/DENY |
 | 10.7 | Hoàn thiện Setup, Build_setup.cmd, hồ sơ QA và một ZIP hệ thống; chủ dự án duyệt phát hành | Chưa thực hiện; không tăng phiên bản phần mềm trong lần cập nhật tài liệu |
 
 Bước 10.1–10.7 là các mốc quản lý tổng hợp, không thay lộ trình 11 bước nghiên cứu chi tiết của STD-20.1. Tám phạm vi công việc BM01–BM08 được theo dõi trong các mốc này: công cụ, giao diện, Gate, Add-in, Build tự động, QA, lưu trữ/phục hồi và Setup. Chỉ bổ sung thay đổi trực tiếp cần thiết, review ảnh hưởng và nghiệm thu theo STD-18/16 trước bàn giao. Kiểm thử đối chứng A (Gate gốc/Add-in gốc), B (Gate bảo vệ/Add-in gốc), C (Gate gốc/Add-in bảo vệ), D (cả hai bảo vệ); B/C đạt độc lập trước D. Không dùng kết quả Lab hoặc V70 làm PASS cho thành phẩm V74 mới. Tất cả các thay đổi tích hợp còn ở trạng thái NotVerified.
 
-**Bước tiếp theo:** 10.2; hoàn thiện chứng cứ còn thiếu, đánh giá phạm vi và thiết kế trước khi chủ dự án duyệt triển khai. Chỉ cập nhật Plan STD-20 V1.4; không thay nội dung hợp đồng kỹ thuật hiện hành, không sửa V74, không tạo V75, không thay ZIP quy ước đã phát hành, không tiếp tục hạng mục 07/09.
+**Bước tiếp theo tại mốc V74 (lịch sử):** 10.2; hoàn thiện chứng cứ còn thiếu, đánh giá phạm vi và thiết kế trước khi chủ dự án duyệt triển khai. Chỉ cập nhật Plan STD-20 V1.4; không thay nội dung hợp đồng kỹ thuật hiện hành, không sửa V74, không tạo V75, không thay ZIP quy ước đã phát hành, không tiếp tục hạng mục 07/09.
 
 **Quyết định V1.5 — 28/11/2026:** Chủ dự án duyệt bỏ thủ tục xác nhận ngoài ZIP khi trực tiếp bàn giao Integration. V76 lấy V75 làm nguồn chuẩn, giữ ký và xác minh SEC06 lúc xuất, thay thông báo và hướng dẫn người tích hợp. Người lập trình chịu trách nhiệm hoàn tất bốn file bảo mật trước bàn giao, không chuyển intake sang máy build. Không sửa Gate/License/Authenticode/Machine 2/3, không triển khai 10.3. V76 QA mô hình Linux 64 ca PASS, cross-build Setup x64 và 267 payload file khớp; Windows/MSVC/CAD NotVerified. Các ghi nhận lịch sử dưới Plan không thay thế INT-06 V1.5 hiện hành.
+
+**Cập nhật tiến độ V1.6 — 28/11/2026:** Chủ dự án chọn bộ TidiDcad V76 là baseline OK mới nhất để phát triển tiếp, thay mốc V74; đây là xác nhận của chủ dự án, không phải nghiệm thu production hoặc chứng cứ từng ca Windows/CAD. Giữ V74/V75 và lịch sử trước đó. Không tạo phiên bản phần mềm mới trong lần cập nhật này.
+
+- **Tồn đọng cần xử lý trong lần sửa nguồn tiếp theo:** hệ thống cấp và xác minh License DCAD-LIC-V4/V5 đúng theo hợp đồng API hiện hành; nguồn sinh ToolInfo.json (IntegrationModel.h) còn khai báo V2/V3. Sửa metadata tại nguồn xuất, đối chiếu hợp đồng Gate và tài liệu STD-20 hiện hành, bổ sung QA LicenseFormats, rồi xuất/ký lại Integration khi cần. Không chỉnh tay JSON đã ký, không đổi giao thức License, khóa, runtime hay cấp lại License chỉ vì lỗi metadata. Còn phải kiểm chứng trên nguồn cuối theo STD-18; chưa sửa ở lần cập nhật tiến độ này.
+- **10.2:** Lab V3 Windows Build và CTest 8/8 đã được ghi nhận trong trao đổi kiểm thử trước đó; demo nguyên lý không chứng minh bảo vệ PE native. Thẩm định dependency, thiết kế và các điều kiện còn thiếu tiếp tục được theo dõi.
+- **10.3.2:** Chủ dự án báo bộ DCAD-10.3-PE-QA-V1.zip đã thử thành công (UserReportedWorking=YES). Bộ kiểm tra chỉ đọc PE, không bảo vệ hoặc biến đổi binary. Chưa nhận/đối chiếu log từng ca, hash trước/sau và tên/hash mẫu trong lần cập nhật này; trạng thái chứng cứ chi tiết NotVerified.
+- **Bước tiếp theo 10.3.3:** thẩm định ứng viên công nghệ và thư viện, phiên bản/commit, license, dependency, khả năng bảo trì, tương thích PE32+ x64, khả năng giữ ABI/metadata và giới hạn bảo vệ thực tế; chốt phương án và tiêu chí thử nghiệm trước khi phát triển hoặc chọn dependency. Đối chiếu log PE QA khi có. Không chuyển sang 10.4/10.5 trước nghiệm thu độc lập và quyết định chủ dự án; giữ 07, 09 và System Check tạm dừng. Rà lại đúng nguồn V76 trước tích hợp.
+- Chỉ cập nhật Plan; hợp đồng INT-06 V1.5 và các điều khoản kỹ thuật hiện hành chưa thay đổi. Không sửa mã, ZIP đã phát hành hoặc ghi PASS cho bảo vệ binary thực tế.
 
 ## 2. Cấu trúc bàn giao bắt buộc
 
