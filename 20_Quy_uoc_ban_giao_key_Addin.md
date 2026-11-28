@@ -1,8 +1,8 @@
 # DCAD-STD-20 — Quy ước bàn giao Key và tích hợp bản quyền Add-in DCAD
 
 **Mã quy ước:** 20  
-**Phiên bản:** 1.3  
-**Ngày cập nhật:** 26/11/2026  
+**Phiên bản:** 1.4  
+**Ngày cập nhật:** 28/11/2026  
 **Trạng thái:** Quy ước được phê duyệt ngày 25/11/2026; bắt buộc khi bàn giao bộ tích hợp bản quyền và tích hợp Add-in trong phạm vi hợp đồng đã xác nhận.  
 **Nguồn chuẩn:** TidiDcad-System V49 (Gate V6), DJoin V38 (tham chiếu tích hợp native), ToolCatalog.db.  
 **Phạm vi đã khảo sát:** Add-in native C++ x64, AutoCAD 2022; không mặc định áp dụng cho .NET, AutoCAD 2025 hoặc GstarCAD 2027 khi chưa có hợp đồng và nghiệm thu tương ứng.  
@@ -21,7 +21,7 @@
 
 Plan là một phần của STD-20, được quản lý trực tiếp tại đây; không tạo quy ước, file kế hoạch hoặc dự án riêng. Đây là nơi ghi yêu cầu và tiến độ phát triển chính thức của TidiDcad; README DCAD chỉ là thông tin tổng hợp, không thay thế Plan. Plan không thay đổi hợp đồng tích hợp đang hiệu lực khi chưa có thiết kế và nghiệm thu được duyệt.
 
-**Baseline ban đầu: V55. Baseline duy trì hiện tại: V68 (kế thừa V61)** — V59 là bản đã được chủ dự án xác nhận build OK và kiểm nghiệm các ca chính chống sửa Add-in với Dtscr V121 / AutoCAD 2022 ngày 26/11/2026. V68 Setup được chủ dự án xác nhận OK; ngày 28/11/2026 chủ dự án xác nhận hạng mục 08 SMBIOS 2/3 OK. Duy trì 01–06 và 08; 07 và 09 tạm dừng phát triển, System Check tạm hoãn. Xác nhận của chủ dự án không thay thế log kiểm thử riêng từng ca/host; các ca thiếu chứng cứ vẫn NotVerified. ZIP V68 trên GitHub và phát hành production chưa xác minh.
+**Baseline ban đầu: V55. Baseline duy trì hiện tại: V74 (kế thừa V68/V70; chủ dự án xác nhận OK ngày 28/11/2026)** — V59 là bản đã được chủ dự án xác nhận build OK và kiểm nghiệm các ca chính chống sửa Add-in với Dtscr V121 / AutoCAD 2022 ngày 26/11/2026. V68 Setup được chủ dự án xác nhận OK; ngày 28/11/2026 chủ dự án xác nhận hạng mục 08 SMBIOS 2/3 OK. Duy trì 01–06 và 08; 07 và 09 tạm dừng phát triển, System Check tạm hoãn. Xác nhận của chủ dự án không thay thế log kiểm thử riêng từng ca/host; các ca thiếu chứng cứ vẫn NotVerified. ZIP V68 trên GitHub và phát hành production chưa xác minh. V70 là mốc khảo sát của bộ nghiên cứu bảo vệ binary, không phải baseline tích hợp hiện tại. V74 hợp nhất năm tab và điều chỉnh khởi tạo dữ liệu; xác nhận OK của chủ dự án không thay thế log nghiệm thu chi tiết. Phát triển tiếp hạng mục 10 trên V74 sau khi đủ điều kiện và được duyệt; không mở lại 07, 09 hoặc System Check.
 
 | STT | Hạng mục | Yêu cầu | Tiến độ |
 |---|---|---|---|
@@ -34,6 +34,7 @@ Plan là một phần của STD-20, được quản lý trực tiếp tại đâ
 | 07 | Chống lùi đồng hồ (SEC-07) | Bảo vệ thời hạn License offline, phát hiện lùi thời gian và xử lý hợp lệ | **Tạm dừng phát triển** theo quyết định chủ dự án 26/11/2026; chưa triển khai code |
 | 08 | Cải tiến xác thực máy — Machine Identity V2 (LIC-02) | SMBIOS UUID + System Serial Number + Mainboard Serial Number; tối thiểu 2 giá trị hợp lệ khớp với License đã ký | Đã triển khai từ V60/V61, kế thừa V68; chủ dự án xác nhận OK ngày 28/11/2026 (UserReportedWorking=YES). Log từng ca Windows/CAD còn thiếu: NotVerified |
 | 09 | Feature-Bound Execution (DCAD-FBE) — chống bỏ qua Gate | Ràng buộc Feature với thành phần thiết yếu của nghiệp vụ, không chỉ ALLOW/DENY; nghiên cứu độc lập, kiểm soát tác động, duyệt từng bước | **Tạm dừng tại 09.3** theo chủ dự án 28/11/2026; 09.1–09.2 đã duyệt hướng nghiên cứu, chưa duyệt thiết kế 09.3, chưa code/tích hợp |
+| 10 | Mã hóa chống dịch ngược (Binary Encryption + Code Virtualization) | Nghiên cứu một công cụ bảo vệ dùng chung cho Gate và Add-in, nghiệm thu độc lập trước tích hợp hai luồng ký V74; chi tiết tại [STD-20.1](20.1_Ma_hoa_chong_dich_nguoc_Tam_thoi.md) | Lab V3/Handover V1: demo nguyên lý đã được chủ dự án xác nhận; chưa có bảo vệ binary native thực tế, chưa tích hợp V74, production NotVerified |
 
 ```text
 V55 — giữ nguyên 01–05
@@ -47,6 +48,10 @@ Duy trì 01–06; 07 tạm dừng phát triển
 V68 — baseline duy trì; Setup được chủ dự án xác nhận OK
   ↓
 09 — DCAD-FBE: tạm dừng tại 09.3; chưa code/tích hợp
+  ↓
+V74 — baseline duy trì đã được chủ dự án xác nhận OK
+  ↓
+10 — Lab V3/Handover V1; đối chiếu V70 → V74; nghiên cứu và nghiệm thu độc lập trước tích hợp
 ```
 
 **Yêu cầu và tiến độ từng bước của hạng mục hiện tại:**
@@ -299,6 +304,39 @@ Luồng ký: build thành phẩm cuối → tính hash Authenticode → ký dữ
 **Tiến độ V59 — 26/11/2026:** Log V58 đã vượt live Add-in trust preflight đến SEC06 QA; dừng do fixture bundle thiếu osslsigncode.exe. Đối chiếu publisher xác nhận còn thiếu hai notice và DcadAddinVerify.exe ở hai QA root; recovery allowlist chưa có ba signer outputs. V59 sửa fixture bằng dependency thực đã pin hash, bổ sung verifier giả lập, ca sai hash/rollback/recovery/final verification; đồng bộ embedded, không sửa publisher/thuật toán ký/xác minh/Gate/Licensecc/Integration. Linux đối chiếu đường dẫn, 602/602 hash, phạm vi diff, embedded và ZIP PASS; AddinContract 27/27 (50.000 mẫu), Integration model 60/60 PASS. Windows SEC06 QA mới, full Build/Authenticode/CAD NotVerified. ZIP SHA256 26281931c5facde26b03fff5119182063eded6c029c68cce1c1063003233b8c3. Chưa nghiệm thu production.
 
 **Quyết định và trạng thái hiện hành — 26/11/2026:** Chủ dự án xác nhận V59 build OK; Dtscr V121 (Tool 019, Feature 019-01, Gate V7, Integration 1.1, AutoCAD 2022 x64) build, ký và chạy OK theo phản hồi; ARX chưa ký bị Gate từ chối `Gate status=9: ADDIN_PE_INVALID`; ARX đã ký bị sửa một byte trong vùng bảo vệ bị AutoCAD cảnh báo Invalid Signature và Gate từ chối `Gate status=9: ADDIN_SIGNATURE_INVALID`; khôi phục bản nguyên gốc được chủ dự án xác nhận OK. Phản hồi cuối “oke” khi chuyển sang 07 không kèm log riêng cho ca build/ký lại giữ nguyên Gate/License. Ghi nhận kết quả trong phạm vi thực tế, không khẳng định chống sửa tuyệt đối hoặc nghiệm thu mọi host. Chọn V59 làm baseline duy trì; 07 đã khảo sát nhưng **tạm dừng phát triển** theo yêu cầu chủ dự án vì chi phí/phức tạp và giới hạn bảo vệ offline; chưa code, giữ kiểm tra hết hạn hiện có. Không thay hợp đồng kỹ thuật STD-20, không tạo phiên bản phần mềm mới; ZIP V59/V121 trên GitHub chưa xác minh. Các ghi nhận trước đây là lịch sử, trạng thái này thay thế trạng thái cũ.
+
+**Hạng mục 10 — Mã hóa chống dịch ngược, tiếp nhận Handover V1 và đối chiếu V70 → V74 (28/11/2026)**
+
+Chủ dự án yêu cầu bổ sung tiến trình vào Plan chính thức và lấy V74 làm baseline tích hợp. [STD-20.1 V1.2 (Tạm thời)](20.1_Ma_hoa_chong_dich_nguoc_Tam_thoi.md) vẫn là tài liệu nghiên cứu chi tiết, không phải hợp đồng production đã nghiệm thu. Việc ghi Plan không cấp quyền triển khai, không sửa hợp đồng tích hợp hiện hành.
+
+**Căn cứ đã kiểm tra trực tiếp:** Ba ZIP đều CRC PASS; SHA-256 của V70 `f212eac53f083bec93d17cb0ab0d397b0517bb1909ab3c0a24e314aa6a7355e8`, V74 `5be6fbf8f78f3d0778dd88213229ed667a0793a20d2bc1f46b477d60c8d639b5`, Handover V1(1) `1c517a1dc638115d1c17337abfcaf841c80b2fd92269a18eae0af58133df06d0`. Manifest Handover 12/12 và Lab V3 25/25 khớp. Fingerprint V70 khớp tham chiếu trong STATUS.json của Handover. Đã đọc báo cáo đánh giá, ma trận tác động, QA và nguồn Lab V3. V70 chỉ là nguồn hệ thống được khảo sát, không có bằng chứng Gate/ARX thật đã được bảo vệ trên V70. Lab chạy độc lập: GCC/Clang mỗi bộ 5/5 theo log lưu sẵn; demo Windows Native = VM = AES-GCM + VM = 253 theo bản ghi chủ dự án. Chưa có log Windows V3 Build_All/Test_All đầy đủ, LabLoader và nghiệm thu CAD. Lab chỉ kiểm chứng bytecode số học mẫu và đọc cấu trúc PE; chưa có PE Rebuilder hoặc chuyển đổi native post-build. Không chạy lại build/runtime trong lần cập nhật Plan này.
+
+**Đối chiếu nguồn payload V70 và V74:** V70 có 263 file, V74 có 267; 257 file giống byte, 6 thay đổi, 4 bổ sung, không xóa file. Các đường dẫn tương đối từ TidiDcad-Source/payload/.
+
+| Phạm vi | Kết quả đối chiếu | Điều kiện tiếp nhận |
+|---|---|---|
+| Giao diện và điều phối | Source/TidiDcad/Source/Main.cpp, ReleaseSecurity.cpp/.h thay đổi | Dùng bố cục và vòng đời 5 tab V74; không chép GUI V70 đè lên |
+| LicenseccManager | Source/LicenseccManager/Source/Main.cpp thay đổi; EmbeddedManager.h, EmbeddedReleaseReady.h bổ sung | Giữ khởi tạo và bảo toàn danh tính V74; không mở rộng phạm vi cấp phép |
+| Build/QA | Build/TidiDcadCompileCache.ps1, Source/TidiDcad/Build.cmd thay đổi; Source/Common/NativeControls.h và Source/TidiDcad/QA/VerifyEmbeddedBootstrap.cpp bổ sung | Giữ kiểm thử khởi động, chuyển tab và bootstrap; chỉ sửa phần cần thiết |
+| Ký Gate/Add-in, build và publish | PortableSecurity.ps1, PortableSecurityEmbedded.h, StreamBuild.ps1, PublishRootBinaries.ps1 không đổi byte | Dùng hợp đồng hiện hành; rà cả hai đường ký và giao dịch phát hành |
+| Gate, Client, Inspector, Integration | Nguồn liên quan không đổi byte | Giữ ABI/policy, định dạng, danh tính khóa và sáu file Integration; kiểm thử lại trên V74 khi có thay đổi |
+| Setup/dependency | Giữ cơ chế V74 | Chỉ cập nhật inventory, build và đóng gói khi có thành phần mới được duyệt |
+
+**Phạm vi quản lý và trình tự:** Không tạo tab mới hoặc hệ thống bảo mật thứ hai. Dự kiến dùng chung công cụ bảo vệ sau khi được nghiệm thu, với phạm vi riêng cho Gate và Add-in. Hai luồng ký giữ thẩm quyền/danh tính độc lập. Mọi thay đổi binary phải hoàn tất trước ký; kiểm tra và ký đúng thành phẩm cuối; bảo toàn bản gốc, không tự công bố bản chưa bảo vệ dưới nhãn đã bảo vệ. Giữ nguyên các kiểm tra bảo mật Windows/CAD, không vô hiệu hóa cơ chế bảo vệ. Không tự thay đổi License, Dreq, SMBIOS 2/3, Feature, Gate ABI 2/Machine Policy 2/Add-in Policy 1, khóa, dữ liệu khách hàng hoặc nghiệp vụ CAD.
+
+| Bước | Công việc / cổng nghiệm thu | Tiến độ |
+|---|---|---|
+| 10.1 | Tiếp nhận Handover, xác định baseline và đối chiếu V70/V74 | Đã kiểm tra CRC, manifest, đối chiếu payload; chủ dự án xác nhận V74 OK; khảo sát tĩnh, chưa nghiệm thu runtime |
+| 10.2 | Hoàn thiện hồ sơ kiểm thử Lab, thẩm định thiết kế và phạm vi độc lập theo STD-20.1 | Demo mẫu đã xác nhận; Windows QA đầy đủ, thẩm định dependency và đặc tả còn thiếu |
+| 10.3 | Đánh giá khả năng đáp ứng mục tiêu bảo vệ sở hữu trí tuệ và tương thích trên mẫu được phép; nghiệm thu độc lập công cụ trước tích hợp | Chưa đạt cổng, chưa có công cụ native post-build hoàn chỉnh |
+| 10.4 | Khi đủ điều kiện và được duyệt, tích hợp chức năng bảo vệ/ ký Gate vào tab Quản lý tài khoản và khóa phát hành; rà cả luồng Build tự động | Chưa triển khai; giữ cơ chế SEC06 hiện hành |
+| 10.5 | Khi đủ điều kiện và được duyệt, tích hợp chức năng bảo vệ/ ký Add-in vào tab Ký duyệt công cụ | Chưa triển khai; giữ Authenticode và Feature |
+| 10.6 | Nghiệm thu riêng và kết hợp Gate/Add-in, hồi quy V74, tính toàn vẹn, tương thích và hiệu năng; đánh giá độc lập | NotVerified; kiểm thử đúng thành phẩm và đúng host đã duyệt, không thay điều kiện PASS/DENY |
+| 10.7 | Hoàn thiện Setup, Build_setup.cmd, hồ sơ QA và một ZIP hệ thống; chủ dự án duyệt phát hành | Chưa thực hiện; không tăng phiên bản phần mềm trong lần cập nhật tài liệu |
+
+Bước 10.1–10.7 là các mốc quản lý tổng hợp, không thay lộ trình 11 bước nghiên cứu chi tiết của STD-20.1. Tám phạm vi công việc BM01–BM08 được theo dõi trong các mốc này: công cụ, giao diện, Gate, Add-in, Build tự động, QA, lưu trữ/phục hồi và Setup. Chỉ bổ sung thay đổi trực tiếp cần thiết, review ảnh hưởng và nghiệm thu theo STD-18/16 trước bàn giao. Kiểm thử đối chứng A (Gate gốc/Add-in gốc), B (Gate bảo vệ/Add-in gốc), C (Gate gốc/Add-in bảo vệ), D (cả hai bảo vệ); B/C đạt độc lập trước D. Không dùng kết quả Lab hoặc V70 làm PASS cho thành phẩm V74 mới. Tất cả các thay đổi tích hợp còn ở trạng thái NotVerified.
+
+**Bước tiếp theo:** 10.2; hoàn thiện chứng cứ còn thiếu, đánh giá phạm vi và thiết kế trước khi chủ dự án duyệt triển khai. Chỉ cập nhật Plan STD-20 V1.4; không thay nội dung hợp đồng kỹ thuật hiện hành, không sửa V74, không tạo V75, không thay ZIP quy ước đã phát hành, không tiếp tục hạng mục 07/09.
 
 ## 2. Cấu trúc bàn giao bắt buộc
 
