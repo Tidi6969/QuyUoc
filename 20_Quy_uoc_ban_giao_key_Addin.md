@@ -1,7 +1,7 @@
 # DCAD-STD-20 — Quy ước bàn giao Key và tích hợp bản quyền Add-in DCAD
 
 **Mã quy ước:** 20  
-**Phiên bản:** 1.4  
+**Phiên bản:** 1.5  
 **Ngày cập nhật:** 28/11/2026  
 **Trạng thái:** Quy ước được phê duyệt ngày 25/11/2026; bắt buộc khi bàn giao bộ tích hợp bản quyền và tích hợp Add-in trong phạm vi hợp đồng đã xác nhận.  
 **Nguồn chuẩn:** TidiDcad-System V49 (Gate V6), DJoin V38 (tham chiếu tích hợp native), ToolCatalog.db.  
@@ -29,7 +29,7 @@ Plan là một phần của STD-20, được quản lý trực tiếp tại đâ
 | 02 | Khóa bản quyền theo máy (LIC-02) | Giữ DeviceID và đối chiếu máy tại Gate | V55 — giữ nguyên |
 | 03 | Phân quyền Feature (LIC-03) | Giữ định danh, quyền và thời hạn Feature | V55 — giữ nguyên |
 | 04 | Chống thay thế Gate (SEC-02) | Giữ xác minh chữ ký/hash Gate DLL theo SEC06 | V55 — giữ nguyên |
-| 05 | Ký số bộ bàn giao (SEC-03) | Giữ RSA-PSS Integration sáu file và xác thực khi tiếp nhận theo STD-20 | V55 — giữ nguyên |
+| 05 | Ký số bộ bàn giao (SEC-03) | Giữ RSA-PSS Integration sáu file; tiếp nhận trực tiếp từ chủ dự án, kiểm tra nội bộ, không yêu cầu xác nhận ngoài ZIP | V76 — nguồn kiểm thử; chữ ký giữ nguyên, Windows NotVerified |
 | 06 | Chống sửa Add-in (SEC-AT) | Ký số nhúng Authenticode cho thành phẩm; xác minh tính toàn vẹn và danh tính phát hành DCAD; từ chối nghiệp vụ trong ranh giới bảo vệ đã duyệt | V59 — đã triển khai; chủ dự án xác nhận các ca chính trên Dtscr V121 / AutoCAD 2022 |
 | 07 | Chống lùi đồng hồ (SEC-07) | Bảo vệ thời hạn License offline, phát hiện lùi thời gian và xử lý hợp lệ | **Tạm dừng phát triển** theo quyết định chủ dự án 26/11/2026; chưa triển khai code |
 | 08 | Cải tiến xác thực máy — Machine Identity V2 (LIC-02) | SMBIOS UUID + System Serial Number + Mainboard Serial Number; tối thiểu 2 giá trị hợp lệ khớp với License đã ký | Đã triển khai từ V60/V61, kế thừa V68; chủ dự án xác nhận OK ngày 28/11/2026 (UserReportedWorking=YES). Log từng ca Windows/CAD còn thiếu: NotVerified |
@@ -338,6 +338,8 @@ Bước 10.1–10.7 là các mốc quản lý tổng hợp, không thay lộ tr�
 
 **Bước tiếp theo:** 10.2; hoàn thiện chứng cứ còn thiếu, đánh giá phạm vi và thiết kế trước khi chủ dự án duyệt triển khai. Chỉ cập nhật Plan STD-20 V1.4; không thay nội dung hợp đồng kỹ thuật hiện hành, không sửa V74, không tạo V75, không thay ZIP quy ước đã phát hành, không tiếp tục hạng mục 07/09.
 
+**Quyết định V1.5 — 28/11/2026:** Chủ dự án duyệt bỏ thủ tục xác nhận ngoài ZIP khi trực tiếp bàn giao Integration. V76 lấy V75 làm nguồn chuẩn, giữ ký và xác minh SEC06 lúc xuất, thay thông báo và hướng dẫn người tích hợp. Người lập trình chịu trách nhiệm hoàn tất bốn file bảo mật trước bàn giao, không chuyển intake sang máy build. Không sửa Gate/License/Authenticode/Machine 2/3, không triển khai 10.3. V76 QA mô hình Linux 64 ca PASS, cross-build Setup x64 và 267 payload file khớp; Windows/MSVC/CAD NotVerified. Các ghi nhận lịch sử dưới Plan không thay thế INT-06 V1.5 hiện hành.
+
 ## 2. Cấu trúc bàn giao bắt buộc
 
 ```text
@@ -464,7 +466,7 @@ Nguồn: `D:\000\TidiDcad\DData\ReleaseTrust\GateReleaseTrust.h`. V49 tạo head
 
 **Tại bên xuất:** dùng cơ chế xác minh trust hiện hành của SEC06; Header hợp lệ, KeyId tính lại khớp Header và `IssuerPrivate\GateReleaseSigner.pin`; kiểm tra không có `identity.pending` hoặc `publish.pending`; không tự sinh, đổi hoặc thay pin. Chỉ xuất dữ liệu công khai. Việc xuất public material không yêu cầu truyền khóa riêng sang máy build.
 
-**Tại bên nhận:** xác thực chữ ký bộ bàn giao theo INT-06, dựa vào danh tính SEC06 đã được tin cậy độc lập. Không dùng khóa trong chính ZIP để tự chứng minh nguồn gốc. KeyId thay đổi phải được duyệt và tích hợp/build lại các Add-in liên quan. Thay mật khẩu nhưng giữ KeyId không cần đổi public header. Phân biệt SEC06 ký Gate với khóa Licensecc cấp License.
+**Tại bên nhận:** bộ ZIP do chủ dự án trực tiếp giao là căn cứ tiếp nhận. Tính lại KeyId từ public header, đối chiếu JSON và kiểm tra chữ ký nội bộ theo INT-06. Không yêu cầu SHA-256 ZIP, KeyId hoặc bằng chứng xác nhận riêng. Chữ ký tự khớp với khóa trong ZIP không chứng minh độc lập nguồn phát hành; nếu đã có trust độc lập, đối chiếu với trust đó. KeyId thay đổi so với baseline phải được đánh giá trong phạm vi tích hợp đã giao; không tự đổi danh tính phát hành. Thay mật khẩu nhưng giữ KeyId không cần đổi public header. Phân biệt SEC06 ký Gate với khóa Licensecc cấp License.
 
 ## 5. DcadLicenseGate.h — hợp đồng API
 
@@ -572,7 +574,7 @@ Mỗi ZIP phải có tài liệu độc lập đủ để người lập trình 
 
 ### INT-01. Đầu vào, phạm vi và hợp đồng
 
-Ghi ToolId, tên Tool, mô tả, toàn bộ Feature đang hoạt động, target, output, phiên bản Integration, Gate ABI, Policy, KeyId; danh sách sáu file; nguồn phát hành và cách đối chiếu KeyId độc lập. Xác định baseline Add-in, mục tiêu chỉ tích hợp bảo mật và những phần phải giữ nguyên. Nêu rõ target nào chưa hỗ trợ. Đọc STD-18 trước sửa.
+Ghi ToolId, tên Tool, mô tả, toàn bộ Feature đang hoạt động, target, output, phiên bản Integration, Gate ABI, Policy, KeyId; danh sách sáu file; nguồn bàn giao trực tiếp và kết quả kiểm tra nội bộ theo INT-06. Xác định baseline Add-in, mục tiêu chỉ tích hợp bảo mật và những phần phải giữ nguyên. Nêu rõ target nào chưa hỗ trợ. Đọc STD-18 trước sửa.
 
 ### INT-02. Bố trí file và chuyển đổi mã cũ
 
@@ -612,10 +614,10 @@ Append `$(ProjectDir)src\Security` vào AdditionalIncludeDirectories, giữ `%(A
 
 Thư viện V38 để tham khảo: rxapi.lib, acad.lib, acdb24.lib, accore.lib, acge24.lib, adui24.lib, acui24.lib, acgiapi.lib, Shell32.lib, Comctl32.lib, Bcrypt.lib, Crypt32.lib. Chỉ hai lib cuối là phần bổ sung bảo mật. Không sao chép bộ ObjectARX lib này sang target khác.
 
-### INT-06. Xác thực bộ bàn giao — V1.2 (thay thế toàn bộ cơ chế phê duyệt máy build V1.1)
+### INT-06. Tiếp nhận và kiểm tra bộ bàn giao — V1.5 (thay thế thủ tục tiếp nhận V1.2)
 
-1. TidiDcad kiểm tra Tool/Feature, target, Header/Pin và trạng thái SEC06, mở khóa PFX bằng tài khoản phát hành hiện hành, ký RSA-PSS SHA-256 salt 32. Không tạo khóa khác; ký bộ bàn giao là một miền chữ ký độc lập với Gate manifest. TidiDcad phải xác minh chữ ký và kiểm tra ZIP đọc lại trước khi công bố. Hủy, thiếu/sai tài khoản, đổi snapshot, pending hoặc ký/ghi lỗi thì không công bố, bảo toàn ZIP cũ.
-2. Giữ đúng sáu file. `IntegrationVersion` vẫn là "1.0" (mở rộng tương thích); bổ sung thành viên cuối `Certification` trong ToolInfo.json theo định dạng canonical:
+1. TidiDcad giữ nguyên ký RSA-PSS SHA-256 salt 32 bằng PFX SEC06 hiện hành sau khi kiểm tra Tool/Feature, target, Header/Pin, trạng thái và snapshot; tự xác minh chữ ký, kiểm tra ZIP đọc lại trước công bố. Không tạo khóa mới; miền chữ ký riêng với Gate manifest. Hủy/sai tài khoản/pending/snapshot đổi/ký hoặc ghi lỗi thì bảo toàn ZIP cũ. Khi xuất thành công, chỉ cần giao ZIP cùng mã nguồn; SHA-256 toàn ZIP và kiểm tra theo Header/Pin tại TidiDcad vẫn xem được ở Kiểm tra ZIP, không phải đầu vào bắt buộc cho người lập trình.
+2. Giữ đúng sáu file. `IntegrationVersion` giữ theo hợp đồng hiện hành (1.2 trên V76); bổ sung thành viên cuối `Certification` trong ToolInfo.json theo định dạng canonical:
 ```json
 "Certification": {"Issuer": "TidiDcad", "Format": "DCAD-INTEGRATION-V1", "Algorithm": "RSA-PSS-SHA256", "KeyId": "<64hex>", "PackageId": "<64hex>", "ContentHash": "<64hex>", "SignatureHex": "<768-1024 hex>"}
 ```
@@ -626,18 +628,19 @@ KeyId=<64hex>
 ContentHash=<64hex>
 ```
    SignatureHex dạng hex thường, kích thước tương ứng modulus RSA 384–512 byte. Xác thực tất cả sáu entry, reject unsigned/tamper/extra/repack; không trộn chữ ký Gate với chữ ký bộ bàn giao.
-3. Xác thực khi bàn giao, không lặp tại mỗi build. TidiDcad V55 có nút Kiểm tra ZIP dùng Header/Pin của issuer hiện hành, không lấy trust từ ZIP. Khi xuất, ứng dụng tự xác minh và hiển thị SHA-256 của ZIP thực tế; nếu máy nhận khác, đối chiếu SHA-256 do quản trị viên xác nhận qua kênh tin cậy (ví dụ `certutil -hashfile "Djoin-Integration.zip" SHA256`). Có thể kiểm lại ZIP nguyên byte tại TidiDcad khi cần, hoặc dùng verifier đã có public key đáng tin cậy từ trước; không yêu cầu cài TidiDcad ở máy build. Chữ ký tự khớp với khóa trong ZIP không đủ chứng minh nguồn gốc. Không tích hợp khi không xác thực được nguồn, hash hoặc chữ ký sai.
-4. Người nhận đối chiếu ToolId, Feature, target, ánh xạ nghiệp vụ với yêu cầu đã duyệt; lưu ZIP gốc và bằng chứng xác thực, giữ đúng byte bốn file bảo mật. Khi source bảo mật bị thay đổi, phải xác thực lại trước build/phát hành. Thiếu public header hoặc sai ánh xạ phải dừng. Không cần phê duyệt máy build; bỏ riêng ApprovedGateKeyId.txt, hai biến môi trường phê duyệt, Check-ReleaseTrust.ps1 và hook phê duyệt trong CMD/project khi chuyển từ V1.1. Không bỏ các kiểm tra SDK, build và runtime của baseline. Không yêu cầu đổi ExecutionPolicy, thêm EXE, tài khoản SEC06 hoặc Gate/License khi compile. Build_All/Build_Release/MSBuild dùng nguồn đã xác thực, giữ quy trình build gốc. Gói cũ chưa ký phải xuất lại cho lần tích hợp mới.
+3. Khi chủ dự án trực tiếp giao ZIP, đó là căn cứ tiếp nhận. Không hỏi lại SHA-256 ZIP, KeyId, nguồn phát hành hoặc yêu cầu file/script phê duyệt riêng. Người lập trình tự kiểm tra đúng sáu entry, không trùng/thoát thư mục, không rỗng/placeholder, ToolId, Feature, target, KeyId tính lại từ Header, ContentHash, PackageId và chữ ký RSA-PSS bằng public key trong gói. Nếu đã có trust độc lập, đối chiếu; tự khớp không phải xác thực độc lập nguồn gốc. Sai cấu trúc/hash/chữ ký/ánh xạ hoặc trust đã biết mâu thuẫn thì dừng, báo lỗi cụ thể. Nếu không được chủ dự án trực tiếp giao, phải có căn cứ tin cậy độc lập trước tiếp nhận. Gói chưa ký hoặc sai hợp đồng không được sử dụng.
+4. Người lập trình hoàn thành tích hợp trước bàn giao: sao chép nguyên byte cả bốn file GateReleaseTrust.h, DcadLicenseGate.h, DcadGateClient.h, DcadGateClient.cpp vào nguồn (ví dụ src\Security), lưu ToolInfo.json trong project, cấu hình include/compile/link, ánh xạ từng Feature, rà điểm chặn và diff. Lưu ZIP gốc và kết quả tự kiểm tra. Kiểm tra đầy đủ file/tham chiếu project, khả năng build độc lập. Thiếu dữ liệu thiết yếu thì báo trước, không bàn giao nguồn thiếu file, không chuyển việc tích hợp sang chủ dự án. Tên ZIP nguồn theo STD-03/17, không tự thêm hậu tố SourceCandidate. Thiếu host kiểm thử ghi NotVerified trong QA, không coi là thiếu tích hợp và không tuyên bố PASS.
+5. Không tạo ImportVerifiedIntegration.ps1 hoặc chuyển intake sang Build_All/Build_Release/MSBuild. Không yêu cầu ApprovedGateKeyId.txt, biến môi trường phê duyệt, Check-ReleaseTrust.ps1, verifier bổ sung ở máy build, SEC06 login, ExecutionPolicy mới, ZIP gốc, Gate DLL hoặc License khi compile. Bỏ các hook phê duyệt V1.1 còn sót; giữ các kiểm tra đầu vào build, SDK và mọi điểm chặn runtime. Nguồn bảo mật thay đổi phải được rà soát, kiểm tra lại trước build/phát hành; giữ nguyên byte bốn file từ ZIP trừ thay đổi hợp đồng được duyệt. Bảo toàn nghiệp vụ, settings, dữ liệu và quy trình ký thành phẩm.
 
 ### INT-07. Build_All.cmd — luồng bắt buộc
 
 1. Xác định root từ script, target, đường dẫn SDK và output; tạo BuildRunId, log/binlog và staging riêng từng lần; không lấy log cũ. Nếu thiếu/sai đầu vào, dừng trước compile/publish, ghi lỗi riêng lần build. Không thao tác vào dữ liệu vận hành.
-2. Kiểm tra nguồn và project, sáu file tích hợp; kiểm tra ID/Feature, khóa tin cậy đã duyệt; kiểm tra toolchain/SDK.
+2. Kiểm tra nguồn/project đã tích hợp đầy đủ bốn file bảo mật, metadata, ID/Feature, KeyId và toolchain/SDK; không thực hiện lại intake hoặc yêu cầu ZIP/xác nhận riêng.
 3. Gọi Build_Release.cmd cho từng target đã duyệt, truyền thông số chính xác, nhận exit code. Không lấy output cũ để bù khi lỗi; MSBuild nonzero phải dừng. Xác minh output tạo mới, không rỗng; không dùng verification build để hợp thức hóa artifact cũ.
 4. Publish đúng tên thành phẩm theo quy ước, tạo thư mục nếu thiếu; kiểm tra nội dung file đích bằng SHA-256 hoặc so sánh byte. Không phá hủy bản đã phát hành chỉ vì build mới thất bại; dùng staging riêng, chỉ công bố kết quả đủ điều kiện.
 5. Log chính ghi baseline, target, ToolId, Feature, KeyId, SDK root, toolset, bước build, output, kết quả và lỗi; log target tách riêng. Exit 0 chỉ khi build/publish đúng phạm vi; lỗi nonzero. Không coi exit 0 là APPLOAD/Runtime PASS.
 
-**Khác mẫu V38:** bỏ phụ thuộc đồng bộ từ máy TidiDcad trong `Sync-ReleaseTrust.ps1` của Build_All khi bộ Integration đã chứa Public Key thật; xác thực bộ bàn giao khi tiếp nhận theo INT-06. V38 còn xóa output staging trước khi build và có trạng thái SETUP REQUIRED (exit 2); quy ước mới yêu cầu không mất bản phát hành cũ, thiếu khóa bàn giao phải FAIL rõ nguyên nhân. Không tạo PFX/khóa, không đăng nhập, không yêu cầu Dcad.lic, không build/copy DLL hoặc manifest Gate. Không tự chạy ứng dụng hoặc mở Explorer. Có thể dùng `/nopause` cho build tự động.
+**Khác mẫu V38:** bỏ phụ thuộc đồng bộ từ máy TidiDcad trong `Sync-ReleaseTrust.ps1` của Build_All khi bộ Integration đã chứa Public Key thật; kiểm tra và hoàn tất tích hợp trước bàn giao theo INT-06. V38 còn xóa output staging trước khi build và có trạng thái SETUP REQUIRED (exit 2); quy ước mới yêu cầu không mất bản phát hành cũ, thiếu khóa bàn giao phải FAIL rõ nguyên nhân. Không tạo PFX/khóa, không đăng nhập, không yêu cầu Dcad.lic, không build/copy DLL hoặc manifest Gate. Không tự chạy ứng dụng hoặc mở Explorer. Có thể dùng `/nopause` cho build tự động.
 
 ### INT-08. Build_Release.cmd và SDK
 
@@ -651,11 +654,11 @@ Lệnh mẫu V38:
 "%MSBUILD%" "%BASE%DJoin.vcxproj" /t:Rebuild /p:Configuration=Release /p:Platform=x64 "/p:PlatformToolset=%TOOLSET%" "/p:ARX2022_SDK=%SDKROOT%" /m:1 /nologo "/flp:LogFile=%LOG%;Verbosity=normal;Append"
 ```
 
-Không đóng gói SDK dùng chung vào ZIP nguồn. Output V38: `bin\DJoin.arx`; intermediate `Buildtime\obj\`; staging root `Dprogram\AutoCAD2022\DJoin.arx`; log chính `log\Build_All.log`, log target `log\Build_AutoCAD2022.log` trong thư mục target. Giữ bố trí theo quy ước hiện hành khi thực hiện. Không liên kết nhầm SDK/host. Build_Release dùng nguồn đã xác thực khi bàn giao, giữ kiểm tra build gốc và mọi điểm chặn runtime.
+Không đóng gói SDK dùng chung vào ZIP nguồn. Output V38: `bin\DJoin.arx`; intermediate `Buildtime\obj\`; staging root `Dprogram\AutoCAD2022\DJoin.arx`; log chính `log\Build_All.log`, log target `log\Build_AutoCAD2022.log` trong thư mục target. Giữ bố trí theo quy ước hiện hành khi thực hiện. Không liên kết nhầm SDK/host. Build_Release dùng trực tiếp nguồn đã tích hợp đầy đủ, không yêu cầu intake; giữ kiểm tra build gốc và mọi điểm chặn runtime.
 
 ### INT-09. Cập nhật README, BuildInfo và dữ liệu QA
 
-README của Add-in phải có: tên/phiên bản/baseline; ToolId và Feature → command/action; CAD target; Security Contract (Gate version, ABI, Policy, License format); KeyId được nhúng và nguồn duyệt và bằng chứng xác thực ZIP; các file tích hợp; điểm chặn; SDK/toolset/Windows SDK; cách chạy Build_All; output/log; cài đặt DProgram/DUser; hành vi ALLOW/DENY; cách xử lý thiếu file hoặc khóa không khớp; Known Issues và trạng thái Build/APPLOAD/Runtime riêng. Cập nhật BuildInfo, DataManifest, QA và lịch sử phiên bản theo STD-16/17 khi phù hợp. Không thêm README thứ hai vào ZIP Integration.
+README của Add-in phải có: tên/phiên bản/baseline; ToolId và Feature → command/action; CAD target; Security Contract (Gate version, ABI, Policy, License format); KeyId được nhúng, căn cứ tiếp nhận và kết quả kiểm tra nội bộ; các file tích hợp; điểm chặn; SDK/toolset/Windows SDK; cách chạy Build_All; output/log; cài đặt DProgram/DUser; hành vi ALLOW/DENY; cách xử lý thiếu file hoặc khóa không khớp; Known Issues và trạng thái Build/APPLOAD/Runtime riêng. Cập nhật BuildInfo, DataManifest, QA và lịch sử phiên bản theo STD-16/17 khi phù hợp. Không thêm README thứ hai vào ZIP Integration.
 
 ### INT-10. Ma trận kiểm thử bắt buộc
 
@@ -676,7 +679,7 @@ Build PASS ≠ APPLOAD PASS ≠ Runtime PASS. Chỉ phát hành bản nghiệm t
 1. Chọn Tool đã đăng ký → Xuất bộ tích hợp bản quyền. Đọc snapshot Tool/Feature đang hoạt động, xác nhận target và ánh xạ theo dữ liệu được duyệt. Hiển thị tên, mã, Feature, ABI, Policy, KeyId, sáu file.
 2. Đọc public trust đã duyệt, kiểm tra trạng thái giao dịch, tính nhất quán; không cần xuất private key. Lấy API Header đúng phiên bản và client đã chuẩn hóa/kiểm thử, không dùng code do AI sinh tùy ý từng lần xuất.
 3. Tạo ToolInfo và Integration.txt với thông tin thật, chép đúng các header/client; kiểm tra dữ liệu không thiếu, không placeholder, không có bí mật. Ký nội dung sáu file theo INT-06, xác minh chữ ký bằng danh tính SEC06 hiện hành; kiểm tra ZIP đúng sáu file, đọc lại nội dung, đối chiếu hash file nguồn/đích. Nếu đích đã tồn tại, yêu cầu xác nhận trước thay thế; không để ZIP dang dở khi lỗi.
-4. Báo rõ xuất thành công hay lỗi cụ thể (Tool đã retire, Feature thiếu, KeyId chưa duyệt, phiên bản client không phù hợp, v.v.). Xuất ZIP PASS chỉ là nghiệm thu bộ dữ liệu tích hợp, không phải nghiệm thu Add-in đích.
+4. Báo rõ xuất thành công hay lỗi cụ thể (Tool đã retire, Feature thiếu, KeyId chưa duyệt, phiên bản client không phù hợp, v.v.). Khi xuất thành công, chỉ hướng dẫn giao ZIP cùng mã nguồn, không yêu cầu sao chép mã xác nhận. Xuất ZIP PASS chỉ là nghiệm thu bộ dữ liệu tích hợp, không phải nghiệm thu Add-in đích.
 
 Không tạo thêm schema database hoặc phần mềm quản lý khóa; tái sử dụng khóa SEC06 hiện có, tách miền chữ ký bộ bàn giao. Nếu cần mở rộng dữ liệu CAD target, phải duyệt riêng phương án; V1.0 có thể lấy từ thông tin target đã xác nhận khi xuất.
 
@@ -689,13 +692,13 @@ Không tạo thêm schema database hoặc phần mềm quản lý khóa; tái s�
 | EXP03 | Header chưa enrollment, pin sai, pending transaction | từ chối xuất |
 | EXP04 | Gói ZIP lỗi, ghi dở, trùng đích | báo lỗi, không làm mất gói hợp lệ |
 | EXP05 | Kiểm tra thành phần | không có khóa riêng, DLL, manifest, License hoặc database |
-| QA01 | Build nguồn + Integration, không cài TidiDcad | PASS |
+| QA01 | Build nguồn đã tích hợp hoàn chỉnh, không cần ZIP hoặc cài TidiDcad | PASS |
 | QA02 | Build thiếu Gate DLL/manifest/License runtime | PASS |
-| QA03 | Thiếu public header hoặc #error | Build FAIL |
-| QA04 | Public key hoặc KeyId bị sửa trong ZIP | Xác thực FAIL |
-| QA05 | JSON/Header tự khớp nhưng ký bằng danh tính khác | Xác thực FAIL |
+| QA03 | Thiếu bất kỳ file bảo mật hoặc public header #error | Không bàn giao nguồn thiếu file; build FAIL nếu dữ liệu hỏng |
+| QA04 | Public header/KeyId không khớp, hash hoặc chữ ký sai | Dừng tích hợp |
+| QA05 | ZIP hợp lệ do chủ dự án trực tiếp giao, không có mã xác nhận ngoài ZIP | Tự kiểm tra và tích hợp; không yêu cầu xác nhận thêm; không tuyên bố xác thực độc lập |
 | QA06 | Feature sai cú pháp, sai Tool, không đúng ánh xạ | Từ chối tích hợp |
-| QA07 | Build trực tiếp nguồn đã xác thực, không có file/script phê duyệt máy | Không phụ thuộc phê duyệt máy; giữ kiểm tra build gốc |
+| QA07 | Build trực tiếp nguồn đủ bốn file bảo mật, không có ZIP hoặc script/phê duyệt máy | Không cần intake; giữ kiểm tra build gốc |
 | QA08 | SDK thiếu, sai target hoặc trộn root | Build FAIL |
 | QA09 | Build/publish lỗi giữa chừng, output cũ hoặc đích sai | FAIL, không phát hành sai, bản cũ an toàn |
 | QA10 | APPLOAD đúng CAD target | PASS |
@@ -722,26 +725,26 @@ Các ca trên là **tiêu chí thiết kế**, chưa phải kết quả thực t
 | Việc | TidiDcad/đơn vị phát hành | Người tích hợp Add-in |
 |---|---|---|
 | Quản lý danh tính, Tool/Feature, phát hành Gate và License | Chịu trách nhiệm | Không tạo khóa |
-| Xác minh/xuất public key và bộ Integration | Chịu trách nhiệm | Kiểm tra nguồn tin cậy |
+| Xác minh/xuất public key và bộ Integration | Chịu trách nhiệm; chủ dự án trực tiếp giao ZIP | Tự kiểm tra nội bộ, hoàn thành tích hợp trước bàn giao; không yêu cầu xác nhận ngoài ZIP |
 | Xác định ánh xạ Feature → chức năng, CAD target | Phối hợp/phê duyệt | Khảo sát và thực hiện |
 | Tích hợp client, project, Build_All, README | Cung cấp chuẩn | Chịu trách nhiệm |
 | Kiểm thử build và CAD, hồi quy | Phối hợp cung cấp runtime/license QA | Chịu trách nhiệm và báo cáo |
 | Nghiệm thu/phát hành chính thức | Phê duyệt | Bàn giao bằng chứng |
 
-## 11A. Nghiệm thu bổ sung V1.2
+## 11A. Nghiệm thu bổ sung INT-06 V1.5
 
 | Mã | Điều kiện | Expected |
 |---|---|---|
 | CERT01 | Xuất hợp lệ với khóa SEC06 hiện hành | Sáu file, Certification hợp lệ, chữ ký đúng |
 | CERT02 | Hủy/sai mật khẩu, khóa thiếu, pending hoặc snapshot đổi | Không công bố, bảo toàn ZIP cũ |
 | CERT03 | Sửa bất kỳ entry, chữ ký, mã, thêm file/repack | Xác thực FAIL |
-| CERT04 | Gói tự ký bằng danh tính khác | Xác thực FAIL |
+| CERT04 | Gói ký bằng danh tính mâu thuẫn với trust độc lập đã biết | Từ chối; không tự thay trust |
 | CERT05 | Kiểm tra ZIP đúng bằng public trust hiện hành, không PFX | PASS |
-| CERT06 | Nhận ZIP khác với hash được xác nhận | Không tích hợp |
-| CERT07 | Build nguồn đã xác thực không có file/script phê duyệt máy | Không cần cấu hình Windows bổ sung; giữ luồng build gốc |
+| CERT06 | ZIP hợp lệ do chủ dự án trực tiếp giao, không kèm hash riêng | Tự kiểm tra; không yêu cầu xác nhận ngoài ZIP |
+| CERT07 | Build nguồn đã tích hợp đầy đủ, không cần ZIP, file/script phê duyệt máy | Không cần intake/cấu hình Windows bổ sung; giữ luồng build gốc |
 | CERT08 | Build/publish lỗi sau một lần PASS | Không dùng log/artifact cũ, bản cũ còn nguyên |
 
-Tiêu chí trên chưa phải kết quả thực thi Windows/CAD. V55 dùng khóa SEC06 hiện có; không thay Gate/Licensecc, khóa, database và runtime. Phê duyệt máy build V1.1 hết hiệu lực với bộ bàn giao V1.2. Không tự xóa file cũ của người dùng.
+Tiêu chí trên chưa phải kết quả thực thi Windows/CAD. V55 dùng khóa SEC06 hiện có; không thay Gate/Licensecc, khóa, database và runtime. Phê duyệt máy build V1.1 hết hiệu lực; thủ tục tiếp nhận V1.2 được thay bằng INT-06 V1.5. Không tự xóa file cũ của người dùng.
 
 ## 12. Căn cứ nguồn và giới hạn hiện tại
 
