@@ -1,7 +1,7 @@
 # DCAD-STD-20 — Quy ước bàn giao Key và tích hợp bản quyền Add-in DCAD
 
 **Mã quy ước:** 20  
-**Phiên bản:** 1.10  
+**Phiên bản:** 1.11  
 **Ngày cập nhật:** 28/11/2026  
 **Trạng thái:** Quy ước được phê duyệt ngày 25/11/2026; bắt buộc khi bàn giao bộ tích hợp bản quyền và tích hợp Add-in trong phạm vi hợp đồng đã xác nhận.  
 **Nguồn chuẩn:** TidiDcad-System V49 (Gate V6), DJoin V38 (tham chiếu tích hợp native), ToolCatalog.db.  
@@ -371,6 +371,12 @@ Bước 10.1–10.7 là các mốc quản lý tổng hợp, không thay lộ tr�
 - V9 ZIP SHA-256 `6c14473b042d605ef33550c0f54f6924a6ae254ec8e1955de2c469a0a4569777`, manifest 69/69 xác minh. Hai log Windows: Build_All(20261128-173553).log SHA-256 `afc5b557ad9545240eecb09756999f1e3987d2e312f1c90a75d2129a21877496`; Test_All(5).log SHA-256 `390a2d7b247ba2deefbc1c4acd492215a35a7265b7e59604b6daef8cf8b28c4b`. Cùng Run-d507b80adb0545d08563120be477a9f2, 12/12 CTest mỗi lần, exit 0; ABI 108 cặp, output guards nguyên, metadata 3 PE mẫu, decoder mẫu PASS, LIEF 593/593. Native protection chưa xác minh.
 - Lab V10 bản nguồn thử nghiệm SHA-256 `db1ec0f2dcc97fc48fff636f5a9d73aea548d2d46c5ccd39b015b0f1baeef35e`, CRC/manifest 78/78. Hồ sơ kiến trúc, tài sản, threat model, giới hạn, quản lý khóa và cổng nghiệm thu đề xuất; chỉ thêm một CTest tính toàn vẹn hai file dữ liệu cố định không thực thi, 12 tình huống, không đổi binary/core/publish/keys. Linux GCC và Clang ASan/UBSan 8/8 mỗi lượt; resolver fixtures 8/8; negative control sai digest bị từ chối. Windows V10/13 CTest, chữ ký, khóa thật, CAD và native protection NotVerified. Không thêm dependency. Thiết kế production và ngưỡng hiệu năng chưa được duyệt; không coi hash là chữ ký.
 - Tiếp tục nghiên cứu độc lập 10.3.3/10.3.4; chưa nghiệm thu 10.3.5, chưa chuyển 10.4/10.5. Không sửa V76, Gate, Add-in, License, cơ chế ký, INT-06 hoặc chính sách Windows/CAD. Không có thành phẩm native được bảo vệ.
+
+**Cập nhật tiến độ V1.11 — 29/11/2026:** Chủ dự án duyệt cập nhật tiến độ và Lab V11. Baseline nghiên cứu đã kiểm thử Windows là V10; hệ thống TidiDcad V76, tồn đọng LicenseFormats V4/V5, 07/09/System Check giữ nguyên.
+
+- V10 ZIP SHA-256 `db1ec0f2dcc97fc48fff636f5a9d73aea548d2d46c5ccd39b015b0f1baeef35e`, manifest 78/78 xác minh. Hai log Windows đã đọc: Build_All(20261128-174637).log SHA-256 `fe4028c8e8af08c12da5f63f24dbb6b04646a7f124ab600808df5c2797d2d115`; Test_All(6).log SHA-256 `1a0e95c549246005f118df6bd2db97832c9ea908d75d5c9103121a56074feb40`. Cùng Run-464996ae16ec45308e97104647533b2c, 13/13 CTest mỗi lần, exit 0, publication Lab và đối chiếu binary PASS; ReleaseDataIntegrity 12/12 tình huống trên dữ liệu mẫu. LIEF 593/593, Zydis/Zycore static, ABI/metadata/decoder hồi quy PASS. Chưa xác minh chữ ký production, native protection hoặc CAD.
+- V11 source candidate SHA-256 `1de8d1d7564bdba0be4b3cc363898b9ebe7d3d38191487cac1cb65c08e1f7ee4`, CRC/manifest 89/89. Thêm duy nhất CTest ReleaseSignature, RSA-2048/SHA-256 PKCS#1 v1.5 trên chuỗi dữ liệu mẫu cố định; hai public key và chữ ký tạo độc lập, không lưu private key, không có chức năng ký hoặc nhận input bên ngoài. Linux OpenSSL hiện có, Windows CNG bcrypt (NotVerified). GCC và Clang ASan/UBSan Linux mỗi bộ 9/9, 13/13 ca signature, resolver 8/8, hai negative controls và đối chiếu public DER/CNG + chữ ký bằng OpenSSL CLI PASS. Không sửa core, PE, publish, thư viện hoặc khóa sản phẩm. Windows V11/14 CTest, Authenticode, chain/publisher, trust anchor production, key lifecycle, CAD, native protection NotVerified.
+- Tổng hợp: PE Analyzer/Rebuilder, AES-GCM dữ liệu, VM số học mẫu, decoder x64, ABI/metadata, integrity đều có bằng chứng Windows trong phạm vi Lab V10. V11 bổ sung xác minh chữ ký dữ liệu mẫu trên Linux, chưa được chọn baseline Windows. Hồ sơ kiến trúc V10 là đề xuất, chưa phê duyệt production. Không có thành phẩm native được bảo vệ; chưa đủ bằng chứng về khả năng chống dịch ngược. Chưa đạt 10.3.5, chưa chuyển 10.4/10.5; giữ Gate/License/INT-06, Authenticode và Windows/CAD security, không sửa V76. Cảnh báo upstream/RemoteException còn mở.
 
 ## 2. Cấu trúc bàn giao bắt buộc
 
