@@ -1,4 +1,6 @@
-# BỘ TIÊU CHUẨN DCAD — V1.25
+# BỘ TIÊU CHUẨN DCAD — V1.26
+
+Cập nhật trực tuyến 28/11/2026 — [STD-20.1 V1.1 (Tạm thời)](20.1_Ma_hoa_chong_dich_nguoc_Tam_thoi.md): mở rộng bảo vệ Gate DLL cùng Add-in ARX, bổ sung khảo sát nguồn V70 (payload V61), hai luồng ký Gate GUI/Build, ma trận tác động SEC06, Gate Client, Inspector, QA và phát hành. Chưa code hoặc nghiệm thu; STD-20, Plan chính thức, ZIP V1.17 giữ nguyên.
 
 Cập nhật trực tuyến 28/11/2026 — [STD-20.1 V1.0 (Tạm thời)](20.1_Ma_hoa_chong_dich_nguoc_Tam_thoi.md): bổ sung quy trình nghiên cứu mã hóa chống dịch ngược (Binary Encryption + Code Virtualization), tích hợp dự kiến vào công đoạn ký và bảo vệ Add-in của TidiDcad. Chỉ nghiên cứu/phát triển theo từng cổng nghiệm thu, chưa áp dụng production. STD-20, Plan hiện hành, các quy ước khác, mã nguồn và ZIP tổng V1.17 giữ nguyên.
 
