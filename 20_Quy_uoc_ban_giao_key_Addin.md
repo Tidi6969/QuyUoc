@@ -1,7 +1,7 @@
 # DCAD-STD-20 — Quy ước bàn giao Key và tích hợp bản quyền Add-in DCAD
 
 **Mã quy ước:** 20  
-**Phiên bản:** 1.7  
+**Phiên bản:** 1.8  
 **Ngày cập nhật:** 28/11/2026  
 **Trạng thái:** Quy ước được phê duyệt ngày 25/11/2026; bắt buộc khi bàn giao bộ tích hợp bản quyền và tích hợp Add-in trong phạm vi hợp đồng đã xác nhận.  
 **Nguồn chuẩn:** TidiDcad-System V49 (Gate V6), DJoin V38 (tham chiếu tích hợp native), ToolCatalog.db.  
@@ -353,6 +353,12 @@ Bước 10.1–10.7 là các mốc quản lý tổng hợp, không thay lộ tr�
 - Lab V5 ZIP SHA-256 `90b8dd320d3580a4aba66e5c9826d7587de8e092f7740d25b116f75f1cfc0291`, CRC và manifest 37/37 PASS. Hai log Windows do chủ dự án cung cấp đã đọc: Build_All(20261128-164614).log SHA-256 `0d095a79122a6b6215a1b86fa4bde98c8a45b8484383b8e9b8a756054b025fde`; Test_All(1).log SHA-256 `2ef812c847892500818ffd77b10777759483b56765bfaea376e06dde0901cb07`. Cùng Run-848ad50416594948ad718bcd1b9cad7d. MSVC 19.51, LIEF SDK 593/593 file hash PASS, Build/Test mỗi lần 10/10 CTest, exit 0, publication Lab PASS. LIEF tái tạo EXE 79360 byte và DLL 9728 byte giống từng byte, kiểm thử lại EXE và DLL mẫu PASS. Bước kỹ thuật 03 đạt phép thử tái tạo nguyên trạng trên hai mẫu, không chứng minh rewrite native tổng quát, bảo vệ PE hay CAD.
 - Lab V6 là bản nguồn thử nghiệm mới theo bước kỹ thuật 04, SHA-256 ZIP `7e9b69169a9e1912fa2525cf5f276bdaafa6cb72d1bc1119cb8dd4e676ee84c3`, CRC và manifest 44/44 PASS. Kế thừa V5, chỉ bổ sung QA mã hóa bản sao dữ liệu resource không thực thi của EXE/DLL mẫu trong RAM bằng AES-GCM hiện có; không sửa PE, không sinh thành phẩm bảo vệ, không nhận đường dẫn tùy ý, không thêm thư viện. GCC Release và Clang ASan/UBSan Linux mỗi bộ 7/7 CTest; fixture tổng hợp, boundary và 13 ca PE từ chối PASS. Windows V6/11 CTest, CNG và kiểm thử trên hai PE mẫu thật NotVerified. Không công bố đã đạt cổng 04 hoặc 10.3.
 - Bước hiện tại: 10.3.4 trong phạm vi thử nghiệm dữ liệu mẫu độc lập, tiếp tục hoàn thiện chứng cứ 10.2/10.3.3 còn thiếu; chưa nghiệm thu 10.3.5. Thẩm định Zydis, các dependency/thiết kế và phạm vi bảo vệ native vẫn cần thực hiện trước khi mở rộng. Chưa tích hợp Gate/Add-in hoặc thay cơ chế ký; INT-06 và hợp đồng kỹ thuật hiện hành giữ nguyên. V6 chỉ dùng để kiểm thử; sau khi nhận log Windows mới đánh giá bước tiếp theo.
+
+**Cập nhật tiến độ V1.8 — 29/11/2026:** Chủ dự án duyệt tiếp tục 10.3 theo STD-20.1. Hệ thống V76 giữ nguyên, baseline Lab đã kiểm thử Windows chuyển sang V6. Tồn đọng LicenseFormats V4/V5 giữ nguyên; không mở lại 07/09/System Check.
+
+- V6 ZIP SHA-256 `7e9b69169a9e1912fa2525cf5f276bdaafa6cb72d1bc1119cb8dd4e676ee84c3`, CRC và manifest 44/44 PASS. Hai log Windows do chủ dự án cung cấp đã đối chiếu: Build_All(20261128-170227).log SHA-256 `712f5f43bb85bcaff6751dbc8e2ffd51ae97d3f7f037fef3b15f6a266b7f670d`; Test_All(3).log SHA-256 `d3a2cefa176a1ee88ced6087d2bb93741b1711e26354f0793858d30ba0529f23`. Cùng Run-066b668636c148429de8f8ece6742989; LIEF SDK 593/593, Build và Test mỗi lần 11/11 CTest, exit 0; PE_DATA_QA=PASS, ORIGINAL_FILES_UNCHANGED=YES; .rsrc 512 byte của EXE/DLL mẫu được mã hóa và giải mã trong RAM, 100 vòng. Không chứng minh bảo vệ mã máy hoặc CAD.
+- V7 là bản nguồn thử nghiệm phân tích chỉ đọc, SHA-256 ZIP `2cb22c62d5d296058a36137aeab83100c7528258a4ceb94bcbc0ce34da4fbb7b`, CRC và manifest 56/56 PASS. Thẩm định Zydis 4.1.1 và Zycore 1.5.2, giấy phép MIT, commit pin trong STD-20.1 và hồ sơ. Chỉ bổ sung ca QA decoder trên fixture cố định và hàm C++ mẫu nội bộ, không chuyển đổi mã, không sửa PE, không nhận file tùy ý. Full checkout upstream chưa có trong môi trường; V7 yêu cầu chuẩn bị recursive checkout chính thức riêng, không tự tải trong Build_All. Linux GCC và Clang sanitizer mỗi bộ 7/7 hồi quy V6; configure từ chối thiếu Zydis, thiếu Zycore, sai commit. Full Zydis build và Windows V7 12/12 NotVerified, chưa nghiệm thu 10.3.
+- Bước hiện tại tiếp tục 10.3.3/10.3.4 (thẩm định và thử nghiệm phân tích x64); chưa qua cổng 10.3.5, 10.4/10.5. Không sửa V76, Gate, Add-in, cơ chế ký hoặc hợp đồng INT-06; V7 chưa được chọn làm baseline nghiệm thu. Chờ chứng cứ upstream/full Lab QA trước khi đánh giá bước kế tiếp.
 
 ## 2. Cấu trúc bàn giao bắt buộc
 
